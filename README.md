@@ -1,4 +1,4 @@
-# graigner_recommendations_chatbot
+# grainger_recommendations_chatbot
 
 PROJECT IN DEVELOPMENT
 
@@ -9,7 +9,9 @@ Key modifications:
   - webscrape sister company for the missing review data
   - call grainger.com directly to obtain product images and use stability.stable-diffusion-xl-v1 only for enhanced content
   - provide interface to add customer order history for later implementation within the grainger vpc
-  - TODO: plan for addressing ordering capability. Possibly orchestrate user login initially and thereby call order history and allow placing orders.
+  - TODO: plan for addressing ordering capability.
+    - -   Possibly orchestrate user login initially and thereby call order history and allow placing orders.
+      -   Implement an in-mobile-phone chat that uses the stored SQL database to serve past orders (currently stored for off-line use), which are most closely related to the current search.
 
 
     

@@ -5,7 +5,7 @@ PROJECT IN DEVELOPMENT
 Plan: mimic https://github.com/aws-samples/amazon-bedrock-aistylist-lab/blob/main/README.md
 
 Key modifications: 
-  - webscrape grainger.com for liast of products and description creating a limited base of content.
+  - webscrape grainger.com for list of products and descriptions creating a limited base of content.
   - webscrape sister company for the missing review data
   - call grainger.com directly to obtain product images and use stability.stable-diffusion-xl-v1 only for enhanced content
   - provide interface to add customer order history for later implementation within the grainger vpc

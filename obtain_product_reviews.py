@@ -49,7 +49,7 @@ def navigate_to_reviews(product_id, driver):
 
         return reviews_data
 
-    # Main function body
+    # Main
     search_url = f'https://www.zoro.com/search?q={product_id}'
     driver.get(search_url)
     try:
@@ -58,7 +58,7 @@ def navigate_to_reviews(product_id, driver):
         print("Product link not found within 10 seconds.")
         return []
 
-    # Find the specific product link using a precise CSS selector
+    # Find the specific product link using CSS selector
     product_link = driver.find_element(By.CSS_SELECTOR, 'a.product-card-image__link')
     product_url = product_link.get_attribute('href')
     driver.get(product_url)
@@ -68,16 +68,14 @@ def navigate_to_reviews(product_id, driver):
         print("Reviews link not found within 10 seconds.")
         return []
 
-    # Find the reviews link using a precise CSS selector
+    # Find the reviews link using CSS selector
     reviews_link = driver.find_element(By.CSS_SELECTOR, 'a[href*="reviews"]')
     reviews_url = reviews_link.get_attribute('href')
     driver.get(reviews_url)
     time.sleep(1)  # Wait for the reviews page to load
 
-    # Extract page source after page load
     html_content = driver.page_source
 
-    # Extract reviews data
     reviews_data = extract_reviews(html_content)
 
     return reviews_data

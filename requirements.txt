@@ -3,5 +3,5 @@ openai>=1.0.0
 streamlit~=1.36.0
 scipy~=1.13.1
 langchain~=0.2.5
-selenium
+selenium~=4.22.0
 webdriver-manager

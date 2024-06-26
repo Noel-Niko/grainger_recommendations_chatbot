@@ -28,3 +28,13 @@ Key modifications:
 ![1VCE8](https://github.com/Noel-Niko/graigner_recommendations_chatbot/assets/83922762/d455c98e-e906-42b0-89e0-079e6c772bcd)
 
 
+# AWS Bedrock
+- LLM used: Anthropic
+    ![img.png](img.png)
+  
+- AI Image Generator 
+    ![img_1.png](img_1.png)
+
+- For comparison: 
+  - https://aws.amazon.com/bedrock/pricing/
+  - https://openai.com/api/pricing/

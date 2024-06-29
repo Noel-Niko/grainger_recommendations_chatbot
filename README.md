@@ -38,3 +38,7 @@ Key modifications:
 - For comparison: 
   - https://aws.amazon.com/bedrock/pricing/
   - https://openai.com/api/pricing/
+
+
+## AI Image Generation:
+![img_3.png](img_3.png)

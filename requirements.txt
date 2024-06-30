@@ -14,3 +14,5 @@ langchain-community
 sagemaker
 aiohttp
 pillow
+torch
+tensorflow

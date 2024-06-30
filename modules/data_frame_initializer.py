@@ -9,7 +9,7 @@ class DataFrameSingleton:
     def get_instance(cls, parquet_file_path="processed/grainger_products.parquet"):
         if cls._instance is None:
             cls._instance = cls()
-            root_dir = os.path.dirname(os.path.abspath(__file__))
+            root_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
             absolute_path = os.path.join(root_dir, parquet_file_path)
             cls._load_dataframe(absolute_path)
         return cls._instance

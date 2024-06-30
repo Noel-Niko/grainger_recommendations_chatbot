@@ -1,5 +1,5 @@
 import logging
-from vector_index import Document
+from modules.vector_index import Document
 
 
 def test_recreate_vector_index():

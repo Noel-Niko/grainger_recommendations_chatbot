@@ -18,9 +18,9 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 
 
 def print_processing(stop):
-    if stop:
+    if not stop:
         return
-    logging.info("Processing...")
+    print("Processing...")
     threading.Timer(30.0, print_processing, args=(stop,)).start()
 
 

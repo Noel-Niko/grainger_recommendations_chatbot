@@ -6,10 +6,12 @@ class DataFrameSingleton:
     _df = None
 
     @classmethod
-    def get_instance(cls, parquet_file_path="/Users/noel_niko/PycharmProjects/graigner_recommendations_chatbot/processed/grainger_products.parquet"):
+    def get_instance(cls, parquet_file_path="processed/grainger_products.parquet"):
         if cls._instance is None:
             cls._instance = cls()
-            cls._load_dataframe(parquet_file_path)
+            root_dir = os.path.dirname(os.path.abspath(__file__))
+            absolute_path = os.path.join(root_dir, parquet_file_path)
+            cls._load_dataframe(absolute_path)
         return cls._instance
 
     @classmethod

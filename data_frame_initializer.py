@@ -1,12 +1,12 @@
 import pandas as pd
-
+import os
 
 class DataFrameSingleton:
     _instance = None
     _df = None
 
     @classmethod
-    def get_instance(cls, parquet_file_path="processed/grainger_products.parquet"):
+    def get_instance(cls, parquet_file_path="/Users/noel_niko/PycharmProjects/graigner_recommendations_chatbot/processed/grainger_products.parquet"):
         if cls._instance is None:
             cls._instance = cls()
             cls._load_dataframe(parquet_file_path)

@@ -1,3 +1,5 @@
+import time
+
 import numpy as np
 import streamlit as st
 
@@ -51,10 +53,16 @@ class StreamlitInterface:
     def process_chat_question(self, question, qa, clear_history=False):
         try:
             if clear_history:
-                self.chat_history.clear()  # Clear chat history if specified
+                self.chat_history.clear()
+
+            # DATA RETRIEVAL
+            start_time = time.time()
 
             # Retrieve data based on the formatted customer input
             retrieved_data = qa({"query": question})['result']
+
+            end_time = time.time()
+            retrieval_time = end_time - start_time  # Calculate the time difference
 
             # Append the retrieved data to the chat history
             self.chat_history.append(retrieved_data)
@@ -64,6 +72,11 @@ class StreamlitInterface:
                 'question': question,
                 'chat_history': self.chat_history
             }
+
+            st.write(f"Data retrieval time: {retrieval_time} seconds")
+
+            # LLM CHAIN
+
 
             return str(retrieved_data)  # Return chat response as a string
 

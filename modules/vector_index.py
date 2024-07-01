@@ -43,8 +43,9 @@ class Document:
             cls._bedrock_embeddings = cls.initialize_bedrock()
             documents = []
             data_frame_singleton = DataFrameSingleton.get_instance()
-            #TODO: Change the fraction to 1.0 when not testing
-            df = data_frame_singleton.df #.sample(frac=0.1)
+            df = data_frame_singleton.df
+            # TODO: REMOVE POST TESTING!!!!!!!!!!!!!!!!!!!!!!!!
+            df = df.sample(frac=0.1).reset_index(drop=True)
             for _, row in df.iterrows():
                 page_content = f"{row['Code']} {row['Name']} {row['Brand']} {row['Description'] if pd.notna(row['Description']) else ''}"
                 metadata = {

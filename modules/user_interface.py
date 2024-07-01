@@ -37,7 +37,7 @@ class StreamlitInterface:
         question = st.text_input("Enter your question:", value="", placeholder="")
         start_time = time.time()
         if question:
-            response, time_taken = self.process_chat_question(question=question, clear_history=False)
+            response, products, time_taken = self.process_chat_question(question=question, clear_history=False)
             st.write("Response:", response)
             st.write("Time taken:", time_taken)
         end_time = time.time()
@@ -181,7 +181,7 @@ class StreamlitInterface:
             # OBTAIN RESPONSE
             # Run conversation with provided context synchronously
             llm_retrieval_augmented_response = search_index_get_answer_from_llm.run(**context)
-            print(llm_retrieval_augmented_response)
+            # print(llm_retrieval_augmented_response)
             message, product_list_as_json = self.split_process_and_message_from_response(llm_retrieval_augmented_response)
 
             # UPDATE HISTORY
@@ -192,8 +192,9 @@ class StreamlitInterface:
             #     chat_history.append(reviews_dict)
 
             end_time = time.time()
-            print("Time for process_chat_question:", end_time - start_time)
-            return message, product_list_as_json  # Return chat response as a string
+            total_time = end_time - start_time
+            print("Time for process_chat_question:", total_time)
+            return message, product_list_as_json, total_time
 
         except ValueError as error:
             if "AccessDeniedException" in str(error):

@@ -48,10 +48,10 @@ class Document:
             cls._bedrock_embeddings = cls.initialize_bedrock()
             documents = []
             data_frame_singleton = DataFrameSingleton.get_instance()
-            df = data_frame_singleton.df
+            cls.df = data_frame_singleton.df
             # TODO: REMOVE POST TESTING!!!!!!!!!!!!!!!!!!!!!!!!
-            df = df.sample(frac=0.1).reset_index(drop=True)
-            for _, row in df.iterrows():
+            cls.df = cls.df.sample(frac=0.1).reset_index(drop=True)
+            for _, row in cls.df.iterrows():
                 page_content = f"{row['Code']} {row['Name']} {row['Brand']} {row['Description'] if pd.notna(row['Description']) else ''}"
                 metadata = {
                     'Brand': row['Brand'],
@@ -76,7 +76,7 @@ class Document:
             time_taken = end_time - start_time
             logging.info(f"Created FAISS vector store from structured documents in {time_taken} seconds.")
 
-        return cls._vector_index, cls._llm, cls._bedrock_embeddings
+        return cls._vector_index, cls._llm, cls._bedrock_embeddings, cls.df
 
     @classmethod
     def recreate_index(cls, **kwargs):

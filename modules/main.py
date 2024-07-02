@@ -3,19 +3,20 @@ import logging
 import time
 import streamlit as st
 
-from image_utils.grainger_image_util import main as generate_grainger_thumbnails
+from image_utils.grainger_image_util import main as generate_grainger_thumbnails, get_images
 from image_utils.ai_image_utils import main as generate_ai_thumbnails
 from vector_index import Document as vectorIndexDocument
 from vector_index.chat_processor import process_chat_question_with_customer_attribute_identifier
 
 
 class StreamlitInterface:
-    def __init__(self, index_document, LLM, bedrock_titan_embeddings):
+    def __init__(self, index_document, LLM, bedrock_titan_embeddings, data_frame_singleton):
         self.document = index_document
         self.llm = LLM
         self.bedrock_embeddings = bedrock_titan_embeddings
         self.chat_history = []
-
+        # self.data_frame_singleton = vectorIndexDocument.get_instance()
+        self.df = data_frame_singleton
     def run(self):
         st.title("Ask a Question")
 
@@ -77,16 +78,17 @@ class StreamlitInterface:
         start_time_col3 = time.time()
         col3.header("Grainger Images")
 
-        # Extract image URLs from products
-        image_url_maps = [product['product']['Image URL'] for product in products if
-                          'product' in product and 'Image URL' in product['product']]
+        # Extract recommendations in the expected format
+        recommendations_list = [f"{product['product']}, {product['code']}" for product in products]
 
+        # Get image URLs
+        image_urls, total_image_time = await get_images(recommendations_list, self.df)
+        col3.write(f"Time to extract image url's: {total_image_time}")
         # Generate thumbnails and HTML content for col3 using grainger_image_util
-        html_content, total_time = await generate_grainger_thumbnails(image_url_maps, self.document)
-
+        html_content, total_time = await generate_grainger_thumbnails(image_urls, self.df)
+        col3.write(f"Time to generate Grainger image's: {total_time}")
         # Debugging statement
         col3.write(f"HTML Content: {html_content}")
-
 
         # Display the HTML content in col3
         col3.markdown(html_content, unsafe_allow_html=True)
@@ -97,8 +99,8 @@ class StreamlitInterface:
 
 
 if __name__ == "__main__":
-    document, llm, bedrock_embeddings = vectorIndexDocument.get_instance()
-    interface = StreamlitInterface(index_document=document, LLM=llm, bedrock_titan_embeddings=bedrock_embeddings)
+    document, llm, bedrock_embeddings, df = vectorIndexDocument.get_instance()
+    interface = StreamlitInterface(index_document=document, LLM=llm, bedrock_titan_embeddings=bedrock_embeddings, data_frame_singleton=df)
     interface.run()
 
 # import asyncio

@@ -12,7 +12,48 @@ import pandas as pd
 import time
 
 
-async def generate_grainger_thumbnail(image_url, code, name):
+async def get_images(recommendations_list, df):
+    image_tasks = []
+    image_urls = []
+    total_image_time = 0.0
+
+    async with aiohttp.ClientSession() as session:
+        for item in recommendations_list:
+            # Split the recommendation string to get text and code
+            parts = item.split(', ')
+            code = parts[-1]  # Code is the last element
+            text = ', '.join(parts[:-1])  # Text is everything except the code
+
+            if code in df['Code'].values:
+                start_time = time.time()
+                image_url = df.loc[df['Code'] == code, 'PictureUrl600'].iloc[0]
+                end_time = time.time()
+                total_image_time += end_time - start_time
+                image_urls.append({"Code": code, "Image URL": image_url})
+                print(f"Fetched image URL for {code} in {end_time - start_time:.2f} seconds")
+
+                # Add image fetching task
+                image_tasks.append(fetch_image(session, code, image_url))
+            else:
+                print(f"Code {code} not found in the dataframe.")
+
+        # Gather all image tasks concurrently
+        image_results = await asyncio.gather(*image_tasks)
+
+    return image_results, total_image_time
+
+
+async def fetch_image(session, code, image_url):
+    async with session.get(image_url) as response:
+        if response.status == 200:
+            await response.read()  # Simulate fetching image (you can save or process the image here)
+            return f"Image URL for {code}: {image_url}"
+        else:
+            return f"Failed to fetch image for {code}: {image_url}"
+
+
+
+async def generate_single_grainger_thumbnail(image_url, code, name):
     async with aiohttp.ClientSession() as session:
         async with session.get(image_url) as resp:
             img_data = await resp.read()
@@ -52,13 +93,29 @@ async def generate_grainger_thumbnail(image_url, code, name):
 
     return f"<td><img src='data:image/jpeg;base64,{base_64_thumbnail_str}'></td>"
 
+async def generate_grainger_thumbnails(image_url_maps, df):
+    start_time = time.time()
+    logging.info("Generating thumbnails for Grainger products...")
+    logging.info(f"Image URL Maps: {image_url_maps}")
+    image_strips = [
+        await generate_single_grainger_thumbnail(item["Image URL"], item["Code"], df.loc[df['Code'] == item["Code"], 'Name'].iloc[0])
+        for item in image_url_maps if item
+    ]
+
+    html_content = "<table><tr>" + "".join(image_strips) + "</tr></table>"
+
+    total_time = time.time() - start_time
+    print("Total Image Time:", total_time)
+
+    return html_content, total_time
 
 async def main(image_url_maps, df):
     start_time = time.time()
     logging.info("Generating thumbnails for Grainger products...")
     logging.info(f"Image URL Maps: {image_url_maps}")
     image_strips = [
-        await generate_grainger_thumbnail(item["Image URL"], item["Code"], df.loc[df['Code'] == item["Code"], 'Name'].iloc[0])
+        await generate_single_grainger_thumbnail(item["Image URL"], item["Code"],
+                                                 df.loc[df['Code'] == item["Code"], 'Name'].iloc[0])
         for item in image_url_maps if item
     ]
 

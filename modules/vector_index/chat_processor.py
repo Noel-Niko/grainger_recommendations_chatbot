@@ -58,7 +58,7 @@ def process_chat_question_with_customer_attribute_identifier(question, document,
         end_time = time.time()
         total_time = end_time - start_time
         print("Time for process_chat_question:", total_time)
-        return message, product_list_as_json, total_time
+        return message, product_list_as_json, total_time, str(customer_attributes_retrieved)
 
     except ValueError as error:
         if "AccessDeniedException" in str(error):

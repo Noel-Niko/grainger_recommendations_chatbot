@@ -31,7 +31,7 @@ async def get_images(recommendations_list, df):
 
         # Gather all image tasks concurrently
         image_results = await asyncio.gather(*image_tasks)
-        logging.info(f"image_results: {image_results}")
+
     return image_results, total_image_time
 
 async def fetch_image(session, code, image_url):

@@ -126,23 +126,23 @@
 #             print("Time for split_process_and_message_from_response:", end_time - start_time)
 #             return None, None
 #
-    def process_chat_question(self, question, clear_history=False):
-        start_time = time.time()
-        prompt_template3 = """Human: Extract list of upto 5 products and their respective physical IDs from catalog that answer the user question.
-            The catalog of products is provided under <catalog></catalog> tags below.
-            <catalog>
-            {context}
-            </catalog>
-            Question: {question}
-
-            The output should be a json of the form <products>[{{"product": <description of the product from the catalog>, "code":<code of the product from the catalog>}}, ...]</products> for me to process.
-            Also, provide a user-readable message responding in full to the question with all the of the information to display to the user in the form <response>{{message}}</response>.
-            Skip the preamble and always return valid json.
-            Assistant: """
-
-        PROMPT = PromptTemplate(
-            template=prompt_template3, input_variables=["context", "question"]
-        )
+#     def process_chat_question(self, question, clear_history=False):
+#         start_time = time.time()
+#         prompt_template3 = """Human: Extract list of upto 5 products and their respective physical IDs from catalog that answer the user question.
+#             The catalog of products is provided under <catalog></catalog> tags below.
+#             <catalog>
+#             {context}
+#             </catalog>
+#             Question: {question}
+#
+#             The output should be a json of the form <products>[{{"product": <description of the product from the catalog>, "code":<code of the product from the catalog>}}, ...]</products> for me to process.
+#             Also, provide a user-readable message responding in full to the question with all the of the information to display to the user in the form <response>{{message}}</response>.
+#             Skip the preamble and always return valid json.
+#             Assistant: """
+#
+#         PROMPT = PromptTemplate(
+#             template=prompt_template3, input_variables=["context", "question"]
+#         )
 #
 #         # Use RetrievalQA customizations for improving Q&A experience
 #         search_index_get_answer_from_llm = RetrievalQA.from_chain_type(

@@ -35,7 +35,15 @@ def extract_customer_attributes(customer_input, llm):
     result = re.search('<attributes>(.*?)</attributes>', entity_extraction_result, re.DOTALL)
     if result:
         attributes_str = result.group(1)
-        attributes = json.loads(attributes_str)
+        if attributes_str:
+            try:
+                attributes = json.loads(attributes_str)
+            except json.JSONDecodeError:
+                print(f"Invalid JSON: {attributes_str}")
+                attributes = {}
+        else:
+            print("No attributes found")
+            attributes = {}
         end_time = time.time()
         print("Time for extract_customer_attributes:", end_time - start_time)
         return attributes

@@ -1,4 +1,5 @@
 import asyncio
+import logging
 import time
 import streamlit as st
 
@@ -35,6 +36,7 @@ class StreamlitInterface:
 
             # Extract products from the response JSON
             products = response_json.get('products', [])
+            logging.info(f"Products: {products}")
 
             # # Start rendering col1 images asynchronously
             # task_col1 = asyncio.create_task(self.display_ai_images(col1, products))
@@ -82,12 +84,16 @@ class StreamlitInterface:
         # Generate thumbnails and HTML content for col3 using grainger_image_util
         html_content, total_time = await generate_grainger_thumbnails(image_url_maps, self.document)
 
+        # Debugging statement
+        col3.write(f"HTML Content: {html_content}")
+
+
         # Display the HTML content in col3
         col3.markdown(html_content, unsafe_allow_html=True)
 
         end_time_col3 = time.time()
         total_time2 = end_time_col3 - start_time_col3
-        col3.write(f"Time to render Grainger Images for col3: {total_time2}")
+        col3.write(f"Time to render: {total_time2}")
 
 
 if __name__ == "__main__":

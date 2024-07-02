@@ -1,6 +1,8 @@
 # file: image_utils.py
 
 import asyncio
+import logging
+
 import aiohttp
 from PIL import Image, ImageDraw, ImageFont
 import io
@@ -53,7 +55,8 @@ async def generate_grainger_thumbnail(image_url, code, name):
 
 async def main(image_url_maps, df):
     start_time = time.time()
-
+    logging.info("Generating thumbnails for Grainger products...")
+    logging.info(f"Image URL Maps: {image_url_maps}")
     image_strips = [
         await generate_grainger_thumbnail(item["Image URL"], item["Code"], df.loc[df['Code'] == item["Code"], 'Name'].iloc[0])
         for item in image_url_maps if item

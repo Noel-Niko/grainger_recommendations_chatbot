@@ -3,8 +3,12 @@ import os
 import pandas as pd
 import logging
 from datetime import datetime
-from langchain_community.embeddings import BedrockEmbeddings
+from langchain.embeddings import BedrockEmbeddings
 from langchain.vectorstores import FAISS
+from langchain.indexes.vectorstore import VectorStoreIndexWrapper
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain.document_loaders import DirectoryLoader
+from langchain.document_loaders import S3FileLoader
 from .bedrock_initializer import LLMInitializer
 from .data_frame_initializer import DataFrameSingleton
 
@@ -44,10 +48,10 @@ class Document:
             cls._bedrock_embeddings = cls.initialize_bedrock()
             documents = []
             data_frame_singleton = DataFrameSingleton.get_instance()
-            df = data_frame_singleton.df
-            # TODO: REMOVE POST TESTING!!!!!!!!!!!!!!!!!!!!!!!!
-            df = df.sample(frac=0.1).reset_index(drop=True)
-            for _, row in df.iterrows():
+            cls.df = data_frame_singleton.df
+            # # TODO: REMOVE POST TESTING!!!!!!!!!!!!!!!!!!!!!!!!
+            # cls.df = cls.df.sample(frac=0.1).reset_index(drop=True)
+            for _, row in cls.df.iterrows():
                 page_content = f"{row['Code']} {row['Name']} {row['Brand']} {row['Description'] if pd.notna(row['Description']) else ''}"
                 metadata = {
                     'Brand': row['Brand'],
@@ -60,7 +64,7 @@ class Document:
 
             # Print the structured documents
             logging.info("Structured documents created:")
-            for idx, doc in enumerate(documents[:2], 1):
+            for idx, doc in enumerate(documents[:5], 1):
                 logging.info(f"Document {idx} of {len(documents)}:")
                 logging.info(doc.page_content[:200])
 
@@ -72,7 +76,7 @@ class Document:
             time_taken = end_time - start_time
             logging.info(f"Created FAISS vector store from structured documents in {time_taken} seconds.")
 
-        return cls._vector_index, cls._llm, cls._bedrock_embeddings
+        return cls._vector_index, cls._llm, cls._bedrock_embeddings, cls.df
 
     @classmethod
     def recreate_index(cls, **kwargs):

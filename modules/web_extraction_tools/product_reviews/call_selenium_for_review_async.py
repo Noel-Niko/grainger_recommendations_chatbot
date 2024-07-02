@@ -47,7 +47,7 @@ async def navigate_to_reviews_selenium(product_id, driver):
 
         return reviews_data
 
-    # Main function logic
+
     search_url = f'https://www.zoro.com/search?q={product_id}'
     await driver.get(search_url)
     try:

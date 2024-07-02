@@ -7,7 +7,12 @@ import base64
 import tempfile
 from PIL import Image
 import streamlit as st
-
+from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.chrome.options import Options
+from webdriver_manager.chrome import ChromeDriverManager
+from web_extraction_tools.product_reviews.call_for_single_product_review_selenium import \
+    navigate_to_reviews_selenium
 from image_utils.grainger_image_util import main as generate_grainger_thumbnails, get_images
 from image_utils.ai_image_utils import main as generate_ai_thumbnails
 from vector_index import Document as vectorIndexDocument
@@ -21,6 +26,11 @@ class StreamlitInterface:
         self.bedrock_embeddings = bedrock_titan_embeddings
         self.chat_history = []
         self.df = data_frame_singleton
+        self.options = Options()
+        self.options.add_argument("--headless")
+        self.options.add_argument("--disable-gpu")
+        self.service = Service(ChromeDriverManager().install())
+        self.driver = webdriver.Chrome(service=self.service, options=self.options)
 
     def run(self):
         st.title("Grainger Recommendations Chatbot")
@@ -30,12 +40,12 @@ class StreamlitInterface:
         with main_column:
             asyncio.run(self.ask_question(main_column, side_column))
 
-
     async def ask_question(self, center_col, col3):
         question = st.text_input("Enter your question:", value="", placeholder="")
         start_time = time.time()
         if question:
-            message, response_json, time_taken, customer_attributes_retrieved = self.process_chat_question(question=question, clear_history=False)
+            message, response_json, time_taken, customer_attributes_retrieved = self.process_chat_question(
+                question=question, clear_history=False)
 
             products = response_json.get('products', [])
             logging.info(f"Products: {products}")
@@ -52,22 +62,33 @@ class StreamlitInterface:
             await self.display_reviews(products)
 
     def process_chat_question(self, question, clear_history=False):
-        message, response_json, total_time, customer_attributes_retrieved = process_chat_question_with_customer_attribute_identifier(question,
-                                                                                                      self.document,
-                                                                                                      self.llm,
-                                                                                                      self.chat_history,
-                                                                                                      clear_history)
+        message, response_json, total_time, customer_attributes_retrieved = process_chat_question_with_customer_attribute_identifier(
+            question,
+            self.document,
+            self.llm,
+            self.chat_history,
+            clear_history)
         return message, response_json, total_time, customer_attributes_retrieved
 
     async def display_reviews(self, products):
         start_time_col1 = time.time()
 
-
         recommendations_list = [f"{product['product']}, {product['code']}" for product in products]
 
+        reviews_data = navigate_to_reviews_selenium(recommendations_list[0], self.driver)
+        if reviews_data:
+            st.subheader('Extracted Reviews:')
+            for idx, review in enumerate(reviews_data, start=1):
+                st.write(f"\nReview {idx}:")
+                st.write(f"Star Rating: {review['Star Rating']}")
+                st.write(f"Rating Text: {review['Rating Text']}")
+                st.write(f"Review Text: {review['Review Text']}")
+        else:
+            st.write("No reviews found for the given Product ID(s).")
         end_time_col1 = time.time()
         total_time_col1 = end_time_col1 - start_time_col1
         st.write(f"Time searching for reviews: {total_time_col1}")
+        return reviews_data
 
     async def display_grainger_images(self, col3, products):
         start_time_col3 = time.time()

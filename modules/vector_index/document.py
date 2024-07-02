@@ -50,8 +50,6 @@ class Document:
             documents = []
             data_frame_singleton = DataFrameSingleton.get_instance()
             cls._df = data_frame_singleton.df
-            # # TODO: REMOVE POST TESTING!!!!!!!!!!!!!!!!!!!!!!!!
-            # cls.df = cls.df.sample(frac=0.1).reset_index(drop=True)
             for _, row in cls._df.iterrows():
                 page_content = f"{row['Code']} {row['Name']} {row['Brand']} {row['Description'] if pd.notna(row['Description']) else ''}"
                 metadata = {

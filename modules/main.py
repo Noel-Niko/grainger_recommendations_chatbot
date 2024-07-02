@@ -35,26 +35,29 @@ class StreamlitInterface:
         question = st.text_input("Enter your question:", value="", placeholder="")
         start_time = time.time()
         if question:
-            message, response_json, time_taken = self.process_chat_question(question=question, clear_history=False)
+            message, response_json, time_taken, customer_attributes_retrieved = self.process_chat_question(question=question, clear_history=False)
 
             products = response_json.get('products', [])
             logging.info(f"Products: {products}")
 
             center_col.write(f"Response: {message}")
             center_col.write(f"Time taken: {time_taken}")
+            center_col.write(f"Customer attributes identified: {customer_attributes_retrieved}")
 
             await self.display_grainger_images(col3, products)
 
             total_time = time.time() - start_time
             center_col.write(f"Total time to answer: {total_time}")
 
+            await self.display_reviews(products)
+
     def process_chat_question(self, question, clear_history=False):
-        message, response_json, total_time = process_chat_question_with_customer_attribute_identifier(question,
+        message, response_json, total_time, customer_attributes_retrieved = process_chat_question_with_customer_attribute_identifier(question,
                                                                                                       self.document,
                                                                                                       self.llm,
                                                                                                       self.chat_history,
                                                                                                       clear_history)
-        return message, response_json, total_time
+        return message, response_json, total_time, customer_attributes_retrieved
 
     async def display_reviews(self, products):
         start_time_col1 = time.time()
@@ -64,7 +67,7 @@ class StreamlitInterface:
 
         end_time_col1 = time.time()
         total_time_col1 = end_time_col1 - start_time_col1
-        st.write(f"Time to render AI Images for col1: {total_time_col1}")
+        st.write(f"Time searching for reviews: {total_time_col1}")
 
     async def display_grainger_images(self, col3, products):
         start_time_col3 = time.time()

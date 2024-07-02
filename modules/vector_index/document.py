@@ -49,8 +49,8 @@ class Document:
             documents = []
             data_frame_singleton = DataFrameSingleton.get_instance()
             cls.df = data_frame_singleton.df
-            # TODO: REMOVE POST TESTING!!!!!!!!!!!!!!!!!!!!!!!!
-            cls.df = cls.df.sample(frac=0.1).reset_index(drop=True)
+            # # TODO: REMOVE POST TESTING!!!!!!!!!!!!!!!!!!!!!!!!
+            # cls.df = cls.df.sample(frac=0.1).reset_index(drop=True)
             for _, row in cls.df.iterrows():
                 page_content = f"{row['Code']} {row['Name']} {row['Brand']} {row['Description'] if pd.notna(row['Description']) else ''}"
                 metadata = {
@@ -64,7 +64,7 @@ class Document:
 
             # Print the structured documents
             logging.info("Structured documents created:")
-            for idx, doc in enumerate(documents[:2], 1):
+            for idx, doc in enumerate(documents[:5], 1):
                 logging.info(f"Document {idx} of {len(documents)}:")
                 logging.info(doc.page_content[:200])
 

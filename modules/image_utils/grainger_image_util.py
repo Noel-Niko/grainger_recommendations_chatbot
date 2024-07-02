@@ -1,16 +1,16 @@
-# file: image_utils.py
-
 import asyncio
 import logging
-
 import aiohttp
 from PIL import Image, ImageDraw, ImageFont
 import io
 import base64
-from IPython.core.display import HTML
 import pandas as pd
 import time
-
+import asyncio
+from PIL import Image, ImageDraw, ImageFont
+import io
+import aiohttp
+import base64
 
 async def get_images(recommendations_list, df):
     image_tasks = []
@@ -22,7 +22,6 @@ async def get_images(recommendations_list, df):
             # Split the recommendation string to get text and code
             parts = item.split(', ')
             code = parts[-1]  # Code is the last element
-            text = ', '.join(parts[:-1])  # Text is everything except the code
 
             if code in df['Code'].values:
                 start_time = time.time()
@@ -39,9 +38,9 @@ async def get_images(recommendations_list, df):
 
         # Gather all image tasks concurrently
         image_results = await asyncio.gather(*image_tasks)
-
-    return image_results, total_image_time
-
+        logging.info(f"image_results: {image_results}")
+    # return image_results, total_image_time
+    return image_urls, total_image_time
 
 async def fetch_image(session, code, image_url):
     async with session.get(image_url) as response:
@@ -50,8 +49,6 @@ async def fetch_image(session, code, image_url):
             return f"Image URL for {code}: {image_url}"
         else:
             return f"Failed to fetch image for {code}: {image_url}"
-
-
 
 async def generate_single_grainger_thumbnail(image_url, code, name):
     async with aiohttp.ClientSession() as session:
@@ -68,22 +65,33 @@ async def generate_single_grainger_thumbnail(image_url, code, name):
     max_text_width = img.width - 10  # Max width for wrapping text
     lines = []
     words = text.split()
+    current_line = ''
     while words:
-        line = ''
-        while words and draw.textsize(line + words[0], font=font)[0] <= max_text_width:
-            line += words.pop(0) + ' '
-        lines.append(line)
+        word = words.pop(0)
+        if draw.textlength(current_line + word, font=font) > max_text_width:
+            lines.append(current_line.strip())
+            current_line = word + ' '
+        else:
+            current_line += word + ' '
+
+    if current_line.strip():
+        lines.append(current_line.strip())
+
     wrapped_text = '\n'.join(lines)
 
-    wrapped_text_width, wrapped_text_height = draw.textsize(wrapped_text, font=font)
+    # Assuming the rest of your function remains unchanged up to this point
+
+    # Calculate text width and height using textbox
+    bbox = draw.textbbox((0, 0), wrapped_text, font=font)
+    text_width, text_height = bbox[2] - bbox[0], bbox[3] - bbox[1]
 
     box_width = img.width
-    box_height = wrapped_text_height + 10  # Adjust padding as needed
+    box_height = text_height + 10  # Adjust padding as needed
 
     draw.rectangle([(0, img.height - box_height), (img.width, img.height)], fill='black')
 
-    text_x = (img.width - wrapped_text_width) / 2
-    text_y = img.height - box_height + (box_height - wrapped_text_height) / 2  # Center vertically
+    text_x = (img.width - text_width) / 2
+    text_y = img.height - box_height + (box_height - text_height) / 2  # Center vertically
 
     draw.text((text_x, text_y), wrapped_text, fill='white', font=font)
 
@@ -93,13 +101,57 @@ async def generate_single_grainger_thumbnail(image_url, code, name):
 
     return f"<td><img src='data:image/jpeg;base64,{base_64_thumbnail_str}'></td>"
 
-async def generate_grainger_thumbnails(image_url_maps, df):
+
+
+
+# async def generate_single_grainger_thumbnail(image_url, code, name):
+#     async with aiohttp.ClientSession() as session:
+#         async with session.get(image_url) as resp:
+#             img_data = await resp.read()
+#
+#     img = Image.open(io.BytesIO(img_data))
+#     img.thumbnail((200, 200))  # Adjust the size as needed for thumbnails
+#
+#     draw = ImageDraw.Draw(img)
+#     text = f"{code}: {name}"
+#     font = ImageFont.load_default()  # Adjust the font and size here
+#
+#     max_text_width = img.width - 10  # Max width for wrapping text
+#     lines = []
+#     words = text.split()
+#     while words:
+#         line = ''
+#         while words and draw.textlength(line + words[0], font=font) <= max_text_width:
+#             line += words.pop(0) + ' '
+#         lines.append(line)
+#     wrapped_text = '\n'.join(lines)
+#
+#     wrapped_text_width, wrapped_text_height = draw.textlength(wrapped_text, font=font)
+#
+#     box_width = img.width
+#     box_height = wrapped_text_height + 10  # Adjust padding as needed
+#
+#     draw.rectangle([(0, img.height - box_height), (img.width, img.height)], fill='black')
+#
+#     text_x = (img.width - wrapped_text_width) / 2
+#     text_y = img.height - box_height + (box_height - wrapped_text_height) / 2  # Center vertically
+#
+#     draw.text((text_x, text_y), wrapped_text, fill='white', font=font)
+#
+#     buffered = io.BytesIO()
+#     img.save(buffered, format="JPEG")
+#     base_64_thumbnail_str = base64.b64encode(buffered.getvalue()).decode()
+#
+#     return f"<td><img src='data:image/jpeg;base64,{base_64_thumbnail_str}'></td>"
+
+async def generate_grainger_thumbnails(image_urls, df):
     start_time = time.time()
     logging.info("Generating thumbnails for Grainger products...")
-    logging.info(f"Image URL Maps: {image_url_maps}")
+    logging.info(f"Image URL Maps: {image_urls}")
+
     image_strips = [
         await generate_single_grainger_thumbnail(item["Image URL"], item["Code"], df.loc[df['Code'] == item["Code"], 'Name'].iloc[0])
-        for item in image_url_maps if item
+        for item in image_urls if item
     ]
 
     html_content = "<table><tr>" + "".join(image_strips) + "</tr></table>"
@@ -109,19 +161,241 @@ async def generate_grainger_thumbnails(image_url_maps, df):
 
     return html_content, total_time
 
-async def main(image_url_maps, df):
-    start_time = time.time()
-    logging.info("Generating thumbnails for Grainger products...")
-    logging.info(f"Image URL Maps: {image_url_maps}")
-    image_strips = [
-        await generate_single_grainger_thumbnail(item["Image URL"], item["Code"],
-                                                 df.loc[df['Code'] == item["Code"], 'Name'].iloc[0])
-        for item in image_url_maps if item
-    ]
+async def main(image_urls, df):
+    return await generate_grainger_thumbnails(image_urls, df)
 
-    html_content = "<table><tr>" + "".join(image_strips) + "</tr></table>"
-
-    total_time = time.time() - start_time
-    print("Total Image Time:", total_time)
-
-    return html_content, total_time
+# import asyncio
+# import logging
+# import aiohttp
+# from PIL import Image, ImageDraw, ImageFont
+# import io
+# import base64
+# import pandas as pd
+# import time
+#
+# async def get_images(recommendations_list, df):
+#     image_tasks = []
+#     image_urls = []
+#     total_image_time = 0.0
+#
+#     async with aiohttp.ClientSession() as session:
+#         for item in recommendations_list:
+#             # Split the recommendation string to get text and code
+#             parts = item.split(', ')
+#             code = parts[-1]  # Code is the last element
+#
+#             if code in df['Code'].values:
+#                 start_time = time.time()
+#                 image_url = df.loc[df['Code'] == code, 'PictureUrl600'].iloc[0]
+#                 end_time = time.time()
+#                 total_image_time += end_time - start_time
+#                 image_urls.append({"Code": code, "Image URL": image_url})
+#                 print(f"Fetched image URL for {code} in {end_time - start_time:.2f} seconds")
+#
+#                 # Add image fetching task
+#                 image_tasks.append(fetch_image(session, code, image_url))
+#             else:
+#                 print(f"Code {code} not found in the dataframe.")
+#
+#         # Gather all image tasks concurrently
+#         image_results = await asyncio.gather(*image_tasks)
+#
+#     return image_results, total_image_time
+#
+# async def fetch_image(session, code, image_url):
+#     async with session.get(image_url) as response:
+#         if response.status == 200:
+#             await response.read()  # Simulate fetching image (you can save or process the image here)
+#             return f"Image URL for {code}: {image_url}"
+#         else:
+#             return f"Failed to fetch image for {code}: {image_url}"
+#
+# async def generate_single_grainger_thumbnail(image_url, code, name):
+#     async with aiohttp.ClientSession() as session:
+#         async with session.get(image_url) as resp:
+#             img_data = await resp.read()
+#
+#     img = Image.open(io.BytesIO(img_data))
+#     img.thumbnail((200, 200))  # Adjust the size as needed for thumbnails
+#
+#     draw = ImageDraw.Draw(img)
+#     text = f"{code}: {name}"
+#     font = ImageFont.load_default()  # Adjust the font and size here
+#
+#     max_text_width = img.width - 10  # Max width for wrapping text
+#     lines = []
+#     words = text.split()
+#     while words:
+#         line = ''
+#         while words and draw.textsize(line + words[0], font=font)[0] <= max_text_width:
+#             line += words.pop(0) + ' '
+#         lines.append(line)
+#     wrapped_text = '\n'.join(lines)
+#
+#     wrapped_text_width, wrapped_text_height = draw.textsize(wrapped_text, font=font)
+#
+#     box_width = img.width
+#     box_height = wrapped_text_height + 10  # Adjust padding as needed
+#
+#     draw.rectangle([(0, img.height - box_height), (img.width, img.height)], fill='black')
+#
+#     text_x = (img.width - wrapped_text_width) / 2
+#     text_y = img.height - box_height + (box_height - wrapped_text_height) / 2  # Center vertically
+#
+#     draw.text((text_x, text_y), wrapped_text, fill='white', font=font)
+#
+#     buffered = io.BytesIO()
+#     img.save(buffered, format="JPEG")
+#     base_64_thumbnail_str = base64.b64encode(buffered.getvalue()).decode()
+#
+#     return f"<td><img src='data:image/jpeg;base64,{base_64_thumbnail_str}'></td>"
+#
+# async def generate_grainger_thumbnails(image_urls, df):
+#     start_time = time.time()
+#     logging.info("Generating thumbnails for Grainger products...")
+#     logging.info(f"Image URL Maps: {image_urls}")
+#
+#     image_strips = [
+#         await generate_single_grainger_thumbnail(item["Image URL"], item["Code"], df.loc[df['Code'] == item["Code"], 'Name'].iloc[0])
+#         for item in image_urls if item
+#     ]
+#
+#     html_content = "<table><tr>" + "".join(image_strips) + "</tr></table>"
+#
+#     total_time = time.time() - start_time
+#     print("Total Image Time:", total_time)
+#
+#     return html_content, total_time
+#
+# async def main(image_urls, df):
+#     # This function can be used for further integration or standalone execution
+#     return await generate_grainger_thumbnails(image_urls, df)
+#
+#
+# # # file: image_utils.py
+# #
+# # import asyncio
+# # import logging
+# #
+# # import aiohttp
+# # from PIL import Image, ImageDraw, ImageFont
+# # import io
+# # import base64
+# # from IPython.core.display import HTML
+# # import pandas as pd
+# # import time
+# #
+# #
+# # async def get_images(recommendations_list, df):
+# #     image_tasks = []
+# #     image_urls = []
+# #     total_image_time = 0.0
+# #
+# #     async with aiohttp.ClientSession() as session:
+# #         for item in recommendations_list:
+# #             # Split the recommendation string to get text and code
+# #             parts = item.split(', ')
+# #             code = parts[-1]  # Code is the last element
+# #             text = ', '.join(parts[:-1])  # Text is everything except the code
+# #
+# #             if code in df['Code'].values:
+# #                 start_time = time.time()
+# #                 image_url = df.loc[df['Code'] == code, 'PictureUrl600'].iloc[0]
+# #                 end_time = time.time()
+# #                 total_image_time += end_time - start_time
+# #                 image_urls.append({"Code": code, "Image URL": image_url})
+# #                 print(f"Fetched image URL for {code} in {end_time - start_time:.2f} seconds")
+# #
+# #                 # Add image fetching task
+# #                 image_tasks.append(fetch_image(session, code, image_url))
+# #             else:
+# #                 print(f"Code {code} not found in the dataframe.")
+# #
+# #         # Gather all image tasks concurrently
+# #         image_results = await asyncio.gather(*image_tasks)
+# #
+# #     return image_results, total_image_time
+# #
+# #
+# # async def fetch_image(session, code, image_url):
+# #     async with session.get(image_url) as response:
+# #         if response.status == 200:
+# #             await response.read()  # Simulate fetching image (you can save or process the image here)
+# #             return f"Image URL for {code}: {image_url}"
+# #         else:
+# #             return f"Failed to fetch image for {code}: {image_url}"
+# #
+# #
+# #
+# # async def generate_single_grainger_thumbnail(image_url, code, name):
+# #     async with aiohttp.ClientSession() as session:
+# #         async with session.get(image_url) as resp:
+# #             img_data = await resp.read()
+# #
+# #     img = Image.open(io.BytesIO(img_data))
+# #     img.thumbnail((200, 200))  # Adjust the size as needed for thumbnails
+# #
+# #     draw = ImageDraw.Draw(img)
+# #     text = f"{code}: {name}"
+# #     font = ImageFont.load_default()  # Adjust the font and size here
+# #
+# #     max_text_width = img.width - 10  # Max width for wrapping text
+# #     lines = []
+# #     words = text.split()
+# #     while words:
+# #         line = ''
+# #         while words and draw.textsize(line + words[0], font=font)[0] <= max_text_width:
+# #             line += words.pop(0) + ' '
+# #         lines.append(line)
+# #     wrapped_text = '\n'.join(lines)
+# #
+# #     wrapped_text_width, wrapped_text_height = draw.textsize(wrapped_text, font=font)
+# #
+# #     box_width = img.width
+# #     box_height = wrapped_text_height + 10  # Adjust padding as needed
+# #
+# #     draw.rectangle([(0, img.height - box_height), (img.width, img.height)], fill='black')
+# #
+# #     text_x = (img.width - wrapped_text_width) / 2
+# #     text_y = img.height - box_height + (box_height - wrapped_text_height) / 2  # Center vertically
+# #
+# #     draw.text((text_x, text_y), wrapped_text, fill='white', font=font)
+# #
+# #     buffered = io.BytesIO()
+# #     img.save(buffered, format="JPEG")
+# #     base_64_thumbnail_str = base64.b64encode(buffered.getvalue()).decode()
+# #
+# #     return f"<td><img src='data:image/jpeg;base64,{base_64_thumbnail_str}'></td>"
+# #
+# # async def generate_grainger_thumbnails(image_url_maps, df):
+# #     start_time = time.time()
+# #     logging.info("Generating thumbnails for Grainger products...")
+# #     logging.info(f"Image URL Maps: {image_url_maps}")
+# #     image_strips = [
+# #         await generate_single_grainger_thumbnail(item["Image URL"], item["Code"], df.loc[df['Code'] == item["Code"], 'Name'].iloc[0])
+# #         for item in image_url_maps if item
+# #     ]
+# #
+# #     html_content = "<table><tr>" + "".join(image_strips) + "</tr></table>"
+# #
+# #     total_time = time.time() - start_time
+# #     print("Total Image Time:", total_time)
+# #
+# #     return html_content, total_time
+# #
+# # async def main(image_url_maps, df):
+# #     start_time = time.time()
+# #     logging.info("Generating thumbnails for Grainger products...")
+# #     logging.info(f"Image URL Maps: {image_url_maps}")
+# #     image_strips = [
+# #         await generate_single_grainger_thumbnail(item["Image URL"], item["Code"],
+# #                                                  df.loc[df['Code'] == item["Code"], 'Name'].iloc[0])
+# #         for item in image_url_maps if item
+# #     ]
+# #
+# #     html_content = "<table><tr>" + "".join(image_strips) + "</tr></table>"
+# #
+# #     total_time = time.time() - start_time
+# #     print("Total Image Time:", total_time)
+# #
+# #     return html_content, total_time

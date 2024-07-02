@@ -65,13 +65,13 @@ async def generate_ai_thumbnail(rec_tuple, attributes, bedrock_runtime):
     words = text.split()
     while words:
         line = ''
-        while words and draw.textsize(line + words[0], font=font)[0] <= max_text_width:
+        while words and draw.textlength(line + words[0], font=font)[0] <= max_text_width:
             line += words.pop(0) + ' '
         lines.append(line)
     wrapped_text = '\n'.join(lines)
 
     # Calculate text size after wrapping
-    wrapped_text_width, wrapped_text_height = draw.textsize(wrapped_text, font=font)
+    wrapped_text_width, wrapped_text_height = draw.textlength(wrapped_text, font=font)
 
     # Calculate box dimensions
     box_width = img.width

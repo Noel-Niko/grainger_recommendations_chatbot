@@ -22,7 +22,7 @@ async def get_images(recommendations_list, df):
                 image_url = df.loc[df['Code'] == code, 'PictureUrl600'].iloc[0]
                 end_time = time.time()
                 total_image_time += end_time - start_time
-                print(f"Fetched image URL for {code} in {end_time - start_time:.2f} seconds")
+                print(f"Fetched image URL {image_url} for {code} in {end_time - start_time:.2f} seconds")
 
                 # Add image fetching task
                 image_tasks.append(fetch_image(session, code, image_url))

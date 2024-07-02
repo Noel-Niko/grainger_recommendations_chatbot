@@ -9,7 +9,7 @@ for port in "${port_range[@]}"; do
     if [ $? -eq 0 ]; then
         # Port is available, start Streamlit with this port
         echo "Starting Streamlit Application..."
-        exec  streamlit run modules/user_interface.py --server.port=$port --server.address=0.0.0.0 || { echo "Streamlit failed to start"; exit 1; }
+        exec  streamlit run modules/main.py --server.port=$port --server.address=0.0.0.0 || { echo "Streamlit failed to start"; exit 1; }
         break
     fi
 done

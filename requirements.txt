@@ -22,3 +22,5 @@ torch
 tensorflow
 IPython
 faiss-cpu
+matplotlib
+transformers

@@ -23,17 +23,17 @@ class StreamlitInterface:
         self.df = data_frame_singleton
 
     def run(self):
-        st.title("Ask a Question")
+        st.title("Grainger Recommendations Chatbot")
 
-        col1, center_col, col3 = st.columns([1, 2, 1])
+        center_col, col3 = st.columns([2, 2])
 
         with center_col:
             start_time_center = time.time()
-            asyncio.run(self.ask_question(center_col, col1, col3))
+            asyncio.run(self.ask_question(center_col, col3))
             total_time_center = time.time() - start_time_center
             st.write(f"Time to render Center Column: {total_time_center}")
 
-    async def ask_question(self, center_col, col1, col3):
+    async def ask_question(self, center_col, col3):
         question = st.text_input("Enter your question:", value="", placeholder="")
         start_time = time.time()
         if question:
@@ -58,17 +58,15 @@ class StreamlitInterface:
                                                                                                       clear_history)
         return message, response_json, total_time
 
-    async def display_ai_images(self, col1, products):
+    async def display_reviews(self, products):
         start_time_col1 = time.time()
-        col1.header("AI Images")
 
-        image_strips_col1 = await generate_ai_thumbnails(col1, products, self.bedrock_embeddings)
 
-        col1.markdown("".join(image_strips_col1), unsafe_allow_html=True)
+        recommendations_list = [f"{product['product']}, {product['code']}" for product in products]
 
         end_time_col1 = time.time()
         total_time_col1 = end_time_col1 - start_time_col1
-        col1.write(f"Time to render AI Images for col1: {total_time_col1}")
+        st.write(f"Time to render AI Images for col1: {total_time_col1}")
 
     async def display_grainger_images(self, col3, products):
         start_time_col3 = time.time()
@@ -79,8 +77,6 @@ class StreamlitInterface:
         image_data, total_image_time = await get_images(recommendations_list, self.df)
         col3.write(f"Time to extract image url's: {total_image_time}")
 
-        # Directly display the images using the binary data
-        # Directly display the images using the binary data
         for image_info in image_data:
             try:
                 img = Image.open(io.BytesIO(image_info["Image Data"]))
@@ -92,49 +88,6 @@ class StreamlitInterface:
         end_time_col3 = time.time()
         total_time2 = end_time_col3 - start_time_col3
         col3.write(f"Time to render: {total_time2}")
-
-    # async def display_grainger_images(self, col3, products):
-    #     start_time_col3 = time.time()
-    #     col3.header("Grainger Images")
-    #
-    #     recommendations_list = [f"{product['product']}, {product['code']}" for product in products]
-    #
-    #     image_urls, total_image_time = await get_images(recommendations_list, self.df)
-    #     col3.write(f"Time to extract image url's: {total_image_time}")
-    #
-    #     html_content, total_time = await generate_grainger_thumbnails(image_urls, self.df)
-    #     col3.write(f"Time to generate Grainger image's: {total_time}")
-    #
-    #     # Decode the base64 image data and display it
-    #     for base64_img_str in html_content.split(','):
-    #         decoded_img_data = base64.b64decode(base64_img_str)
-    #         img = Image.open(io.BytesIO(decoded_img_data))
-    #         col3.image(img, caption="Grainger Product Image", use_column_width=True)
-    #
-    #     end_time_col3 = time.time()
-    #     total_time2 = end_time_col3 - start_time_col3
-    #     col3.write(f"Time to render: {total_time2}")
-
-    # async def display_grainger_images(self, col3, products):
-    #     start_time_col3 = time.time()
-    #     col3.header("Grainger Images")
-    #
-    #     recommendations_list = [f"{product['product']}, {product['code']}" for product in products]
-    #
-    #     image_urls, total_image_time = await get_images(recommendations_list, self.df)
-    #     col3.write(f"Time to extract image url's: {total_image_time}")
-    #
-    #     html_content, total_time = await generate_grainger_thumbnails(image_urls, self.df)
-    #     col3.write(f"Time to generate Grainger image's: {total_time}")
-    #
-    #     col3.write(f"HTML Content: {html_content}")
-    #
-    #     # Display the HTML content in col3
-    #     col3.markdown(html_content, unsafe_allow_html=True)
-    #
-    #     end_time_col3 = time.time()
-    #     total_time2 = end_time_col3 - start_time_col3
-    #     col3.write(f"Time to render: {total_time2}")
 
     def display_base64_image(self, base64_img_str):
         decoded_img_data = base64.b64decode(base64_img_str)

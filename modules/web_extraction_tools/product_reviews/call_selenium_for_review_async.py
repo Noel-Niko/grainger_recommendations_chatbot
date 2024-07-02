@@ -4,9 +4,9 @@ from selenium.webdriver.support import expected_conditions as EC
 from bs4 import BeautifulSoup
 import asyncio
 
-async def navigate_to_reviews_selenium(product_id, driver):
+async def async_navigate_to_reviews_selenium(product_id, driver):
     async def get_page_soup(url):
-        await driver.get(url)
+        await asyncio.to_thread(driver.get, url)
         await asyncio.sleep(1)  # Wait for the page to load
         return BeautifulSoup(driver.page_source, 'html.parser')
 
@@ -40,6 +40,7 @@ async def navigate_to_reviews_selenium(product_id, driver):
         for idx, review in enumerate(reviews, start=1):
             review_text = review.find('p', class_='pr-rd-description-text')
             reviews_data.append({
+                'Recommendation Percent': recommendation_percent,
                 'Star Rating': star_rating_label,
                 'Rating Text': star_rating_text,
                 'Review Text': review_text.text.strip() if review_text else None
@@ -47,30 +48,33 @@ async def navigate_to_reviews_selenium(product_id, driver):
 
         return reviews_data
 
-    # Main function logic
     search_url = f'https://www.zoro.com/search?q={product_id}'
-    await driver.get(search_url)
+    await asyncio.to_thread(driver.get, search_url)
+    await asyncio.sleep(2)  # Wait for the page to load
+
     try:
-        await WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR, 'a.product-card-image__link')))
+        await asyncio.to_thread(WebDriverWait(driver, 10).until, EC.presence_of_element_located((By.CSS_SELECTOR, 'a.product-card-image__link')))
     except TimeoutError:
         print("Product link not found within 10 seconds.")
         return []
 
     # Find the specific product link using CSS selector
-    product_link = await driver.find_element(By.CSS_SELECTOR, 'a.product-card-image__link')
-    product_url = await product_link.get_attribute('href')
-    await driver.get(product_url)
+    product_link = await asyncio.to_thread(driver.find_element, By.CSS_SELECTOR, 'a.product-card-image__link')
+    product_url = await asyncio.to_thread(product_link.get_attribute, 'href')
+    await asyncio.to_thread(driver.get, product_url)
+    await asyncio.sleep(2)  # Wait for the product page to load
+
     try:
-        await WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR, 'a[href*="reviews"]')))
+        await asyncio.to_thread(WebDriverWait(driver, 10).until, EC.presence_of_element_located((By.CSS_SELECTOR, 'a[href*="reviews"]')))
     except TimeoutError:
         print("Reviews link not found within 10 seconds.")
         return []
 
     # Find the reviews link using CSS selector
-    reviews_link = await driver.find_element(By.CSS_SELECTOR, 'a[href*="reviews"]')
-    reviews_url = await reviews_link.get_attribute('href')
-    await driver.get(reviews_url)
-    await asyncio.sleep(1)  # Wait for the reviews page to load
+    reviews_link = await asyncio.to_thread(driver.find_element, By.CSS_SELECTOR, 'a[href*="reviews"]')
+    reviews_url = await asyncio.to_thread(reviews_link.get_attribute, 'href')
+    await asyncio.to_thread(driver.get, reviews_url)
+    await asyncio.sleep(2)  # Wait for the reviews page to load
 
     html_content = driver.page_source
 

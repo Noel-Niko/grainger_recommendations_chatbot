@@ -3,8 +3,12 @@ import os
 import pandas as pd
 import logging
 from datetime import datetime
-from langchain_community.embeddings import BedrockEmbeddings
+from langchain.embeddings import BedrockEmbeddings
 from langchain.vectorstores import FAISS
+from langchain.indexes.vectorstore import VectorStoreIndexWrapper
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain.document_loaders import DirectoryLoader
+from langchain.document_loaders import S3FileLoader
 from .bedrock_initializer import LLMInitializer
 from .data_frame_initializer import DataFrameSingleton
 

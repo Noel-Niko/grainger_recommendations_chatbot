@@ -3,7 +3,7 @@ from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
 from webdriver_manager.chrome import ChromeDriverManager
-from call_for_single_product_review_selenium import navigate_to_reviews_selenium  # Import your function from call_for_single_product_review_selenium.py
+from legacy.call_for_single_product_review_selenium import navigate_to_reviews_selenium  # Import your function from call_for_single_product_review_selenium.py
 
 class ReviewExtractor:
     def __init__(self):

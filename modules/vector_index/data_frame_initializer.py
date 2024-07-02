@@ -1,5 +1,8 @@
 import pandas as pd
 import os
+import logging
+
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 
 class DataFrameSingleton:
@@ -7,13 +10,24 @@ class DataFrameSingleton:
     _df = None
 
     @classmethod
-    def get_instance(cls, parquet_file_path="processed/grainger_products.parquet"):
+    def get_instance(cls, parquet_file_path="modules/vector_index/processed/grainger_products.parquet"):
+        logging.info("Entering dataframe get_instance method")
         if cls._instance is None:
-            cls._instance = cls()
-            root_dir = os.path.dirname(os.path.abspath(__file__))
-            absolute_path = os.path.join(root_dir, parquet_file_path)
-            cls._load_dataframe(absolute_path)
-        return cls._instance
+            try:
+                cls._instance = cls()
+                absolute_path = cls._generate_absolute_path(parquet_file_path)
+                cls._load_dataframe(absolute_path)
+                logging.info("Dataframe loaded successfully!")
+                return cls._instance
+            except Exception as e:
+                logging.error(f"Error loading dataframe: {e}")
+                return cls._instance
+
+    @classmethod
+    def _generate_absolute_path(cls, relative_path):
+        root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
+        absolute_path = os.path.join(root_dir, relative_path)
+        return absolute_path
 
     @classmethod
     def _load_dataframe(cls, parquet_file_path):

@@ -7,32 +7,36 @@ import pandas as pd
 import time
 import asyncio
 
+
 async def get_images(recommendations_list, df):
     image_tasks = []
     image_data = []  # Change to store binary data
     total_image_time = 0.0
 
     async with aiohttp.ClientSession() as session:
+        checked = []
         for item in recommendations_list:
             parts = item.split(', ')
             code = parts[-1]
 
             if code in df['Code'].values:
-                start_time = time.time()
-                image_url = df.loc[df['Code'] == code, 'PictureUrl600'].iloc[0]
-                end_time = time.time()
-                total_image_time += end_time - start_time
-                print(f"Fetched image URL {image_url} for {code} in {end_time - start_time:.2f} seconds")
+                if code not in checked:
+                    start_time = time.time()
+                    image_url = df.loc[df['Code'] == code, 'PictureUrl600'].iloc[0]
+                    end_time = time.time()
+                    total_image_time += end_time - start_time
+                    print(f"Fetched image URL {image_url} for {code} in {end_time - start_time:.2f} seconds")
 
-                # Add image fetching task
-                image_tasks.append(fetch_image(session, code, image_url))
+                    # Add image fetching task
+                    image_tasks.append(fetch_image(session, code, image_url))
+                    checked.append(code)
             else:
                 print(f"Code {code} not found in the dataframe.")
 
         # Gather all image tasks concurrently
         image_results = await asyncio.gather(*image_tasks)
-
     return image_results, total_image_time
+
 
 async def fetch_image(session, code, image_url):
     async with session.get(image_url) as response:
@@ -41,6 +45,7 @@ async def fetch_image(session, code, image_url):
             return {"Code": code, "Image Data": img_data}
         else:
             return f"Failed to fetch image for {code}: {image_url}"
+
 
 async def generate_single_grainger_thumbnail(image_data):
     img = Image.open(io.BytesIO(image_data))
@@ -86,6 +91,7 @@ async def generate_single_grainger_thumbnail(image_data):
 
     return f"<td><img src='data:image/jpeg;base64,{base_64_thumbnail_str}'></td>"
 
+
 # Example usage
 # recommendations_list = [...]  # Your list of recommendations
 # df = pd.DataFrame(...)  # Your DataFrame with product information
@@ -93,9 +99,6 @@ async def generate_single_grainger_thumbnail(image_data):
 # for data in image_data:
 #     result = await generate_single_grainger_thumbnail(data["Image Data"])
 #     print(result)
-
-
-
 
 
 # import asyncio
@@ -202,8 +205,6 @@ async def generate_single_grainger_thumbnail(image_data):
 #     return f"<td><img src='data:image/jpeg;base64,{base_64_thumbnail_str}'></td>"
 
 
-
-
 # async def generate_single_grainger_thumbnail(image_url, code, name):
 #     async with aiohttp.ClientSession() as session:
 #         async with session.get(image_url) as resp:
@@ -250,7 +251,8 @@ async def generate_grainger_thumbnails(image_urls, df):
     logging.info(f"Image URL Maps: {image_urls}")
 
     image_strips = [
-        await generate_single_grainger_thumbnail(item["Image URL"], item["Code"], df.loc[df['Code'] == item["Code"], 'Name'].iloc[0])
+        await generate_single_grainger_thumbnail(item["Image URL"], item["Code"],
+                                                 df.loc[df['Code'] == item["Code"], 'Name'].iloc[0])
         for item in image_urls if item
     ]
 
@@ -260,6 +262,7 @@ async def generate_grainger_thumbnails(image_urls, df):
     print("Total Image Time:", total_time)
 
     return html_content, total_time
+
 
 async def main(image_urls, df):
     return await generate_grainger_thumbnails(image_urls, df)

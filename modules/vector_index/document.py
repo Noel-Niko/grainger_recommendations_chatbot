@@ -26,6 +26,7 @@ def log_creation_time(file_path):
 class Document:
     _instance = None
     _vector_index = None
+    _df = None
     _llm = None
     _bedrock_embeddings = None
 
@@ -43,15 +44,15 @@ class Document:
         """Static access method to get the singleton instance, enforcing required arguments."""
         logging.info("Entering get_instance method")
 
-        if cls._vector_index is None:
+        if cls._vector_index is None or cls._df is None:
             cls._llm = cls.initialize_llm()
             cls._bedrock_embeddings = cls.initialize_bedrock()
             documents = []
             data_frame_singleton = DataFrameSingleton.get_instance()
-            cls.df = data_frame_singleton.df
+            cls._df = data_frame_singleton.df
             # # TODO: REMOVE POST TESTING!!!!!!!!!!!!!!!!!!!!!!!!
             # cls.df = cls.df.sample(frac=0.1).reset_index(drop=True)
-            for _, row in cls.df.iterrows():
+            for _, row in cls._df.iterrows():
                 page_content = f"{row['Code']} {row['Name']} {row['Brand']} {row['Description'] if pd.notna(row['Description']) else ''}"
                 metadata = {
                     'Brand': row['Brand'],
@@ -76,7 +77,7 @@ class Document:
             time_taken = end_time - start_time
             logging.info(f"Created FAISS vector store from structured documents in {time_taken} seconds.")
 
-        return cls._vector_index, cls._llm, cls._bedrock_embeddings, cls.df
+        return cls._vector_index, cls._llm, cls._bedrock_embeddings, cls._df
 
     @classmethod
     def recreate_index(cls, **kwargs):

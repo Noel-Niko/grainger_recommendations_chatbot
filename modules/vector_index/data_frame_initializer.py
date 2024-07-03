@@ -16,6 +16,7 @@ class DataFrameSingleton:
         logging.info("Entering dataframe get_instance method")
         if cls._instance is None:
             try:
+                logging.info("Loading new dataframe instance...")
                 cls._instance = cls()
                 absolute_path = cls._generate_absolute_path(parquet_file_path)
                 cls._instance._load_dataframe(absolute_path)
@@ -33,10 +34,7 @@ class DataFrameSingleton:
     def _load_dataframe(self, parquet_file_path):
         print("Attempting to load file from:", parquet_file_path)
         try:
-            # TODO REMOVE SAMPLING AFTER TESTING **************************************
-            df = pd.read_parquet(parquet_file_path)
-            logging.info("Loading sample of dataframe")
-            self._df = df.sample(frac=0.01).reset_index(drop=True)
+            self._df = pd.read_parquet(parquet_file_path)
 
             print("File loaded successfully!")
         except FileNotFoundError as e:

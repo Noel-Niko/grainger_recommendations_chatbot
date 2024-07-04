@@ -35,7 +35,8 @@ class DataFrameSingleton:
         print("Attempting to load file from:", parquet_file_path)
         try:
             self._df = pd.read_parquet(parquet_file_path)
-
+            # TODO: TAKE SAMPLE
+            self._df = self._df.sample(frac=0.01, random_state=1)
             print("File loaded successfully!")
         except FileNotFoundError as e:
             print("Error loading file:", e)

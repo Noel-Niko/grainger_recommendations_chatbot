@@ -11,10 +11,12 @@ from .bedrock_initializer import bedrock
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
+
 class Document:
     def __init__(self, page_content, metadata):
         self.page_content = page_content
         self.metadata = metadata
+
 
 def initialize_embeddings_and_faiss():
     os.environ["AWS_DEFAULT_REGION"] = "us-east-1"
@@ -53,30 +55,31 @@ def initialize_embeddings_and_faiss():
     current_dir = os.path.dirname(os.path.abspath(__file__))
     parquet_file_path = os.path.join(os.path.join(current_dir, "processed/grainger_products.parquet"))
     logging.info("Attempting to load file from:", parquet_file_path)
+    # Load processed data from Parquet file
+    documents = []
+    df = pd.read_parquet(parquet_file_path)
 
     try:
-        df = pd.read_parquet(parquet_file_path)
-        logging.info("File loaded successfully!")
+        documents = pickle.load(open("documents.pkl", "rb"))
+        logging.info("Documents file loaded successfully!")
     except FileNotFoundError as e:
         logging.error("Error loading file:", e)
-        raise
-
-    documents = []
-    for index, row in df.iterrows():
-        page_content = f"{row['Code']} {row['Name']} {row['Brand']} {row['Description'] if pd.notna(row['Description']) else ''}"
-        metadata = {
-            'Brand': row['Brand'],
-            'Code': row['Code'],
-            'Name': row['Name'],
-            'Description': row['Description'],
-            'Price': row['Price']
-        }
-        documents.append(Document(page_content, metadata))
-
-    logging.info("Structured documents created:")
-    for idx, doc in enumerate(documents[:5], 1):
-        logging.info(f"Document {idx} of {len(documents)}:")
-        logging.info(doc.page_content[:200])
+        logging.info("Generating new df")
+        for index, row in df.iterrows():
+            page_content = f"{row['Code']} {row['Name']} {row['Brand']} {row['Description'] if pd.notna(row['Description']) else ''}"
+            metadata = {
+                'Brand': row['Brand'],
+                'Code': row['Code'],
+                'Name': row['Name'],
+                'Description': row['Description'],
+                'Price': row['Price']
+            }
+            documents.append(Document(page_content, metadata))
+            logging.info("Structured documents created:")
+            for idx, doc in enumerate(documents[:5], 1):
+                logging.info(f"Document {idx} of {len(documents)}:")
+                logging.info(doc.page_content[:200])
+            pickle.dump(documents, open("documents.pkl", "wb"))
 
     # Check if serialized FAISS index exists
     serialized_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'vector_index.pkl')
@@ -84,7 +87,8 @@ def initialize_embeddings_and_faiss():
         logging.info(f"Serialized file {serialized_file} already exists. Loading...")
         with open(serialized_file, 'rb') as file:
             pickle_data = pickle.load(file)
-            vectorstore_faiss_doc = FAISS.deserialize_from_bytes(embeddings=bedrock_embeddings, serialized=pickle_data, allow_dangerous_deserialization=True)
+            vectorstore_faiss_doc = FAISS.deserialize_from_bytes(embeddings=bedrock_embeddings, serialized=pickle_data,
+                                                                 allow_dangerous_deserialization=True)
         logging.info("FAISS vector store loaded from pickle file.")
     else:
         logging.info("Creating FAISS vector store from structured documents...")
@@ -99,7 +103,6 @@ def initialize_embeddings_and_faiss():
         logging.info("FAISS vector store serialized to pickle file.")
 
     return bedrock_embeddings, vectorstore_faiss_doc, df, llm
-
 
 # import os
 # import pickle

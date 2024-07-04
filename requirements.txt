@@ -24,7 +24,6 @@ IPython
 faiss-cpu
 matplotlib
 transformers
-Pillow
 pillow
 asyncio
 aiohttp

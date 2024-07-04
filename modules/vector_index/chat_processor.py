@@ -8,7 +8,7 @@ from .response_parser import split_process_and_message_from_response
 
 def process_chat_question_with_customer_attribute_identifier(question, document, llm, chat_history, clear_history=False):
     start_time = time.time()
-    prompt_template3 = """Human: Extract list of products (do not repeat or duplicate) and their respective physical IDs 
+    prompt_template3 = """Human: Extract list of products (do not repeat or duplicate) and their respective Code's 
                         from catalog that answer the user question.
                 The catalog of products is provided under <catalog></catalog> tags below.
                 <catalog>

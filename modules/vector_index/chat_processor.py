@@ -1,3 +1,4 @@
+import logging
 import time
 
 from langchain.chains import RetrievalQA
@@ -7,7 +8,7 @@ from .customer_attributes import extract_customer_attributes
 from .response_parser import split_process_and_message_from_response
 
 
-def process_chat_question_with_customer_attribute_identifier(question, document, llm, chat_history, clear_history=False):
+def process_chat_question_with_customer_attribute_identifier(question, document, llm, chat_history):
     start_time = time.time()
     prompt_template3 = """Human: Extract list of products (do not repeat or duplicate) and their respective Code's 
                         from catalog that answer the user question.
@@ -36,18 +37,13 @@ def process_chat_question_with_customer_attribute_identifier(question, document,
         chain_type_kwargs={"prompt": PROMPT},
     )
     try:
-        if clear_history:
-            chat_history.clear()
-
-        chat_history.append([question])
-
         customer_attributes_retrieved = extract_customer_attributes(question, llm)
 
         customer_input_with_attributes = "{} {}".format(question, str(customer_attributes_retrieved))
-
+        logging.info(f"Chat History passed to processor: {chat_history}")
         context = {
             'query': customer_input_with_attributes,
-            'chat_history': chat_history
+            'chat_history': chat_history.copy()
         }
 
         llm_retrieval_augmented_response = search_index_get_answer_from_llm.run(**context)

@@ -11,10 +11,9 @@ from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 
 from image_utils.grainger_image_util import get_images
-# from vector_index import Document as vectorIndexDocument
 from vector_index.chat_processor import process_chat_question_with_customer_attribute_identifier
 from vector_index.document import initialize_embeddings_and_faiss, parallel_search
-# from vector_index.utils import bedrock
+
 from web_extraction_tools.product_reviews.call_selenium_for_review_async import async_navigate_to_reviews_selenium
 
 
@@ -23,7 +22,6 @@ class StreamlitInterface:
         self.document = index_document
         self.llm = LLM
         self.bedrock_embeddings = bedrock_titan_embeddings
-        self.chat_history = []
         self.df = data_frame_singleton
         self.options = Options()
         self.options.add_argument("--headless")
@@ -73,8 +71,8 @@ class StreamlitInterface:
         # Run chat processing asynchronously
         message, response_json, customer_attributes_retrieved = await self.run_chat_processing(question, clear_history)
 
-        # Run FAISS search asynchronously
-        faiss_results = await self.run_faiss_search(response_json)
+        # # Run FAISS search asynchronously
+        # faiss_results = await self.run_faiss_search(response_json)
 
         time_taken = time.time() - start_time
 
@@ -84,42 +82,44 @@ class StreamlitInterface:
         try:
             # Clear history if needed
             if clear_history:
-                self.chat_history.clear()
+                logging.info("Clearing chat history")
+                st.session_state.chat_history.clear()
 
+            logging.info(f"Initial chat history: {st.session_state.chat_history}")
             # Process chat question and retrieve response JSON
             message, response_json, total_time, customer_attributes_retrieved = process_chat_question_with_customer_attribute_identifier(
                 question,
                 self.document,
                 self.llm,
-                self.chat_history,
-                clear_history)
+                st.session_state.chat_history
+            )
 
             # Append chat history with the current question
-            self.chat_history.append([question])
-
+            st.session_state.chat_history.append([f"QUESTION: {question}. MESSAGE: {message}"])
+            logging.info(f"Chat History in Main now: {st.session_state.chat_history}")
             return message, response_json, customer_attributes_retrieved
 
         except Exception as e:
             logging.error(f"Error in chat processing: {e}")
             return None, None, None
 
-    async def run_faiss_search(self, response_json):
-        try:
-            products = response_json.get('products', [])
-            if not products:
-                return None
-
-            recommendations_list = [f"{product['product']}, {product['code']}" for product in products]
-
-            # Perform FAISS search asynchronously
-            faiss_results = await asyncio.to_thread(
-                parallel_search, recommendations_list, self.document)
-
-            return faiss_results
-
-        except Exception as e:
-            logging.error(f"Error in FAISS search: {e}")
-            return None
+    # async def run_faiss_search(self, response_json):
+    #     try:
+    #         products = response_json.get('products', [])
+    #         if not products:
+    #             return None
+    #
+    #         recommendations_list = [f"{product['product']}, {product['code']}" for product in products]
+    #
+    #         # Perform FAISS search asynchronously
+    #         faiss_results = await asyncio.to_thread(
+    #             parallel_search, recommendations_list, self.document)
+    #
+    #         return faiss_results
+    #
+    #     except Exception as e:
+    #         logging.error(f"Error in FAISS search: {e}")
+    #         return None
 
     async def display_grainger_images(self, col3, products):
         start_time_col3 = time.time()
@@ -167,9 +167,11 @@ class StreamlitInterface:
         st.write(f"Total time searching for reviews: {total_time_col1} seconds")
 
 
-
 def main():
-    # df = Document.get_data_frame()  # Replace with your data retrieval method
+    # Initialize chat_history in session_state if it doesn't exist
+    if 'chat_history' not in st.session_state:
+        st.session_state.chat_history = []
+
     bedrock_embeddings, vectorstore_faiss_doc, df, llm = initialize_embeddings_and_faiss()
 
     interface = StreamlitInterface(index_document=vectorstore_faiss_doc, LLM=llm,

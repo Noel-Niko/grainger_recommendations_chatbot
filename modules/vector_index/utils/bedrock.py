@@ -9,7 +9,6 @@ from typing import Optional
 import boto3
 from botocore.config import Config
 
-
 def get_bedrock_client(
     assumed_role: Optional[str] = None,
     region: Optional[str] = None,
@@ -28,6 +27,11 @@ def get_bedrock_client(
     runtime :
         Optional choice of getting different client to perform operations with the Amazon Bedrock service.
     """
+    # Read secrets from Docker secrets path
+    aws_access_key_id = open('aws_access_key_id').read().strip()
+    aws_secret_access_key = open('aws_secret_access_key').read().strip()
+    bedrock_assume_role = open('bedrock_assume_role').read().strip()
+
     if region is None:
         target_region = os.environ.get("AWS_REGION", os.environ.get("AWS_DEFAULT_REGION"))
     else:
@@ -51,17 +55,21 @@ def get_bedrock_client(
     )
     session = boto3.Session(**session_kwargs)
 
-    if assumed_role:
-        print(f"  Using role: {assumed_role}", end='')
+    if assumed_role or bedrock_assume_role:
+        role_to_assume = assumed_role if assumed_role else bedrock_assume_role
+        print(f"  Using role: {role_to_assume}", end='')
         sts = session.client("sts")
         response = sts.assume_role(
-            RoleArn=str(assumed_role),
+            RoleArn=str(role_to_assume),
             RoleSessionName="langchain-llm-1"
         )
         print(" ... successful!")
         client_kwargs["aws_access_key_id"] = response["Credentials"]["AccessKeyId"]
         client_kwargs["aws_secret_access_key"] = response["Credentials"]["SecretAccessKey"]
         client_kwargs["aws_session_token"] = response["Credentials"]["SessionToken"]
+    else:
+        client_kwargs["aws_access_key_id"] = aws_access_key_id
+        client_kwargs["aws_secret_access_key"] = aws_secret_access_key
 
     if runtime:
         service_name='bedrock-runtime'

@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  your_service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    secrets:
+      - aws_access_key_id
+      - aws_secret_access_key
+      - bedrock_assume_role
+
+secrets:
+  aws_access_key_id:
+    file: ./aws_access_key_id
+  aws_secret_access_key:
+    file: ./aws_secret_access_key
+  bedrock_assume_role:
+    file: ./bedrock_assume_role

@@ -1,6 +1,5 @@
-# Use a Debian-based Python image
-FROM python:3.12
 
+FROM python:3.12
 # Set environment variables for non-interactive installation
 ENV DEBIAN_FRONTEND=noninteractive
 

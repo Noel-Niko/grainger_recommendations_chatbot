@@ -109,9 +109,10 @@ def initialize_embeddings_and_faiss():
     return bedrock_embeddings, vectorstore_faiss_doc, df, llm
 
 
-def parallel_search(queries, vectorstore_faiss_doc, k=10, num_threads=4):
+# TODO: consider replacing similarity with mmr for a mix of relevant results while avoiding redundancy
+def parallel_search(queries, vectorstore_faiss_doc, k=10, search_type='similarity', num_threads=4):
     def search_faiss(query):
-        return vectorstore_faiss_doc.search(query, k)
+        return vectorstore_faiss_doc.search(query, k=k, search_type=search_type)
 
     with ThreadPoolExecutor(max_workers=num_threads) as executor:
         results = list(executor.map(search_faiss, queries))

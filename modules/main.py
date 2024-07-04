@@ -141,28 +141,31 @@ class StreamlitInterface:
     async def display_reviews(self, products):
         start_time_col1 = time.time()
         logging.info("Entering display_reviews method")
-        recommendations_list = [f"{product['product']}, {product['code']}" for product in products]
-        reviews_data = None
+
         try:
-            reviews_data = await async_navigate_to_reviews_selenium(recommendations_list[0], self.driver)
-            if reviews_data:
-                st.subheader('Extracted Reviews:')
-                st.write(f"Average Star Rating: {reviews_data['Average Star Rating']}")
-                st.write(f"Average Recommendation Percent: {reviews_data['Average Recommendation Percent']}")
-                st.write("Review Texts:")
-                for idx, review_text in enumerate(reviews_data['Review Texts'], start=1):
-                    st.write(f"\nReview {idx}: {review_text}")
-            else:
-                st.write("No reviews found for the given Product ID(s).")
+            st.subheader('Extracted Reviews:')
+            for product in products:
+                product_info = f"{product['product']}, {product['code']}"
+                reviews_data = await async_navigate_to_reviews_selenium(product_info, self.driver)
+
+                if reviews_data:
+                    st.write(f"Product ID: {product['code']}")
+                    st.write(f"Average Star Rating: {reviews_data['Average Star Rating']}")
+                    st.write(f"Average Recommendation Percent: {reviews_data['Average Recommendation Percent']}")
+                    st.write("Review Texts:")
+                    for idx, review_text in enumerate(reviews_data['Review Texts'], start=1):
+                        st.write(f"\nReview {idx}: {review_text}")
+                else:
+                    st.write(f"No reviews found for Product ID: {product['code']}")
+
         except Exception as e:
             logging.error(f"Error displaying reviews: {e}")
-            st.write("No reviews found for the given Product ID(s).")
+            st.write("Error fetching reviews.")
 
         end_time_col1 = time.time()
         total_time_col1 = end_time_col1 - start_time_col1
-        st.write(f"Time searching for reviews: {total_time_col1}")
+        st.write(f"Total time searching for reviews: {total_time_col1} seconds")
 
-        return reviews_data
 
 
 def main():

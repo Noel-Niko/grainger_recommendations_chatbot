@@ -11,6 +11,7 @@ from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
 from webdriver_manager.chrome import ChromeDriverManager
 
+from vector_index.document import initialize_embeddings_and_faiss
 # from vector_index.utils import bedrock
 from web_extraction_tools.product_reviews.call_selenium_for_review_async import async_navigate_to_reviews_selenium
 from image_utils.grainger_image_util import main as generate_grainger_thumbnails, get_images
@@ -116,89 +117,11 @@ class StreamlitInterface:
         return reviews_data
 
 
-class Document:
-    def __init__(self, page_content, metadata):
-        self.page_content = page_content
-        self.metadata = metadata
-
-def initialize_embeddings_and_faiss(df):
-    os.environ["AWS_DEFAULT_REGION"] = "us-east-1"
-    # os.environ["AWS_PROFILE"] = ""
-    # os.environ["BEDROCK_ASSUME_ROLE"] = ""  # E.g. "arn:aws:..."
-
-    boto3_bedrock = bedrock.get_bedrock_client(
-        assumed_role=os.environ.get("BEDROCK_ASSUME_ROLE", None),
-        region=os.environ.get("AWS_DEFAULT_REGION", None),
-        runtime=False)
-
-    bedrock_runtime = bedrock.get_bedrock_client(
-        assumed_role=os.environ.get("BEDROCK_ASSUME_ROLE", None),
-        region=os.environ.get("AWS_DEFAULT_REGION", None))
-
-    model_parameter = {
-        "temperature": 0.0,
-        "top_p": .5,
-        "top_k": 250,
-        "max_tokens_to_sample": 2000,
-        "stop_sequences": ["\n\n Human: bye"]
-    }
-    llm = Bedrock(
-        model_id="anthropic.claude-v2",
-        model_kwargs=model_parameter,
-        client=bedrock_runtime
-    )
-    # Initialize the Titan Embeddings Model
-    print("Initializing Titan Embeddings Model...")
-    bedrock_embeddings = BedrockEmbeddings(model_id="amazon.titan-embed-text-v1", client=bedrock_runtime)
-    print("Titan Embeddings Model initialized.")
-
-    documents = []
-    for _, row in df.iterrows():
-        page_content = f"{row['Code']} {row['Name']} {row['Brand']} {row['Description'] if pd.notna(row['Description']) else ''}"
-        metadata = {
-            'Brand': row['Brand'],
-            'Code': row['Code'],
-            'Name': row['Name'],
-            'Description': row['Description'],
-            'Price': row['Price']
-        }
-        documents.append(Document(page_content, metadata))
-
-    print("Structured documents created:")
-    for idx, doc in enumerate(documents[:5], 1):
-        print(f"Document {idx} of {len(documents)}:")
-        print(doc.page_content[:200])
-        print()
-
-    # Create FAISS vector store from structured documents
-    print("Creating FAISS vector store from structured documents...")
-    vectorstore_faiss_doc = FAISS.from_documents(documents, bedrock_embeddings)
-    print("FAISS vector store created.")
-
-    return bedrock_embeddings, vectorstore_faiss_doc
-
-
 def main():
-    parquet_file_directory = "vector_index/processed"
-    parquet_file_path = os.path.join(parquet_file_directory, "grainger_products.parquet")
-
-    # "modules/vector_index/processed/grainger_products.parquet"
-
-    print("Attempting to load file from:", parquet_file_path)
-
-    # Now attempt to load the file
-    try:
-        df = pd.read_parquet( "modules/vector_index/processed/grainger_products.parquet")
-
-        print("File loaded successfully!")
-    except FileNotFoundError as e:
-        print("Error loading file:", e)
-
-    print(df.head())
     # df = Document.get_data_frame()  # Replace with your data retrieval method
-    bedrock_embeddings, vectorstore_faiss_doc = initialize_embeddings_and_faiss(df)
+    bedrock_embeddings, vectorstore_faiss_doc, df, llm = initialize_embeddings_and_faiss()
 
-    interface = StreamlitInterface(index_document=vectorstore_faiss_doc, LLM=None, bedrock_titan_embeddings=bedrock_embeddings,
+    interface = StreamlitInterface(index_document=vectorstore_faiss_doc, LLM=llm, bedrock_titan_embeddings=bedrock_embeddings,
                                    data_frame_singleton=df)
     interface.run()
 

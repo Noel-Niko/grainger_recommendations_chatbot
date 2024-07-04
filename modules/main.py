@@ -85,7 +85,6 @@ class StreamlitInterface:
                 logging.info("Clearing chat history")
                 st.session_state.chat_history.clear()
 
-
             logging.info(f"Initial chat history: {st.session_state.chat_history}")
             # Process chat question and retrieve response JSON
             message, response_json, total_time, customer_attributes_retrieved = process_chat_question_with_customer_attribute_identifier(
@@ -97,7 +96,7 @@ class StreamlitInterface:
 
             # Append chat history with the current question
             st.session_state.chat_history.append([f"QUESTION: {question}. MESSAGE: {message}"])
-            logging.info("Chat History in Main now: ", st.session_state.chat_history)
+            logging.info(f"Chat History in Main now: {st.session_state.chat_history}")
             return message, response_json, customer_attributes_retrieved
 
         except Exception as e:
@@ -166,6 +165,7 @@ class StreamlitInterface:
         end_time_col1 = time.time()
         total_time_col1 = end_time_col1 - start_time_col1
         st.write(f"Total time searching for reviews: {total_time_col1} seconds")
+
 
 def main():
     # Initialize chat_history in session_state if it doesn't exist

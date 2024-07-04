@@ -55,7 +55,7 @@ def initialize_embeddings_and_faiss():
     # Load processed data from Parquet file
     current_dir = os.path.dirname(os.path.abspath(__file__))
     parquet_file_path = os.path.join(os.path.join(current_dir, "processed/grainger_products.parquet"))
-    logging.info("Attempting to load file from:", parquet_file_path)
+    logging.info(f"Attempting to load file from: {parquet_file_path}")
     # Load processed data from Parquet file
     documents = []
     df = pd.read_parquet(parquet_file_path)

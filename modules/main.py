@@ -5,6 +5,7 @@ import os
 import time
 import streamlit as st
 from PIL import Image
+from faiss import IndexFlatL2
 from langchain_aws import Bedrock
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service

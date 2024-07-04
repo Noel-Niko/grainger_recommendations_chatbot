@@ -59,9 +59,7 @@ def initialize_embeddings_and_faiss():
     documents = []
     df = pd.read_parquet(parquet_file_path)
 
-
-
-    serialized_documents_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'documents.pkl')
+    serialized_documents_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'processed/documents.pkl')
     if os.path.exists(serialized_documents_file):
         logging.info(f"Serialized documents file {serialized_documents_file} already exists. Loading...")
         with open(serialized_documents_file, 'rb') as file:
@@ -80,11 +78,11 @@ def initialize_embeddings_and_faiss():
                 'Price': row['Price']
             }
             documents.append(Document(page_content, metadata))
-            logging.info("Structured documents created:")
-            for idx, doc in enumerate(documents[:5], 1):
-                logging.info(f"Document {idx} of {len(documents)}:")
-                logging.info(doc.page_content[:200])
-            pickle.dump(documents, open("documents.pkl", "wb"))
+    logging.info("Structured documents created:")
+    for idx, doc in enumerate(documents[:5], 1):
+        logging.info(f"Document {idx} of {len(documents)}:")
+        logging.info(doc.page_content[:200])
+    pickle.dump(documents, open(serialized_documents_file, "wb"))
 
     # Check if serialized FAISS index exists
     serialized_index_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'vector_index.pkl')

@@ -1,11 +1,12 @@
+import logging
 import os
 import pickle
+from concurrent.futures import ThreadPoolExecutor
+
 import pandas as pd
-import logging
-from langchain_aws import Bedrock
 from langchain.embeddings import BedrockEmbeddings
 from langchain.vectorstores import FAISS
-from langchain_core.vectorstores import VectorStoreRetriever
+from langchain_aws import Bedrock
 
 from .bedrock_initializer import bedrock
 
@@ -106,3 +107,12 @@ def initialize_embeddings_and_faiss():
         logging.info("FAISS vector store serialized to pickle file.")
 
     return bedrock_embeddings, vectorstore_faiss_doc, df, llm
+
+
+def parallel_search(queries, vectorstore_faiss_doc, k=10, num_threads=4):
+    def search_faiss(query):
+        return vectorstore_faiss_doc.search(query, k)
+
+    with ThreadPoolExecutor(max_workers=num_threads) as executor:
+        results = list(executor.map(search_faiss, queries))
+    return results

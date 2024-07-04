@@ -1,28 +1,21 @@
 import asyncio
 import io
 import logging
-import os
 import time
+
 import streamlit as st
 from PIL import Image
-from faiss import IndexFlatL2
-from langchain_aws import Bedrock
 from selenium import webdriver
-from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 
-from vector_index.document import initialize_embeddings_and_faiss
-# from vector_index.utils import bedrock
-from web_extraction_tools.product_reviews.call_selenium_for_review_async import async_navigate_to_reviews_selenium
-from image_utils.grainger_image_util import main as generate_grainger_thumbnails, get_images
+from image_utils.grainger_image_util import get_images
 # from vector_index import Document as vectorIndexDocument
 from vector_index.chat_processor import process_chat_question_with_customer_attribute_identifier
-from langchain.embeddings import BedrockEmbeddings
-from langchain.vectorstores import FAISS
-from vector_index.bedrock_initializer import bedrock
-import pandas as pd
-import numpy as np
+from vector_index.document import initialize_embeddings_and_faiss, parallel_search
+# from vector_index.utils import bedrock
+from web_extraction_tools.product_reviews.call_selenium_for_review_async import async_navigate_to_reviews_selenium
 
 
 class StreamlitInterface:
@@ -51,7 +44,8 @@ class StreamlitInterface:
         question = st.text_input("Enter your question:", value="", placeholder="", key="unique_key_for_question")
         start_time = time.time()
         if question:
-            message, response_json, time_taken, customer_attributes_retrieved = self.process_chat_question(
+            # Await the async method properly
+            message, response_json, time_taken, customer_attributes_retrieved = await self.process_chat_question(
                 question=question, clear_history=False)
 
             products = response_json.get('products', [])
@@ -65,6 +59,7 @@ class StreamlitInterface:
             center_col.write(f"Time taken to generate customer attributes: {time_taken}")
             center_col.write(f"Customer attributes identified: {customer_attributes_retrieved}")
 
+            # Use asyncio.gather to await multiple async functions
             await asyncio.gather(
                 self.display_grainger_images(col3, products),
                 self.display_reviews(products)
@@ -72,15 +67,59 @@ class StreamlitInterface:
             total_time = time.time() - start_time
             center_col.write(f"Total time to answer: {total_time}")
 
+    async def process_chat_question(self, question, clear_history=False):
+        start_time = time.time()
 
-    def process_chat_question(self, question, clear_history=False):
-        message, response_json, total_time, customer_attributes_retrieved = process_chat_question_with_customer_attribute_identifier(
-            question,
-            self.document,
-            self.llm,
-            self.chat_history,
-            clear_history)
-        return message, response_json, total_time, customer_attributes_retrieved
+        # Run chat processing asynchronously
+        message, response_json, customer_attributes_retrieved = await self.run_chat_processing(question, clear_history)
+
+        # Run FAISS search asynchronously
+        faiss_results = await self.run_faiss_search(response_json)
+
+        time_taken = time.time() - start_time
+
+        return message, response_json, time_taken, customer_attributes_retrieved
+
+    async def run_chat_processing(self, question, clear_history):
+        try:
+            # Clear history if needed
+            if clear_history:
+                self.chat_history.clear()
+
+            # Process chat question and retrieve response JSON
+            message, response_json, total_time, customer_attributes_retrieved = process_chat_question_with_customer_attribute_identifier(
+                question,
+                self.document,
+                self.llm,
+                self.chat_history,
+                clear_history)
+
+            # Append chat history with the current question
+            self.chat_history.append([question])
+
+            return message, response_json, customer_attributes_retrieved
+
+        except Exception as e:
+            logging.error(f"Error in chat processing: {e}")
+            return None, None, None
+
+    async def run_faiss_search(self, response_json):
+        try:
+            products = response_json.get('products', [])
+            if not products:
+                return None
+
+            recommendations_list = [f"{product['product']}, {product['code']}" for product in products]
+
+            # Perform FAISS search asynchronously
+            faiss_results = await asyncio.to_thread(
+                parallel_search, recommendations_list, self.document)
+
+            return faiss_results
+
+        except Exception as e:
+            logging.error(f"Error in FAISS search: {e}")
+            return None
 
     async def display_grainger_images(self, col3, products):
         start_time_col3 = time.time()
@@ -103,16 +142,20 @@ class StreamlitInterface:
         start_time_col1 = time.time()
         logging.info("Entering display_reviews method")
         recommendations_list = [f"{product['product']}, {product['code']}" for product in products]
-
-        reviews_data = await async_navigate_to_reviews_selenium(recommendations_list[0], self.driver)
-        if reviews_data:
-            st.subheader('Extracted Reviews:')
-            st.write(f"Average Star Rating: {reviews_data['Average Star Rating']}")
-            st.write(f"Average Recommendation Percent: {reviews_data['Average Recommendation Percent']}")
-            st.write("Review Texts:")
-            for idx, review_text in enumerate(reviews_data['Review Texts'], start=1):
-                st.write(f"\nReview {idx}: {review_text}")
-        else:
+        reviews_data = None
+        try:
+            reviews_data = await async_navigate_to_reviews_selenium(recommendations_list[0], self.driver)
+            if reviews_data:
+                st.subheader('Extracted Reviews:')
+                st.write(f"Average Star Rating: {reviews_data['Average Star Rating']}")
+                st.write(f"Average Recommendation Percent: {reviews_data['Average Recommendation Percent']}")
+                st.write("Review Texts:")
+                for idx, review_text in enumerate(reviews_data['Review Texts'], start=1):
+                    st.write(f"\nReview {idx}: {review_text}")
+            else:
+                st.write("No reviews found for the given Product ID(s).")
+        except Exception as e:
+            logging.error(f"Error displaying reviews: {e}")
             st.write("No reviews found for the given Product ID(s).")
 
         end_time_col1 = time.time()
@@ -126,7 +169,8 @@ def main():
     # df = Document.get_data_frame()  # Replace with your data retrieval method
     bedrock_embeddings, vectorstore_faiss_doc, df, llm = initialize_embeddings_and_faiss()
 
-    interface = StreamlitInterface(index_document=vectorstore_faiss_doc, LLM=llm, bedrock_titan_embeddings=bedrock_embeddings,
+    interface = StreamlitInterface(index_document=vectorstore_faiss_doc, LLM=llm,
+                                   bedrock_titan_embeddings=bedrock_embeddings,
                                    data_frame_singleton=df)
     interface.run()
 

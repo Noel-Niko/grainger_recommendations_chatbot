@@ -59,11 +59,16 @@ def initialize_embeddings_and_faiss():
     documents = []
     df = pd.read_parquet(parquet_file_path)
 
-    try:
-        documents = pickle.load(open("documents.pkl", "rb"))
-        logging.info("Documents file loaded successfully!")
-    except FileNotFoundError as e:
-        logging.error("Error loading file:", e)
+
+
+    serialized_documents_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'documents.pkl')
+    if os.path.exists(serialized_documents_file):
+        logging.info(f"Serialized documents file {serialized_documents_file} already exists. Loading...")
+        with open(serialized_documents_file, 'rb') as file:
+            documents = pickle.load(open(serialized_documents_file, "rb"))
+            logging.info("Documents file loaded successfully!")
+    else:
+        logging.error("Error loading serialized_documents_file")
         logging.info("Generating new df")
         for index, row in df.iterrows():
             page_content = f"{row['Code']} {row['Name']} {row['Brand']} {row['Description'] if pd.notna(row['Description']) else ''}"
@@ -82,10 +87,10 @@ def initialize_embeddings_and_faiss():
             pickle.dump(documents, open("documents.pkl", "wb"))
 
     # Check if serialized FAISS index exists
-    serialized_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'vector_index.pkl')
-    if os.path.exists(serialized_file):
-        logging.info(f"Serialized file {serialized_file} already exists. Loading...")
-        with open(serialized_file, 'rb') as file:
+    serialized_index_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'vector_index.pkl')
+    if os.path.exists(serialized_index_file):
+        logging.info(f"Serialized file {serialized_index_file} already exists. Loading...")
+        with open(serialized_index_file, 'rb') as file:
             pickle_data = pickle.load(file)
             vectorstore_faiss_doc = FAISS.deserialize_from_bytes(embeddings=bedrock_embeddings, serialized=pickle_data,
                                                                  allow_dangerous_deserialization=True)
@@ -96,8 +101,8 @@ def initialize_embeddings_and_faiss():
         logging.info("FAISS vector store created.")
 
         # Serialize FAISS vector store to pickle file
-        logging.info(f"Serializing FAISS vector store to {serialized_file}")
-        with open(serialized_file, 'wb') as file:
+        logging.info(f"Serializing FAISS vector store to {serialized_index_file}")
+        with open(serialized_index_file, 'wb') as file:
             serialized_vector = vectorstore_faiss_doc.serialize_to_bytes()
             pickle.dump(serialized_vector, file)
         logging.info("FAISS vector store serialized to pickle file.")

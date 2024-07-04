@@ -1,19 +1,24 @@
 # grainger_recommendations_chatbot
-
-PROJECT IN DEVELOPMENT
-
-Plan: mimic https://github.com/aws-samples/amazon-bedrock-aistylist-lab/blob/main/README.md
+Note: incorporates ideas from https://github.com/aws-samples/amazon-bedrock-aistylist-lab/blob/main/README.md
 
 Key modifications: 
   - Webscrape grainger.com for a potential list of related products.
   - Call internal Grainger Api for product details and compile data frame.
-  - Webscrape sister company for the missing review data.
-  - Call grainger.com directly to obtain product images and use stability.stable-diffusion-xl-v1 only for enhanced content
+  - Webscrape sister company Zoro for the review data not on Grainger.com.
+  - Call grainger.com directly to obtain product images
+  - Uses Named Entity Recognition to categorize the customer and personalize the responses.
+    - This could also be used for generating analytic data on use.
   
-  - TODO: plan for addressing ordering capability.
-    - -   Provide interface to add customer order history for later implementation within the Grainger VPC.
-    - -   Possibly orchestrate user login initially and thereby call order history and allow placing orders.
-      -   Implement an in-mobile-phone chat that uses the stored SQL database to serve past orders (currently stored for off-line use), which are most closely related to the current search.
+  - TODO: Address ordering capability.
+      -   Provide an interface to add customer order history for later implementation within the Grainger VPC.
+      -   Possibly orchestrate user login initially and thereby call order history and allow recommendations (e.g. clothing sizes) specific to the customer based on past orders.
+      -   Implement an in-mobile-phone chat that uses the stored SQL database of past orders (currently for off-line searching by customer).
+     
+![Deer Hunting Hats](https://github.com/Noel-Niko/grainger_recommendations_chatbot/assets/83922762/b73cf069-c8fa-46bf-a45f-0d13e52651f8)
+
+![Alaskan boots](https://github.com/Noel-Niko/grainger_recommendations_chatbot/assets/83922762/398ea974-43c4-476b-93e1-7a92fd52b5e8)
+
+      
 
 # Depth First Web Scrape to Obtain List of Related Products
 ![image](https://github.com/Noel-Niko/grainger_recommendations_chatbot/assets/83922762/f2fb3cad-5a00-448c-94e0-4a82eda0998b)
@@ -41,4 +46,5 @@ Key modifications:
 
 
 ## AI Image Generation:
+- Though removed from the final product as superfluous, images can be generated of the products being used in the environment and by the type of user obtained from the gleaned customer attributes.
 ![img_3.png](img_3.png)

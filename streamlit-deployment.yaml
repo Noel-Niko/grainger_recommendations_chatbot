@@ -35,14 +35,14 @@ spec:
           env:
             - name: PORT
               value: "8507"
-        - name: streamlit-container-2
+        - name: streamlit-container-4
           image: your-docker-image:tag
           ports:
             - containerPort: 8508
           env:
             - name: PORT
               value: "8508"
-        - name: streamlit-container-4
+        - name: streamlit-container-5
           image: your-docker-image:tag
           ports:
             - containerPort: 8509

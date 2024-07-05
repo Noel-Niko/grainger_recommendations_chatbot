@@ -5,8 +5,9 @@ metadata:
 spec:
   type: NodePort
   selector:
-    app: streamlit  # Label selector matching application pods
+    app: streamlit
   ports:
-    - protocol: TCP
-      port: 30505  # ANY available port (I.E.: 30505)
-      targetPort: 8505  # Port on which application is listening inside the container
+  - protocol: TCP
+    port: 80  # The port on which the service will be accessible
+    targetPort: 8501  # The port on which the application is listening inside the container
+    nodePort: 30505  # The port on which the service will be exposed on each Node

@@ -18,6 +18,7 @@ Resources:
           Image: public.ecr.aws/e2o8h8p3/grainger_recommendations_chatbot:latest
           PortMappings:
             - ContainerPort: 8501
+          MemoryReservation: 51200 # 50 GB in MB
 
   ECSService:
     Type: AWS::ECS::Service
@@ -43,6 +44,7 @@ Resources:
           Value: '60'
       Subnets:
         - subnet-0918f902632532b95
+        - subnet-0baa42a289a3899fa
       SecurityGroups:
         - sg-0857f1e3a154956da
       Tags:

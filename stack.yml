@@ -1,0 +1,76 @@
+Resources:
+  ECRRepository:
+    Type: AWS::ECR::Repository
+    Properties:
+      RepositoryName: grainger_recommendations_chatbot
+
+  ECSCluster:
+    Type: AWS::ECS::Cluster
+    Properties:
+      ClusterName: grainger-recommendations-cluster
+
+  ECSTaskDefinition:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Family: grainger-recommendations-task
+      ContainerDefinitions:
+        - Name: grainger-recommendations-container
+          Image: public.ecr.aws/e2o8h8p3/grainger_recommendations_chatbot:latest
+          PortMappings:
+            - ContainerPort: 8501
+
+  ECSService:
+    Type: AWS::ECS::Service
+    Properties:
+      Cluster: !Ref ECSCluster
+      DesiredCount: 1
+      TaskDefinition: !Ref ECSTaskDefinition
+      LaunchType: FARGATE
+      NetworkConfiguration:
+        AwsvpcConfiguration:
+          Subnets:
+            - subnet-0918f902632532b95
+          SecurityGroups:
+            - sg-0857f1e3a154956da
+
+  ECSALB:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties:
+      Name: grainger-recommendations-alb
+      Scheme: internet-facing
+      LoadBalancerAttributes:
+        - Key: idle_timeout.timeout_seconds
+          Value: '60'
+      Subnets:
+        - subnet-0918f902632532b95
+      SecurityGroups:
+        - sg-0857f1e3a154956da
+      Tags:
+        - Key: Name
+          Value: grainger-recommendations-alb
+
+  ECSALBListener:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties:
+      LoadBalancerArn: !Ref ECSALB
+      Protocol: HTTP
+      Port: 80
+      DefaultActions:
+        - Type: forward
+          TargetGroupArn: !Ref ECSTG
+
+  ECSTG:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      Name: grainger-recommendations-tg
+      Port: 8501
+      Protocol: HTTP
+      TargetType: ip
+      VpcId: vpc-0aa4186490602cedd
+
+Outputs:
+  LoadBalancerDNSName:
+    Description: DNS name for the load balancer
+    Value: !GetAtt ECSALB.DNSName
+    Export:
+      Name: grainger-recommendations-alb-dns

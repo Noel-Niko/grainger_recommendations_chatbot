@@ -20,17 +20,19 @@ class Document:
 
 
 def initialize_embeddings_and_faiss():
-    os.environ["AWS_DEFAULT_REGION"] = "us-east-1"
+    # os.environ["AWS_DEFAULT_REGION"] = "us-east-1"
 
     # Initialize Bedrock clients
+    logging.info("Getting bedrock client...")
     boto3_bedrock = bedrock.get_bedrock_client(
-        assumed_role=os.environ.get("BEDROCK_ASSUME_ROLE", None),
-        region=os.environ.get("AWS_DEFAULT_REGION", None),
+        assumed_role=os.environ.get("BEDROCK_ASSUME_ROLE"),
+        region=os.environ.get("AWS_DEFAULT_REGION"),
         runtime=False
     )
+    logging.info("Initializing Bedrock...")
     bedrock_runtime = bedrock.get_bedrock_client(
-        assumed_role=os.environ.get("BEDROCK_ASSUME_ROLE", None),
-        region=os.environ.get("AWS_DEFAULT_REGION", None)
+        assumed_role=os.environ.get("BEDROCK_ASSUME_ROLE"),
+        region=os.environ.get("AWS_DEFAULT_REGION")
     )
 
     # Load or create LLM instance

@@ -172,13 +172,24 @@ def main():
     if 'chat_history' not in st.session_state:
         st.session_state.chat_history = []
 
-    bedrock_embeddings, vectorstore_faiss_doc, df, llm = initialize_embeddings_and_faiss()
-
-    interface = StreamlitInterface(index_document=vectorstore_faiss_doc, LLM=llm,
+    if 'vectorstore_faiss_doc' not in st.session_state or 'bedrock_embeddings' not in st.session_state or 'llm' not in st.session_state:
+        logging.info("Generating session state variables...")
+        bedrock_embeddings, vectorstore_faiss_doc, df, llm = initialize_embeddings_and_faiss()
+        st.session_state.vectorstore_faiss_doc = vectorstore_faiss_doc
+        st.session_state.bedrock_embeddings = bedrock_embeddings
+        st.session_state.df = df
+        st.session_state.llm = llm
+        interface = StreamlitInterface(index_document=vectorstore_faiss_doc, LLM=llm,
                                    bedrock_titan_embeddings=bedrock_embeddings,
                                    data_frame_singleton=df)
-    interface.run()
-
+        interface.run()
+    else:
+        logging.info("Using session state variables...")
+        interface = StreamlitInterface(index_document=st.session_state.vectorstore_faiss_doc,
+                                   LLM=st.session_state.llm,
+                                   bedrock_titan_embeddings=st.session_state.bedrock_embeddings,
+                                   data_frame_singleton=st.session_state.df)
+        interface.run()
 
 if __name__ == "__main__":
     main()

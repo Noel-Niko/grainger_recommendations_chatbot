@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: streamlit-app
 spec:
-  replicas: 5  # Adjust as needed
+  replicas: 5
   selector:
     matchLabels:
       app: streamlit
@@ -13,39 +13,10 @@ spec:
         app: streamlit
     spec:
       containers:
-        - name: streamlit-container-1
-          image: grainger_recommendations_chatbot:tag
-          ports:
-            - containerPort: 8505
-          env:
-            - name: PORT
-              value: "8505"
-        - name: streamlit-container-2
-          image: your-docker-image:tag
-          ports:
-            - containerPort: 8506
-          env:
-            - name: PORT
-              value: "8506"
-
-        - name: streamlit-container-3
-          image: your-docker-image:tag
-          ports:
-            - containerPort: 8507
-          env:
-            - name: PORT
-              value: "8507"
-        - name: streamlit-container-2
-          image: your-docker-image:tag
-          ports:
-            - containerPort: 8508
-          env:
-            - name: PORT
-              value: "8508"
-        - name: streamlit-container-4
-          image: your-docker-image:tag
-          ports:
-            - containerPort: 8509
-          env:
-            - name: PORT
-              value: "8509"
+      - name: streamlit-container
+        image: noelniko76/grainger_recommendations_chatbot:latest
+        ports:
+        - containerPort: 8501
+        env:
+        - name: PORT
+          value: "8501"

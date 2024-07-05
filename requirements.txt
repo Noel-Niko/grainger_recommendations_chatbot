@@ -27,3 +27,4 @@ transformers
 pillow
 asyncio
 aiohttp
+kubernetes

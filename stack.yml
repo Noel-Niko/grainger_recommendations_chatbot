@@ -13,12 +13,18 @@ Resources:
     Type: AWS::ECS::TaskDefinition
     Properties:
       Family: grainger-recommendations-task
+      Cpu: "16384"  # 16 vCPU units
+      Memory: "32768"  # 32 GB in MiB
+      NetworkMode: awsvpc
+      RequiresCompatibilities:
+        - FARGATE
+      ExecutionRoleArn: arn:aws:iam::905418421511:role/service-role/AmazonSageMaker-ExecutionRole-20240623T114364
       ContainerDefinitions:
         - Name: grainger-recommendations-container
           Image: public.ecr.aws/e2o8h8p3/grainger_recommendations_chatbot:latest
           PortMappings:
             - ContainerPort: 8501
-          MemoryReservation: 51200 # 50 GB in MB
+          MemoryReservation: 32768
 
   ECSService:
     Type: AWS::ECS::Service
@@ -44,7 +50,7 @@ Resources:
           Value: '60'
       Subnets:
         - subnet-0918f902632532b95
-        - subnet-0baa42a289a3899fa
+        - subnet-0487499961164e5cd
       SecurityGroups:
         - sg-0857f1e3a154956da
       Tags:

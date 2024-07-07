@@ -28,3 +28,4 @@ pillow
 asyncio
 aiohttp
 kubernetes
+fastapi

@@ -10,25 +10,19 @@ Resources:
       Family: grainger-recommendations-task
       Cpu: "16384"  # 16 vCPU units
       Memory: "32768"  # 32 GB in MiB
-      NetworkMode: awsvpc
-      RequiresCompatibilities:
-        - FARGATE
-      ExecutionRoleArn: arn:aws:iam::905418421511:role/service-role/AmazonSageMaker-ExecutionRole-20240623T114364
+      ExecutionRoleArn: arn:aws:iam::905418421511:role/service-role/YourCustomECSExecutionRole
       ContainerDefinitions:
         - Name: grainger-recommendations-container
           Image: public.ecr.aws/e2o8h8p3/grainger_recommendations_chatbot:latest
           PortMappings:
             - ContainerPort: 8501
           MemoryReservation: 32768
-      NetworkConfiguration:
-        AwsvpcConfiguration:
-          Subnets:
-            - subnet-0918f902632532b95
-          SecurityGroups:
-            - sg-0857f1e3a154956da
-          EndpointResolution: 'VPC_ENDPOINT'
-          EndpointConfiguration:
-            AwsVpcEndpoint: 'com.amazonaws.us-east-1.ecr.dkr'
+          HealthCheck:
+            Command: ["CMD-SHELL", "curl -f http://localhost:8000/health || exit 1"]
+            Interval: 30
+            Timeout: 5
+            Retries: 3
+            StartPeriod: 300
 
   ECSService:
     Type: AWS::ECS::Service
@@ -36,7 +30,7 @@ Resources:
       Cluster: !Ref ECSCluster
       DesiredCount: 1
       TaskDefinition: !Ref ECSTaskDefinition
-      LaunchType: FARGATE
+      LaunchType: EC2
       NetworkConfiguration:
         AwsvpcConfiguration:
           Subnets:
@@ -79,6 +73,14 @@ Resources:
       Protocol: HTTP
       TargetType: ip
       VpcId: vpc-0aa4186490602cedd
+      HealthCheckEnabled: true
+      HealthCheckIntervalSeconds: 30
+      HealthCheckPath: /health  # Path to FastAPI health check endpoint
+      HealthCheckTimeoutSeconds: 5
+      HealthyThresholdCount: 3
+      UnhealthyThresholdCount: 3
+      Matcher:
+        HttpCode: 200
 
 Outputs:
   LoadBalancerDNSName:
@@ -86,3 +88,78 @@ Outputs:
     Value: !GetAtt ECSALB.DNSName
     Export:
       Name: grainger-recommendations-alb-dns
+##
+#
+#Resources:
+#  ECSCluster:
+#    Type: AWS::ECS::Cluster
+#    Properties:
+#      ClusterName: grainger-recommendations-cluster
+#
+#  ECSTaskDefinition:
+#    Type: AWS::ECS::TaskDefinition
+#    Properties:
+#      Family: grainger-recommendations-task
+#      Cpu: "16384"  # 16 vCPU units
+#      Memory: "32768"  # 32 GB in MiB
+#      NetworkMode: b
+#      RequiresCompatibilities:
+#        - FARGATE
+#      ExecutionRoleArn: arn:aws:iam::905418421511:role/service-role/AmazonSageMaker-ExecutionRole-20240623T114364
+#      ContainerDefinitions:
+#        - Name: grainger-recommendations-container
+#          Image: public.ecr.aws/e2o8h8p3/grainger_recommendations_chatbot:latest
+#          PortMappings:
+#            - ContainerPort: 8501
+#          MemoryReservation: 32768
+#
+#  ECSService:
+#    Type: AWS::ECS::Service
+#    Properties:
+#      Cluster: !Ref ECSCluster
+#      DesiredCount: 1
+#      TaskDefinition: !Ref ECSTaskDefinition
+#      LaunchType: FARGATE
+#
+#  ECSALB:
+#    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+#    Properties:
+#      Name: grainger-recommendations-alb
+#      Scheme: internet-facing
+#      LoadBalancerAttributes:
+#        - Key: idle_timeout.timeout_seconds
+#          Value: '60'
+#      Subnets:
+#        - subnet-0918f902632532b95
+#        - subnet-0487499961164e5cd
+#      SecurityGroups:
+#        - sg-0857f1e3a154956da
+#      Tags:
+#        - Key: Name
+#          Value: grainger-recommendations-alb
+#
+#  ECSALBListener:
+#    Type: AWS::ElasticLoadBalancingV2::Listener
+#    Properties:
+#      LoadBalancerArn: !Ref ECSALB
+#      Protocol: HTTP
+#      Port: 80
+#      DefaultActions:
+#        - Type: forward
+#          TargetGroupArn: !Ref ECSTG
+#
+#  ECSTG:
+#    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+#    Properties:
+#      Name: grainger-recommendations-tg
+#      Port: 8501
+#      Protocol: HTTP
+#      TargetType: ip
+#      VpcId: vpc-0aa4186490602cedd
+#
+#Outputs:
+#  LoadBalancerDNSName:
+#    Description: DNS name for the load balancer
+#    Value: !GetAtt ECSALB.DNSName
+#    Export:
+#      Name: grainger-recommendations-alb-dns

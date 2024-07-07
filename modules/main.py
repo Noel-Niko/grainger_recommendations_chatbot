@@ -16,7 +16,6 @@ from vector_index.document import initialize_embeddings_and_faiss, parallel_sear
 
 from web_extraction_tools.product_reviews.call_selenium_for_review_async import async_navigate_to_reviews_selenium
 
-
 class StreamlitInterface:
     def __init__(self, index_document, LLM, bedrock_titan_embeddings, data_frame_singleton):
         self.document = index_document
@@ -103,24 +102,6 @@ class StreamlitInterface:
             logging.error(f"Error in chat processing: {e}")
             return None, None, None
 
-    # async def run_faiss_search(self, response_json):
-    #     try:
-    #         products = response_json.get('products', [])
-    #         if not products:
-    #             return None
-    #
-    #         recommendations_list = [f"{product['product']}, {product['code']}" for product in products]
-    #
-    #         # Perform FAISS search asynchronously
-    #         faiss_results = await asyncio.to_thread(
-    #             parallel_search, recommendations_list, self.document)
-    #
-    #         return faiss_results
-    #
-    #     except Exception as e:
-    #         logging.error(f"Error in FAISS search: {e}")
-    #         return None
-
     async def display_grainger_images(self, col3, products):
         start_time_col3 = time.time()
 
@@ -166,6 +147,9 @@ class StreamlitInterface:
         total_time_col1 = end_time_col1 - start_time_col1
         st.write(f"Total time searching for reviews: {total_time_col1} seconds")
 
+    # Health Check Endpoint
+    async def health_check_endpoint(self):
+        return "healthy"
 
 def main():
     # Initialize chat_history in session_state if it doesn't exist

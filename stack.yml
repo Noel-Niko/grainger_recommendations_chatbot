@@ -16,7 +16,7 @@ Resources:
       ExecutionRoleArn: arn:aws:iam::905418421511:role/service-role/AmazonSageMaker-ExecutionRole-20240623T114364
       ContainerDefinitions:
         - Name: grainger-recommendations-container
-          Image: 905418421511.dkr.ecr.us-east-1.amazonaws.com/grainger_recommendations_chatbot:latest
+          Image: public.ecr.aws/e2o8h8p3/grainger_recommendations_chatbot:latest
           PortMappings:
             - ContainerPort: 8501
           MemoryReservation: 32768

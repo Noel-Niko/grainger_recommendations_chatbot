@@ -26,7 +26,7 @@ Resources:
             - subnet-0918f902632532b95
           SecurityGroups:
             - sg-0857f1e3a154956da
-          EndpointResolvation: 'VPC_ENDPOINT'
+          EndpointResolution: 'VPC_ENDPOINT'
           EndpointConfiguration:
             AwsVpcEndpoint: 'com.amazonaws.us-east-1.ecr.dkr'
 

@@ -1,25 +1,25 @@
 # grainger_recommendations_chatbot
 
-Note: incorporates ideas from https://github.com/aws-samples/amazon-bedrock-aistylist-lab/blob/main/README.md
-
-Key modifications: 
-  - Webscrape grainger.com for a potential list of related products.
-  - Call internal Grainger Api for product details and compile data frame.
-  - Webscrape sister company Zoro for the review data not on Grainger.com.
-  - Call grainger.com directly to obtain product images
-  - Uses Named Entity Recognition to categorize the customer and personalize the responses.
-    - This could also be used for generating analytic data on use.
-  
-  - TODO: Address ordering capability.
-      -   Provide an interface to add customer order history for later implementation within the Grainger VPC.
-      -   Possibly orchestrate user login initially and thereby call order history and allow recommendations (e.g. clothing sizes) specific to the customer based on past orders.
-      -   Implement an in-mobile-phone chat that uses the stored SQL database of past orders (currently for off-line searching by customer).
+## Key Features: 
+  - Asynchronous calls for data returning a response as soon as available without waiting for the images or reviews.
+  - Utilizes Anthropic instead of OpenAi, and through its use of AWS Bedrock Anthropic can be switched for any of the many LLM models available.
+  - Uses Named Entity Recognition to categorize the customer and personalize responses.
+    - This could also be used for generating analytic data on customers.
      
 ![Deer Hunting Hats](https://github.com/Noel-Niko/grainger_recommendations_chatbot/assets/83922762/b73cf069-c8fa-46bf-a45f-0d13e52651f8)
 
 ![Alaskan boots](https://github.com/Noel-Niko/grainger_recommendations_chatbot/assets/83922762/398ea974-43c4-476b-93e1-7a92fd52b5e8)
 
-      
+# Data Sources:
+  - Webscrapes grainger.com for a potential list of related products.
+  - Calls internal Grainger Api for product details and compiles data frame.
+  - Webscrapes sister company Zoro for the review data, which Grainger.com does not provide
+  - Calls Grainger.com directly to obtain product images
+  
+  - TODO: Address ordering capability.
+      -   Provide an interface to add customer order history for later implementation within the Grainger VPC.
+      -   Possibly orchestrate user login initially and thereby call order history and allow recommendations (e.g. clothing sizes) specific to the customer based on past orders.
+      -   Implement an in-mobile-phone chat that uses the stored SQL database of past orders (currently for off-line searching by customer).
 
 # Depth First Web Scrape to Obtain List of Related Products
 ![image](https://github.com/Noel-Niko/grainger_recommendations_chatbot/assets/83922762/f2fb3cad-5a00-448c-94e0-4a82eda0998b)
@@ -44,6 +44,8 @@ Key modifications:
 - For comparison: 
   - https://aws.amazon.com/bedrock/pricing/
   - https://openai.com/api/pricing/
+ 
+Note: incorporates ideas from https://github.com/aws-samples/amazon-bedrock-aistylist-lab/blob/main/README.md
 
 
 ## AI Image Generation:

@@ -1,4 +1,7 @@
 # grainger_recommendations_chatbot
+
+Public Container available via AWS at: public.ecr.aws/e2o8h8p3/grainger_recommendations_chatbot:latest
+
 Note: incorporates ideas from https://github.com/aws-samples/amazon-bedrock-aistylist-lab/blob/main/README.md
 
 Key modifications: 

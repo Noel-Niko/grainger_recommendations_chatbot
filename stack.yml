@@ -11,8 +11,6 @@ Resources:
       Cpu: "16384"  # 16 vCPU units
       Memory: "32768"  # 32 GB in MiB
       NetworkMode: awsvpc
-      RequiresCompatibilities:
-        - FARGATE
       ExecutionRoleArn: arn:aws:iam::905418421511:role/service-role/AmazonSageMaker-ExecutionRole-20240623T114364
       ContainerDefinitions:
         - Name: grainger-recommendations-container
@@ -20,15 +18,6 @@ Resources:
           PortMappings:
             - ContainerPort: 8501
           MemoryReservation: 32768
-      NetworkConfiguration:
-        AwsvpcConfiguration:
-          Subnets:
-            - subnet-0918f902632532b95
-          SecurityGroups:
-            - sg-0857f1e3a154956da
-          EndpointResolution: 'VPC_ENDPOINT'
-          EndpointConfiguration:
-            AwsVpcEndpoint: 'com.amazonaws.us-east-1.ecr.dkr'
 
   ECSService:
     Type: AWS::ECS::Service
@@ -36,7 +25,7 @@ Resources:
       Cluster: !Ref ECSCluster
       DesiredCount: 1
       TaskDefinition: !Ref ECSTaskDefinition
-      LaunchType: FARGATE
+      LaunchType: EC2
       NetworkConfiguration:
         AwsvpcConfiguration:
           Subnets:

@@ -5,6 +5,10 @@
   - Utilizes Anthropic instead of OpenAi, and through its use of AWS Bedrock Anthropic can be switched for any of the many LLM models available.
   - Uses Named Entity Recognition to categorize the customer and personalize responses.
     - This could also be used for generating analytic data on customers.
+    
+
+![C884EB6D-CD52-48DA-940D-D8CB739FD523_1_102_o](https://github.com/Noel-Niko/grainger_recommendations_chatbot/assets/83922762/f8ef4fa6-cd27-42e1-81db-011863cc36be)
+
      
 ![Deer Hunting Hats](https://github.com/Noel-Niko/grainger_recommendations_chatbot/assets/83922762/b73cf069-c8fa-46bf-a45f-0d13e52651f8)
 

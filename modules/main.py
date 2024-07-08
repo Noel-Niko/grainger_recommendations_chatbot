@@ -39,9 +39,11 @@ class StreamlitInterface:
             asyncio.run(self.ask_question(main_column, side_column))
 
     async def ask_question(self, center_col, col3):
+        logging.info("Asking question")
         question = st.text_input("Enter your question:", value="", placeholder="", key="unique_key_for_question")
         start_time = time.time()
         if question:
+            logging.info(f"Question entered: {question}")
             # Await the async method properly
             message, response_json, time_taken, customer_attributes_retrieved = await self.process_chat_question(
                 question=question, clear_history=False)

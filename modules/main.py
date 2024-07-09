@@ -31,12 +31,17 @@ class StreamlitInterface:
 
     def run(self):
         st.set_page_config(layout="wide")
+        st.button("Clear History", on_click=self.clear_chat_history)
         st.title("Grainger Recommendations Chatbot")
 
         main_column, side_column = st.columns([2, 1])
 
         with main_column:
             asyncio.run(self.ask_question(main_column, side_column))
+
+
+    def clear_chat_history(self):
+        st.session_state.chat_history = []
 
     async def ask_question(self, center_col, col3):
         logging.info("Asking question")
@@ -57,7 +62,7 @@ class StreamlitInterface:
             center_col.write(message)
 
             center_col.write(f"Time taken to generate customer attributes: {time_taken}")
-            center_col.write(f"Customer attributes identified: {customer_attributes_retrieved}")
+            center_col.write(f"Customer attributes identified in last question: {customer_attributes_retrieved}")
 
             # Use asyncio.gather to await multiple async functions
             await asyncio.gather(

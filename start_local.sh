@@ -1,4 +1,6 @@
 #!/bin/bash
+AWS_REGION="${AWS_REGION:-${AWS_DEFAULT_REGION:-us-east-1}}"
+export AWS_REGION
 
 # Define the range of ports to try
 port_range=(8000 8001 8500 8505 9000)

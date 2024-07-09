@@ -1,5 +1,5 @@
 
-FROM python:3.12
+FROM python:3.11
 # Set environment variables for non-interactive installation
 ENV DEBIAN_FRONTEND=noninteractive
 

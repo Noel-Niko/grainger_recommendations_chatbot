@@ -54,15 +54,15 @@ def initialize_embeddings_and_faiss():
     bedrock_embeddings = BedrockEmbeddings(model_id="amazon.titan-embed-text-v1", client=bedrock_runtime)
     logging.info("Titan Embeddings Model initialized.")
 
-    # Load processed data from Parquet file
+    # Load v_i_processed data from Parquet file
     current_dir = os.path.dirname(os.path.abspath(__file__))
-    parquet_file_path = os.path.join(os.path.join(current_dir, "processed/grainger_products.parquet"))
+    parquet_file_path = os.path.join(os.path.join(current_dir, "v_i_processed/grainger_products.parquet"))
     logging.info(f"Attempting to load file from: {parquet_file_path}")
-    # Load processed data from Parquet file
+    # Load v_i_processed data from Parquet file
     documents = []
     df = pd.read_parquet(parquet_file_path)
 
-    serialized_documents_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'processed/documents.pkl')
+    serialized_documents_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'v_i_processed/documents.pkl')
     if os.path.exists(serialized_documents_file):
         logging.info(f"Serialized documents file {serialized_documents_file} already exists. Loading...")
         with open(serialized_documents_file, 'rb') as file:

@@ -46,11 +46,11 @@ class StreamlitInterface:
     async def ask_question(self, center_col, col3):
         logging.info("Asking question")
         question = st.text_input("Enter your question:", value="", placeholder="", key="unique_key_for_question")
-        start_time = time.time()
         if question:
+            start_time = time.time()
             logging.info(f"Question entered: {question}")
             # Await the async method properly
-            message, response_json, time_taken, customer_attributes_retrieved = await self.process_chat_question(
+            message, response_json, time_taken, customer_attributes_retrieved, time_to_get_attributes = await self.process_chat_question(
                 question=question, clear_history=False)
 
             products = response_json.get('products', [])
@@ -61,7 +61,7 @@ class StreamlitInterface:
             center_col.write(f"Time taken to generate response: {time_to_initially_respond}")
             center_col.write(message)
 
-            center_col.write(f"Time taken to generate customer attributes: {time_taken}")
+            center_col.write(f"Time taken to generate customer attributes: {time_to_get_attributes}")
             center_col.write(f"Customer attributes identified in last question: {customer_attributes_retrieved}")
 
             # Use asyncio.gather to await multiple async functions
@@ -76,14 +76,14 @@ class StreamlitInterface:
         start_time = time.time()
 
         # Run chat processing asynchronously
-        message, response_json, customer_attributes_retrieved = await self.run_chat_processing(question, clear_history)
+        message, response_json, customer_attributes_retrieved, time_to_get_attributes = await self.run_chat_processing(question, clear_history)
 
         # # Run FAISS search asynchronously
         # faiss_results = await self.run_faiss_search(response_json)
 
         time_taken = time.time() - start_time
 
-        return message, response_json, time_taken, customer_attributes_retrieved
+        return message, response_json, time_taken, customer_attributes_retrieved, time_to_get_attributes
 
     async def run_chat_processing(self, question, clear_history):
         try:
@@ -94,7 +94,7 @@ class StreamlitInterface:
 
             logging.info(f"Initial chat history: {st.session_state.chat_history}")
             # Process chat question and retrieve response JSON
-            message, response_json, total_time, customer_attributes_retrieved = process_chat_question_with_customer_attribute_identifier(
+            message, response_json, customer_attributes_retrieved, time_to_get_attributes = process_chat_question_with_customer_attribute_identifier(
                 question,
                 self.document,
                 self.llm,
@@ -102,9 +102,13 @@ class StreamlitInterface:
             )
 
             # Append chat history with the current question
-            st.session_state.chat_history.append([f"QUESTION: {question}. MESSAGE: {message}"])
+            st.session_state.chat_history.append([f"QUESTION: {question}. MESSAGE: {message}. CUSTOMER ATTRIBUTES: {customer_attributes_retrieved}"])
             logging.info(f"Chat History in Main now: {st.session_state.chat_history}")
-            return message, response_json, customer_attributes_retrieved
+            logging.info(f"$$$$$$$$$$$$$$$$$$$$$$$$$$${message} "
+                  f"*************{response_json}*************"
+                  f"*****%%%%%%%%%%%%%%%%%{customer_attributes_retrieved}_____"
+                  f"#######################{time_to_get_attributes}______")
+            return message, response_json, customer_attributes_retrieved, time_to_get_attributes
 
         except Exception as e:
             logging.error(f"Error in chat processing: {e}")

@@ -38,7 +38,7 @@ def process_chat_question_with_customer_attribute_identifier(question, document,
     )
     try:
         customer_attributes_retrieved = extract_customer_attributes(question, llm)
-
+        time_to_get_attributes = time.time() - start_time
         customer_input_with_attributes = "{} {}".format(question, str(customer_attributes_retrieved))
         logging.info(f"Chat History passed to processor: {chat_history}")
         context = {
@@ -52,10 +52,7 @@ def process_chat_question_with_customer_attribute_identifier(question, document,
         if product_list_as_json is not None:
             chat_history.append(product_list_as_json['products'])
 
-        end_time = time.time()
-        total_time = end_time - start_time
-        print("Time for process_chat_question:", total_time)
-        return message, product_list_as_json, total_time, str(customer_attributes_retrieved)
+        return message, product_list_as_json, str(customer_attributes_retrieved), time_to_get_attributes
 
     except ValueError as error:
         if "AccessDeniedException" in str(error):

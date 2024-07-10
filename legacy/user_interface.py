@@ -65,7 +65,7 @@
 #         # Process the customer input with the NER model
 #         entity_extraction_result = llm(ner_prompt).strip()
 #
-#         # Extract the attributes from the v_i_processed result
+#         # Extract the attributes from the processed result
 #         result = re.search('<attributes>(.*?)</attributes>', entity_extraction_result, re.DOTALL)
 #         if result:
 #             attributes_str = result.group(1)

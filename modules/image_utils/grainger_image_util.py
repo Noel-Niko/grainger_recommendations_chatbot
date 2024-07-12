@@ -10,7 +10,7 @@ import asyncio
 
 async def get_images(recommendations_list, df):
     image_tasks = []
-    image_data = []  # Change to store binary data
+    image_data = []
     total_image_time = 0.0
 
     async with aiohttp.ClientSession() as session:

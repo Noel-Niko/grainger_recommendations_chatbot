@@ -1,6 +1,7 @@
 import logging
 import os
 import pickle
+import sys
 from concurrent.futures import ThreadPoolExecutor
 
 import pandas as pd
@@ -12,6 +13,9 @@ from .bedrock_initializer import bedrock
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
+current_dir = os.path.dirname(__file__)
+project_root = os.path.abspath(os.path.join(current_dir, '..'))
+sys.path.append(project_root)
 
 class Document:
     def __init__(self, page_content, metadata):
@@ -55,27 +59,25 @@ def initialize_embeddings_and_faiss():
     logging.info("Titan Embeddings Model initialized.")
 
     # Load processed data from Parquet file
-    current_dir = os.path.dirname(__file__)
-    parquet_file_path = os.path.join(current_dir, '../web_extraction_tools/processed/grainger_products.parquet')
+    relative_path = '../web_extraction_tools/processed/grainger_products.parquet'
+    parquet_file_path = os.path.join(current_dir, relative_path)
+    parquet_file_path = os.path.abspath(parquet_file_path)
     logging.info(f"Attempting to load file from: {parquet_file_path}")
-    # Load processed data from Parquet file
-    documents = []
     df = pd.read_parquet(parquet_file_path)
 
     # Create serialized source doc for FAISS
-    current_dir = os.path.dirname(os.path.abspath(__file__))
+    documents = []
     data_source_dir = os.path.join(current_dir, 'data_source')
-    # Ensure the directory exists
     os.makedirs(data_source_dir, exist_ok=True)
-
     serialized_documents_file = os.path.join(data_source_dir, 'documents.pkl')
+    logging.info(f"Attempting to load file from: {serialized_documents_file}")
     if os.path.exists(serialized_documents_file):
         logging.info(f"Serialized documents file {serialized_documents_file} already exists. Loading...")
         with open(serialized_documents_file, 'rb') as file:
-            documents = pickle.load(open(serialized_documents_file, "rb"))
+            documents = pickle.load(file)
             logging.info("Documents file loaded successfully!")
     else:
-        logging.error("Error loading serialized_documents_file")
+        logging.error("Error loading serialized_documents_file at " + serialized_documents_file)
         logging.info("Generating new df")
         for index, row in df.iterrows():
             page_content = f"{row['Code']} {row['Name']} {row['Brand']} {row['Description'] if pd.notna(row['Description']) else ''}"
@@ -95,6 +97,7 @@ def initialize_embeddings_and_faiss():
 
     # Check if serialized FAISS index exists
     serialized_index_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'vector_index.pkl')
+    logging.info(f"Serialized index file {serialized_index_file}")
     if os.path.exists(serialized_index_file):
         logging.info(f"Serialized file {serialized_index_file} already exists. Loading...")
         with open(serialized_index_file, 'rb') as file:

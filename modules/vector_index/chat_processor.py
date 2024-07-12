@@ -48,7 +48,8 @@ def process_chat_question_with_customer_attribute_identifier(question, document,
 
         llm_retrieval_augmented_response = search_index_get_answer_from_llm.run(**context)
         message, product_list_as_json = split_process_and_message_from_response(llm_retrieval_augmented_response)
-
+        logging.info(f"chat_procesing: message: {message}")
+        logging.info(f"chat_procesing: product_list_as_json: {product_list_as_json}")
         if product_list_as_json is not None:
             chat_history.append(product_list_as_json['products'])
 

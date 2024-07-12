@@ -1,0 +1,1717 @@
+/opt/homebrew/anaconda3/envs/grainger_recommendations_chatbot-2/lib/python3.11/site-packages/langchain/_api/module_import.py:92: LangChainDeprecationWarning: Importing BedrockEmbeddings from langchain.embeddings is deprecated. Please replace deprecated imports:
+
+>> from langchain.embeddings import BedrockEmbeddings
+
+with new imports of:
+
+>> from langchain_community.embeddings import BedrockEmbeddings
+You can use the langchain cli to **automatically** upgrade many imports. Please see documentation here <https://python.langchain.com/v0.2/docs/versions/v0_2/>
+  warn_deprecated(
+/opt/homebrew/anaconda3/envs/grainger_recommendations_chatbot-2/lib/python3.11/site-packages/langchain/_api/module_import.py:92: LangChainDeprecationWarning: Importing FAISS from langchain.vectorstores is deprecated. Please replace deprecated imports:
+
+>> from langchain.vectorstores import FAISS
+
+with new imports of:
+
+>> from langchain_community.vectorstores import FAISS
+You can use the langchain cli to **automatically** upgrade many imports. Please see documentation here <https://python.langchain.com/v0.2/docs/versions/v0_2/>
+  warn_deprecated(
+/opt/homebrew/anaconda3/envs/grainger_recommendations_chatbot-2/lib/python3.11/site-packages/langchain/_api/module_import.py:92: LangChainDeprecationWarning: Importing Bedrock from langchain.llms is deprecated. Please replace deprecated imports:
+
+>> from langchain.llms import Bedrock
+
+with new imports of:
+
+>> from langchain_community.llms import Bedrock
+You can use the langchain cli to **automatically** upgrade many imports. Please see documentation here <https://python.langchain.com/v0.2/docs/versions/v0_2/>
+  warn_deprecated(
+INFO:     Started server process [11904]
+INFO:     Waiting for application startup.
+2024-07-12 17:26:04,534 - INFO - Getting bedrock client...
+2024-07-12 17:26:04,539 - INFO - Found credentials in shared credentials file: ~/.aws/credentials
+2024-07-12 17:26:04,793 - INFO - Initializing Bedrock...
+2024-07-12 17:26:04,801 - INFO - Found credentials in shared credentials file: ~/.aws/credentials
+/opt/homebrew/anaconda3/envs/grainger_recommendations_chatbot-2/lib/python3.11/site-packages/langchain_core/_api/deprecation.py:139: LangChainDeprecationWarning: The class `Bedrock` was deprecated in LangChain 0.1.0 and will be removed in 0.2.0. Use BedrockLLM instead.
+  warn_deprecated(
+2024-07-12 17:26:05,046 - INFO - Initializing Titan Embeddings Model...
+2024-07-12 17:26:05,046 - INFO - Titan Embeddings Model initialized.
+2024-07-12 17:26:05,046 - INFO - Attempting to load file from: /Users/xnxn040/PycharmProjects/grainger_recommendations_chatbot/modules/web_extraction_tools/processed/grainger_products.parquet
+2024-07-12 17:26:05,082 - INFO - Attempting to load file from: /Users/xnxn040/PycharmProjects/grainger_recommendations_chatbot/modules/vector_index/data_source/documents.pkl
+2024-07-12 17:26:05,082 - INFO - Serialized documents file /Users/xnxn040/PycharmProjects/grainger_recommendations_chatbot/modules/vector_index/data_source/documents.pkl already exists. Loading...
+/opt/homebrew/anaconda3/envs/grainger_recommendations_chatbot-2/lib/python3.11/site-packages/langchain/_api/module_import.py:92: LangChainDeprecationWarning: Importing BedrockEmbeddings from langchain.embeddings is deprecated. Please replace deprecated imports:
+
+>> from langchain.embeddings import BedrockEmbeddings
+
+with new imports of:
+
+>> from langchain_community.embeddings import BedrockEmbeddings
+You can use the langchain cli to **automatically** upgrade many imports. Please see documentation here <https://python.langchain.com/v0.2/docs/versions/v0_2/>
+  warn_deprecated(
+/opt/homebrew/anaconda3/envs/grainger_recommendations_chatbot-2/lib/python3.11/site-packages/langchain/_api/module_import.py:92: LangChainDeprecationWarning: Importing FAISS from langchain.vectorstores is deprecated. Please replace deprecated imports:
+
+>> from langchain.vectorstores import FAISS
+
+with new imports of:
+
+>> from langchain_community.vectorstores import FAISS
+You can use the langchain cli to **automatically** upgrade many imports. Please see documentation here <https://python.langchain.com/v0.2/docs/versions/v0_2/>
+  warn_deprecated(
+/opt/homebrew/anaconda3/envs/grainger_recommendations_chatbot-2/lib/python3.11/site-packages/langchain/_api/module_import.py:92: LangChainDeprecationWarning: Importing Bedrock from langchain.llms is deprecated. Please replace deprecated imports:
+
+>> from langchain.llms import Bedrock
+
+with new imports of:
+
+>> from langchain_community.llms import Bedrock
+You can use the langchain cli to **automatically** upgrade many imports. Please see documentation here <https://python.langchain.com/v0.2/docs/versions/v0_2/>
+  warn_deprecated(
+2024-07-12 17:26:05,093 - INFO - Documents file loaded successfully!
+2024-07-12 17:26:05,093 - INFO - Structured documents created:
+2024-07-12 17:26:05,093 - INFO - Document 1 of 3993:
+2024-07-12 17:26:05,093 - INFO - 52WX73 Handheld Tape Dispenser: Light, For 3 in Max Tape Wd, For 3 in Tape Core Dia, Pistol APPROVED VENDOR <p>Handheld packaging tape dispensers hold a roll of self-adhesive packaging tape and have a
+2024-07-12 17:26:05,093 - INFO - Document 2 of 3993:
+2024-07-12 17:26:05,093 - INFO - 8ZF81 Humidity Sponge Indicator: 3 in Wd, 3 in Lg, 476 cu in Area Protected, Bag, 40 Bags per Pack, 40 PK CONTROL COMPANY <p>Tyvek-brand desiccant bags are tear-proof and dust-free and meet FDA specif
+2024-07-12 17:26:05,093 - INFO - Document 3 of 3993:
+2024-07-12 17:26:05,093 - INFO - 8X316 TIMBERLAND PRO Work Boot: W, 11 1/2, 6 in Work Boot Footwear, Men's, Wheat, 1 PR TIMBERLAND PRO 
+2024-07-12 17:26:05,093 - INFO - Document 4 of 3993:
+2024-07-12 17:26:05,093 - INFO - 31XL69 TPI CORP. Electric Wall & Ceiling Unit Heater: 208/240V AC, 1-phase, 11 in x 10-5/8 in x 9-5/8 in TPI CORP. <p>Standard suspended electric wall and ceiling unit heaters hang from a bracket or t
+2024-07-12 17:26:05,093 - INFO - Document 5 of 3993:
+2024-07-12 17:26:05,093 - INFO - 6FHC0 Traffic Cone: Day or Low Speed Roadway (40 MPH or Less), Non-Reflective, Black Base, 28 in Cone Ht APPROVED VENDOR <p>These traffic cones meet federal MUTCD (Manual on Uniform Traffic Control De
+2024-07-12 17:26:05,098 - INFO - Serialized index file /Users/xnxn040/PycharmProjects/grainger_recommendations_chatbot/modules/vector_index/vector_index.pkl
+2024-07-12 17:26:05,098 - INFO - Serialized file /Users/xnxn040/PycharmProjects/grainger_recommendations_chatbot/modules/vector_index/vector_index.pkl already exists. Loading...
+2024-07-12 17:26:05,102 - INFO - Loading faiss.
+2024-07-12 17:26:05,159 - INFO - Successfully loaded faiss.
+2024-07-12 17:26:05,175 - INFO - FAISS vector store loaded from pickle file.
+2024-07-12 17:26:05,177 - INFO - ====== WebDriver manager ======
+2024-07-12 17:26:05,390 - INFO - Get LATEST chromedriver version for google-chrome
+2024-07-12 17:26:05,441 - INFO - Get LATEST chromedriver version for google-chrome
+2024-07-12 17:26:05,495 - INFO - Driver [/Users/xnxn040/.wdm/drivers/chromedriver/mac64/126.0.6478.126/chromedriver-mac-arm64/chromedriver] found in cache
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8001 (Press CTRL+C to quit)
+
+  You can now view your Streamlit app in your browser.
+
+  Local URL: http://localhost:8503
+  Network URL: http://10.52.150.95:8503
+
+  For better performance, install the Watchdog module:
+
+  $ xcode-select --install
+  $ pip install watchdog
+            
+/opt/homebrew/anaconda3/envs/grainger_recommendations_chatbot-2/lib/python3.11/site-packages/langchain/_api/module_import.py:92: LangChainDeprecationWarning: Importing BedrockEmbeddings from langchain.embeddings is deprecated. Please replace deprecated imports:
+
+>> from langchain.embeddings import BedrockEmbeddings
+
+with new imports of:
+
+>> from langchain_community.embeddings import BedrockEmbeddings
+You can use the langchain cli to **automatically** upgrade many imports. Please see documentation here <https://python.langchain.com/v0.2/docs/versions/v0_2/>
+  warn_deprecated(
+/opt/homebrew/anaconda3/envs/grainger_recommendations_chatbot-2/lib/python3.11/site-packages/langchain/_api/module_import.py:92: LangChainDeprecationWarning: Importing FAISS from langchain.vectorstores is deprecated. Please replace deprecated imports:
+
+>> from langchain.vectorstores import FAISS
+
+with new imports of:
+
+>> from langchain_community.vectorstores import FAISS
+You can use the langchain cli to **automatically** upgrade many imports. Please see documentation here <https://python.langchain.com/v0.2/docs/versions/v0_2/>
+  warn_deprecated(
+/opt/homebrew/anaconda3/envs/grainger_recommendations_chatbot-2/lib/python3.11/site-packages/langchain/_api/module_import.py:92: LangChainDeprecationWarning: Importing Bedrock from langchain.llms is deprecated. Please replace deprecated imports:
+
+>> from langchain.llms import Bedrock
+
+with new imports of:
+
+>> from langchain_community.llms import Bedrock
+You can use the langchain cli to **automatically** upgrade many imports. Please see documentation here <https://python.langchain.com/v0.2/docs/versions/v0_2/>
+  warn_deprecated(
+INFO:     Started server process [12214]
+INFO:     Waiting for application startup.
+2024-07-12 17:31:35,595 - INFO - Getting bedrock client...
+2024-07-12 17:31:35,599 - INFO - Found credentials in shared credentials file: ~/.aws/credentials
+2024-07-12 17:31:35,871 - INFO - Initializing Bedrock...
+2024-07-12 17:31:35,879 - INFO - Found credentials in shared credentials file: ~/.aws/credentials
+/opt/homebrew/anaconda3/envs/grainger_recommendations_chatbot-2/lib/python3.11/site-packages/langchain_core/_api/deprecation.py:139: LangChainDeprecationWarning: The class `Bedrock` was deprecated in LangChain 0.1.0 and will be removed in 0.2.0. Use BedrockLLM instead.
+  warn_deprecated(
+2024-07-12 17:31:36,121 - INFO - Initializing Titan Embeddings Model...
+2024-07-12 17:31:36,122 - INFO - Titan Embeddings Model initialized.
+2024-07-12 17:31:36,122 - INFO - Attempting to load file from: /Users/xnxn040/PycharmProjects/grainger_recommendations_chatbot/modules/web_extraction_tools/processed/grainger_products.parquet
+2024-07-12 17:31:36,157 - INFO - Attempting to load file from: /Users/xnxn040/PycharmProjects/grainger_recommendations_chatbot/modules/vector_index/data_source/documents.pkl
+2024-07-12 17:31:36,157 - INFO - Serialized documents file /Users/xnxn040/PycharmProjects/grainger_recommendations_chatbot/modules/vector_index/data_source/documents.pkl already exists. Loading...
+/opt/homebrew/anaconda3/envs/grainger_recommendations_chatbot-2/lib/python3.11/site-packages/langchain/_api/module_import.py:92: LangChainDeprecationWarning: Importing BedrockEmbeddings from langchain.embeddings is deprecated. Please replace deprecated imports:
+
+>> from langchain.embeddings import BedrockEmbeddings
+
+with new imports of:
+
+>> from langchain_community.embeddings import BedrockEmbeddings
+You can use the langchain cli to **automatically** upgrade many imports. Please see documentation here <https://python.langchain.com/v0.2/docs/versions/v0_2/>
+  warn_deprecated(
+/opt/homebrew/anaconda3/envs/grainger_recommendations_chatbot-2/lib/python3.11/site-packages/langchain/_api/module_import.py:92: LangChainDeprecationWarning: Importing FAISS from langchain.vectorstores is deprecated. Please replace deprecated imports:
+
+>> from langchain.vectorstores import FAISS
+
+with new imports of:
+
+>> from langchain_community.vectorstores import FAISS
+You can use the langchain cli to **automatically** upgrade many imports. Please see documentation here <https://python.langchain.com/v0.2/docs/versions/v0_2/>
+  warn_deprecated(
+/opt/homebrew/anaconda3/envs/grainger_recommendations_chatbot-2/lib/python3.11/site-packages/langchain/_api/module_import.py:92: LangChainDeprecationWarning: Importing Bedrock from langchain.llms is deprecated. Please replace deprecated imports:
+
+>> from langchain.llms import Bedrock
+
+with new imports of:
+
+>> from langchain_community.llms import Bedrock
+You can use the langchain cli to **automatically** upgrade many imports. Please see documentation here <https://python.langchain.com/v0.2/docs/versions/v0_2/>
+  warn_deprecated(
+2024-07-12 17:31:36,166 - INFO - Documents file loaded successfully!
+2024-07-12 17:31:36,166 - INFO - Structured documents created:
+2024-07-12 17:31:36,166 - INFO - Document 1 of 3993:
+2024-07-12 17:31:36,166 - INFO - 52WX73 Handheld Tape Dispenser: Light, For 3 in Max Tape Wd, For 3 in Tape Core Dia, Pistol APPROVED VENDOR <p>Handheld packaging tape dispensers hold a roll of self-adhesive packaging tape and have a
+2024-07-12 17:31:36,166 - INFO - Document 2 of 3993:
+2024-07-12 17:31:36,166 - INFO - 8ZF81 Humidity Sponge Indicator: 3 in Wd, 3 in Lg, 476 cu in Area Protected, Bag, 40 Bags per Pack, 40 PK CONTROL COMPANY <p>Tyvek-brand desiccant bags are tear-proof and dust-free and meet FDA specif
+2024-07-12 17:31:36,166 - INFO - Document 3 of 3993:
+2024-07-12 17:31:36,166 - INFO - 8X316 TIMBERLAND PRO Work Boot: W, 11 1/2, 6 in Work Boot Footwear, Men's, Wheat, 1 PR TIMBERLAND PRO 
+2024-07-12 17:31:36,166 - INFO - Document 4 of 3993:
+2024-07-12 17:31:36,166 - INFO - 31XL69 TPI CORP. Electric Wall & Ceiling Unit Heater: 208/240V AC, 1-phase, 11 in x 10-5/8 in x 9-5/8 in TPI CORP. <p>Standard suspended electric wall and ceiling unit heaters hang from a bracket or t
+2024-07-12 17:31:36,166 - INFO - Document 5 of 3993:
+2024-07-12 17:31:36,166 - INFO - 6FHC0 Traffic Cone: Day or Low Speed Roadway (40 MPH or Less), Non-Reflective, Black Base, 28 in Cone Ht APPROVED VENDOR <p>These traffic cones meet federal MUTCD (Manual on Uniform Traffic Control De
+2024-07-12 17:31:36,171 - INFO - Serialized index file /Users/xnxn040/PycharmProjects/grainger_recommendations_chatbot/modules/vector_index/vector_index.pkl
+2024-07-12 17:31:36,171 - INFO - Serialized file /Users/xnxn040/PycharmProjects/grainger_recommendations_chatbot/modules/vector_index/vector_index.pkl already exists. Loading...
+2024-07-12 17:31:36,176 - INFO - Loading faiss.
+2024-07-12 17:31:36,237 - INFO - Successfully loaded faiss.
+2024-07-12 17:31:36,253 - INFO - FAISS vector store loaded from pickle file.
+2024-07-12 17:31:36,255 - INFO - ====== WebDriver manager ======
+2024-07-12 17:31:36,451 - INFO - Get LATEST chromedriver version for google-chrome
+2024-07-12 17:31:36,500 - INFO - Get LATEST chromedriver version for google-chrome
+2024-07-12 17:31:36,548 - INFO - Driver [/Users/xnxn040/.wdm/drivers/chromedriver/mac64/126.0.6478.126/chromedriver-mac-arm64/chromedriver] found in cache
+INFO:     Application startup complete.
+ERROR:    [Errno 48] error while attempting to bind on address ('0.0.0.0', 8000): address already in use
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+Create new client
+  Using region: None
+  Using role: arn:aws:iam::905418421511:role/service-role/AmazonSageMaker-ExecutionRole-20240623T114364 ... successful!
+boto3 Bedrock client successfully created!
+bedrock(https://bedrock.us-east-1.amazonaws.com)
+Create new client
+  Using region: None
+  Using role: arn:aws:iam::905418421511:role/service-role/AmazonSageMaker-ExecutionRole-20240623T114364 ... successful!
+boto3 Bedrock client successfully created!
+bedrock-runtime(https://bedrock-runtime.us-east-1.amazonaws.com)
+
+  You can now view your Streamlit app in your browser.
+
+  Local URL: http://localhost:8505
+  Network URL: http://10.52.150.95:8505
+
+  For better performance, install the Watchdog module:
+
+  $ xcode-select --install
+  $ pip install watchdog
+            
+/opt/homebrew/anaconda3/envs/grainger_recommendations_chatbot-2/lib/python3.11/site-packages/langchain/_api/module_import.py:92: LangChainDeprecationWarning: Importing BedrockEmbeddings from langchain.embeddings is deprecated. Please replace deprecated imports:
+
+>> from langchain.embeddings import BedrockEmbeddings
+
+with new imports of:
+
+>> from langchain_community.embeddings import BedrockEmbeddings
+You can use the langchain cli to **automatically** upgrade many imports. Please see documentation here <https://python.langchain.com/v0.2/docs/versions/v0_2/>
+  warn_deprecated(
+/opt/homebrew/anaconda3/envs/grainger_recommendations_chatbot-2/lib/python3.11/site-packages/langchain/_api/module_import.py:92: LangChainDeprecationWarning: Importing FAISS from langchain.vectorstores is deprecated. Please replace deprecated imports:
+
+>> from langchain.vectorstores import FAISS
+
+with new imports of:
+
+>> from langchain_community.vectorstores import FAISS
+You can use the langchain cli to **automatically** upgrade many imports. Please see documentation here <https://python.langchain.com/v0.2/docs/versions/v0_2/>
+  warn_deprecated(
+/opt/homebrew/anaconda3/envs/grainger_recommendations_chatbot-2/lib/python3.11/site-packages/langchain/_api/module_import.py:92: LangChainDeprecationWarning: Importing Bedrock from langchain.llms is deprecated. Please replace deprecated imports:
+
+>> from langchain.llms import Bedrock
+
+with new imports of:
+
+>> from langchain_community.llms import Bedrock
+You can use the langchain cli to **automatically** upgrade many imports. Please see documentation here <https://python.langchain.com/v0.2/docs/versions/v0_2/>
+  warn_deprecated(
+INFO:     Started server process [12526]
+INFO:     Waiting for application startup.
+2024-07-12 17:39:55,396 - INFO - Getting bedrock client...
+2024-07-12 17:39:55,400 - INFO - Found credentials in shared credentials file: ~/.aws/credentials
+2024-07-12 17:39:55,643 - INFO - Initializing Bedrock...
+2024-07-12 17:39:55,650 - INFO - Found credentials in shared credentials file: ~/.aws/credentials
+/opt/homebrew/anaconda3/envs/grainger_recommendations_chatbot-2/lib/python3.11/site-packages/langchain_core/_api/deprecation.py:139: LangChainDeprecationWarning: The class `Bedrock` was deprecated in LangChain 0.1.0 and will be removed in 0.2.0. Use BedrockLLM instead.
+  warn_deprecated(
+2024-07-12 17:39:55,890 - INFO - Initializing Titan Embeddings Model...
+2024-07-12 17:39:55,890 - INFO - Titan Embeddings Model initialized.
+2024-07-12 17:39:55,890 - INFO - Attempting to load file from: /Users/xnxn040/PycharmProjects/grainger_recommendations_chatbot/modules/web_extraction_tools/processed/grainger_products.parquet
+2024-07-12 17:39:55,925 - INFO - Attempting to load file from: /Users/xnxn040/PycharmProjects/grainger_recommendations_chatbot/modules/vector_index/data_source/documents.pkl
+2024-07-12 17:39:55,925 - INFO - Serialized documents file /Users/xnxn040/PycharmProjects/grainger_recommendations_chatbot/modules/vector_index/data_source/documents.pkl already exists. Loading...
+/opt/homebrew/anaconda3/envs/grainger_recommendations_chatbot-2/lib/python3.11/site-packages/langchain/_api/module_import.py:92: LangChainDeprecationWarning: Importing BedrockEmbeddings from langchain.embeddings is deprecated. Please replace deprecated imports:
+
+>> from langchain.embeddings import BedrockEmbeddings
+
+with new imports of:
+
+>> from langchain_community.embeddings import BedrockEmbeddings
+You can use the langchain cli to **automatically** upgrade many imports. Please see documentation here <https://python.langchain.com/v0.2/docs/versions/v0_2/>
+  warn_deprecated(
+/opt/homebrew/anaconda3/envs/grainger_recommendations_chatbot-2/lib/python3.11/site-packages/langchain/_api/module_import.py:92: LangChainDeprecationWarning: Importing FAISS from langchain.vectorstores is deprecated. Please replace deprecated imports:
+
+>> from langchain.vectorstores import FAISS
+
+with new imports of:
+
+>> from langchain_community.vectorstores import FAISS
+You can use the langchain cli to **automatically** upgrade many imports. Please see documentation here <https://python.langchain.com/v0.2/docs/versions/v0_2/>
+  warn_deprecated(
+/opt/homebrew/anaconda3/envs/grainger_recommendations_chatbot-2/lib/python3.11/site-packages/langchain/_api/module_import.py:92: LangChainDeprecationWarning: Importing Bedrock from langchain.llms is deprecated. Please replace deprecated imports:
+
+>> from langchain.llms import Bedrock
+
+with new imports of:
+
+>> from langchain_community.llms import Bedrock
+You can use the langchain cli to **automatically** upgrade many imports. Please see documentation here <https://python.langchain.com/v0.2/docs/versions/v0_2/>
+  warn_deprecated(
+2024-07-12 17:39:55,934 - INFO - Documents file loaded successfully!
+2024-07-12 17:39:55,934 - INFO - Structured documents created:
+2024-07-12 17:39:55,934 - INFO - Document 1 of 3993:
+2024-07-12 17:39:55,934 - INFO - 52WX73 Handheld Tape Dispenser: Light, For 3 in Max Tape Wd, For 3 in Tape Core Dia, Pistol APPROVED VENDOR <p>Handheld packaging tape dispensers hold a roll of self-adhesive packaging tape and have a
+2024-07-12 17:39:55,934 - INFO - Document 2 of 3993:
+2024-07-12 17:39:55,934 - INFO - 8ZF81 Humidity Sponge Indicator: 3 in Wd, 3 in Lg, 476 cu in Area Protected, Bag, 40 Bags per Pack, 40 PK CONTROL COMPANY <p>Tyvek-brand desiccant bags are tear-proof and dust-free and meet FDA specif
+2024-07-12 17:39:55,934 - INFO - Document 3 of 3993:
+2024-07-12 17:39:55,934 - INFO - 8X316 TIMBERLAND PRO Work Boot: W, 11 1/2, 6 in Work Boot Footwear, Men's, Wheat, 1 PR TIMBERLAND PRO 
+2024-07-12 17:39:55,934 - INFO - Document 4 of 3993:
+2024-07-12 17:39:55,934 - INFO - 31XL69 TPI CORP. Electric Wall & Ceiling Unit Heater: 208/240V AC, 1-phase, 11 in x 10-5/8 in x 9-5/8 in TPI CORP. <p>Standard suspended electric wall and ceiling unit heaters hang from a bracket or t
+2024-07-12 17:39:55,934 - INFO - Document 5 of 3993:
+2024-07-12 17:39:55,934 - INFO - 6FHC0 Traffic Cone: Day or Low Speed Roadway (40 MPH or Less), Non-Reflective, Black Base, 28 in Cone Ht APPROVED VENDOR <p>These traffic cones meet federal MUTCD (Manual on Uniform Traffic Control De
+2024-07-12 17:39:55,939 - INFO - Serialized index file /Users/xnxn040/PycharmProjects/grainger_recommendations_chatbot/modules/vector_index/vector_index.pkl
+2024-07-12 17:39:55,939 - INFO - Serialized file /Users/xnxn040/PycharmProjects/grainger_recommendations_chatbot/modules/vector_index/vector_index.pkl already exists. Loading...
+2024-07-12 17:39:55,943 - INFO - Loading faiss.
+2024-07-12 17:39:55,997 - INFO - Successfully loaded faiss.
+2024-07-12 17:39:56,013 - INFO - FAISS vector store loaded from pickle file.
+2024-07-12 17:39:56,015 - INFO - ====== WebDriver manager ======
+2024-07-12 17:39:56,227 - INFO - Get LATEST chromedriver version for google-chrome
+2024-07-12 17:39:56,280 - INFO - Get LATEST chromedriver version for google-chrome
+2024-07-12 17:39:56,331 - INFO - Driver [/Users/xnxn040/.wdm/drivers/chromedriver/mac64/126.0.6478.126/chromedriver-mac-arm64/chromedriver] found in cache
+INFO:     Application startup complete.
+ERROR:    [Errno 48] error while attempting to bind on address ('0.0.0.0', 8000): address already in use
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+Create new client
+  Using region: None
+  Using role: arn:aws:iam::905418421511:role/service-role/AmazonSageMaker-ExecutionRole-20240623T114364 ... successful!
+boto3 Bedrock client successfully created!
+bedrock(https://bedrock.us-east-1.amazonaws.com)
+Create new client
+  Using region: None
+  Using role: arn:aws:iam::905418421511:role/service-role/AmazonSageMaker-ExecutionRole-20240623T114364 ... successful!
+boto3 Bedrock client successfully created!
+bedrock-runtime(https://bedrock-runtime.us-east-1.amazonaws.com)
+2024-07-12 17:39:57.438 Port 8505 is already in use
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [11904]
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [11640]
+/opt/homebrew/anaconda3/envs/grainger_recommendations_chatbot-2/lib/python3.11/site-packages/langchain/_api/module_import.py:92: LangChainDeprecationWarning: Importing BedrockEmbeddings from langchain.embeddings is deprecated. Please replace deprecated imports:
+
+>> from langchain.embeddings import BedrockEmbeddings
+
+with new imports of:
+
+>> from langchain_community.embeddings import BedrockEmbeddings
+You can use the langchain cli to **automatically** upgrade many imports. Please see documentation here <https://python.langchain.com/v0.2/docs/versions/v0_2/>
+  warn_deprecated(
+/opt/homebrew/anaconda3/envs/grainger_recommendations_chatbot-2/lib/python3.11/site-packages/langchain/_api/module_import.py:92: LangChainDeprecationWarning: Importing FAISS from langchain.vectorstores is deprecated. Please replace deprecated imports:
+
+>> from langchain.vectorstores import FAISS
+
+with new imports of:
+
+>> from langchain_community.vectorstores import FAISS
+You can use the langchain cli to **automatically** upgrade many imports. Please see documentation here <https://python.langchain.com/v0.2/docs/versions/v0_2/>
+  warn_deprecated(
+/opt/homebrew/anaconda3/envs/grainger_recommendations_chatbot-2/lib/python3.11/site-packages/langchain/_api/module_import.py:92: LangChainDeprecationWarning: Importing Bedrock from langchain.llms is deprecated. Please replace deprecated imports:
+
+>> from langchain.llms import Bedrock
+
+with new imports of:
+
+>> from langchain_community.llms import Bedrock
+You can use the langchain cli to **automatically** upgrade many imports. Please see documentation here <https://python.langchain.com/v0.2/docs/versions/v0_2/>
+  warn_deprecated(
+INFO:     Started server process [12728]
+INFO:     Waiting for application startup.
+2024-07-12 17:41:18,753 - INFO - Getting bedrock client...
+2024-07-12 17:41:18,758 - INFO - Found credentials in shared credentials file: ~/.aws/credentials
+2024-07-12 17:41:19,026 - INFO - Initializing Bedrock...
+2024-07-12 17:41:19,034 - INFO - Found credentials in shared credentials file: ~/.aws/credentials
+/opt/homebrew/anaconda3/envs/grainger_recommendations_chatbot-2/lib/python3.11/site-packages/langchain_core/_api/deprecation.py:139: LangChainDeprecationWarning: The class `Bedrock` was deprecated in LangChain 0.1.0 and will be removed in 0.2.0. Use BedrockLLM instead.
+  warn_deprecated(
+2024-07-12 17:41:19,278 - INFO - Initializing Titan Embeddings Model...
+2024-07-12 17:41:19,278 - INFO - Titan Embeddings Model initialized.
+2024-07-12 17:41:19,278 - INFO - Attempting to load file from: /Users/xnxn040/PycharmProjects/grainger_recommendations_chatbot/modules/web_extraction_tools/processed/grainger_products.parquet
+2024-07-12 17:41:19,313 - INFO - Attempting to load file from: /Users/xnxn040/PycharmProjects/grainger_recommendations_chatbot/modules/vector_index/data_source/documents.pkl
+2024-07-12 17:41:19,313 - INFO - Serialized documents file /Users/xnxn040/PycharmProjects/grainger_recommendations_chatbot/modules/vector_index/data_source/documents.pkl already exists. Loading...
+/opt/homebrew/anaconda3/envs/grainger_recommendations_chatbot-2/lib/python3.11/site-packages/langchain/_api/module_import.py:92: LangChainDeprecationWarning: Importing BedrockEmbeddings from langchain.embeddings is deprecated. Please replace deprecated imports:
+
+>> from langchain.embeddings import BedrockEmbeddings
+
+with new imports of:
+
+>> from langchain_community.embeddings import BedrockEmbeddings
+You can use the langchain cli to **automatically** upgrade many imports. Please see documentation here <https://python.langchain.com/v0.2/docs/versions/v0_2/>
+  warn_deprecated(
+/opt/homebrew/anaconda3/envs/grainger_recommendations_chatbot-2/lib/python3.11/site-packages/langchain/_api/module_import.py:92: LangChainDeprecationWarning: Importing FAISS from langchain.vectorstores is deprecated. Please replace deprecated imports:
+
+>> from langchain.vectorstores import FAISS
+
+with new imports of:
+
+>> from langchain_community.vectorstores import FAISS
+You can use the langchain cli to **automatically** upgrade many imports. Please see documentation here <https://python.langchain.com/v0.2/docs/versions/v0_2/>
+  warn_deprecated(
+/opt/homebrew/anaconda3/envs/grainger_recommendations_chatbot-2/lib/python3.11/site-packages/langchain/_api/module_import.py:92: LangChainDeprecationWarning: Importing Bedrock from langchain.llms is deprecated. Please replace deprecated imports:
+
+>> from langchain.llms import Bedrock
+
+with new imports of:
+
+>> from langchain_community.llms import Bedrock
+You can use the langchain cli to **automatically** upgrade many imports. Please see documentation here <https://python.langchain.com/v0.2/docs/versions/v0_2/>
+  warn_deprecated(
+2024-07-12 17:41:19,323 - INFO - Documents file loaded successfully!
+2024-07-12 17:41:19,323 - INFO - Structured documents created:
+2024-07-12 17:41:19,323 - INFO - Document 1 of 3993:
+2024-07-12 17:41:19,323 - INFO - 52WX73 Handheld Tape Dispenser: Light, For 3 in Max Tape Wd, For 3 in Tape Core Dia, Pistol APPROVED VENDOR <p>Handheld packaging tape dispensers hold a roll of self-adhesive packaging tape and have a
+2024-07-12 17:41:19,323 - INFO - Document 2 of 3993:
+2024-07-12 17:41:19,323 - INFO - 8ZF81 Humidity Sponge Indicator: 3 in Wd, 3 in Lg, 476 cu in Area Protected, Bag, 40 Bags per Pack, 40 PK CONTROL COMPANY <p>Tyvek-brand desiccant bags are tear-proof and dust-free and meet FDA specif
+2024-07-12 17:41:19,323 - INFO - Document 3 of 3993:
+2024-07-12 17:41:19,323 - INFO - 8X316 TIMBERLAND PRO Work Boot: W, 11 1/2, 6 in Work Boot Footwear, Men's, Wheat, 1 PR TIMBERLAND PRO 
+2024-07-12 17:41:19,323 - INFO - Document 4 of 3993:
+2024-07-12 17:41:19,323 - INFO - 31XL69 TPI CORP. Electric Wall & Ceiling Unit Heater: 208/240V AC, 1-phase, 11 in x 10-5/8 in x 9-5/8 in TPI CORP. <p>Standard suspended electric wall and ceiling unit heaters hang from a bracket or t
+2024-07-12 17:41:19,323 - INFO - Document 5 of 3993:
+2024-07-12 17:41:19,323 - INFO - 6FHC0 Traffic Cone: Day or Low Speed Roadway (40 MPH or Less), Non-Reflective, Black Base, 28 in Cone Ht APPROVED VENDOR <p>These traffic cones meet federal MUTCD (Manual on Uniform Traffic Control De
+2024-07-12 17:41:19,328 - INFO - Serialized index file /Users/xnxn040/PycharmProjects/grainger_recommendations_chatbot/modules/vector_index/vector_index.pkl
+2024-07-12 17:41:19,328 - INFO - Serialized file /Users/xnxn040/PycharmProjects/grainger_recommendations_chatbot/modules/vector_index/vector_index.pkl already exists. Loading...
+2024-07-12 17:41:19,332 - INFO - Loading faiss.
+2024-07-12 17:41:19,386 - INFO - Successfully loaded faiss.
+2024-07-12 17:41:19,402 - INFO - FAISS vector store loaded from pickle file.
+2024-07-12 17:41:19,404 - INFO - ====== WebDriver manager ======
+2024-07-12 17:41:19,615 - INFO - Get LATEST chromedriver version for google-chrome
+2024-07-12 17:41:19,668 - INFO - Get LATEST chromedriver version for google-chrome
+2024-07-12 17:41:19,718 - INFO - Driver [/Users/xnxn040/.wdm/drivers/chromedriver/mac64/126.0.6478.126/chromedriver-mac-arm64/chromedriver] found in cache
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+2024-07-12 17:41:20.844 Port 8505 is already in use
+/opt/homebrew/anaconda3/envs/grainger_recommendations_chatbot-2/lib/python3.11/site-packages/langchain/_api/module_import.py:92: LangChainDeprecationWarning: Importing BedrockEmbeddings from langchain.embeddings is deprecated. Please replace deprecated imports:
+
+>> from langchain.embeddings import BedrockEmbeddings
+
+with new imports of:
+
+>> from langchain_community.embeddings import BedrockEmbeddings
+You can use the langchain cli to **automatically** upgrade many imports. Please see documentation here <https://python.langchain.com/v0.2/docs/versions/v0_2/>
+  warn_deprecated(
+/opt/homebrew/anaconda3/envs/grainger_recommendations_chatbot-2/lib/python3.11/site-packages/langchain/_api/module_import.py:92: LangChainDeprecationWarning: Importing FAISS from langchain.vectorstores is deprecated. Please replace deprecated imports:
+
+>> from langchain.vectorstores import FAISS
+
+with new imports of:
+
+>> from langchain_community.vectorstores import FAISS
+You can use the langchain cli to **automatically** upgrade many imports. Please see documentation here <https://python.langchain.com/v0.2/docs/versions/v0_2/>
+  warn_deprecated(
+/opt/homebrew/anaconda3/envs/grainger_recommendations_chatbot-2/lib/python3.11/site-packages/langchain/_api/module_import.py:92: LangChainDeprecationWarning: Importing Bedrock from langchain.llms is deprecated. Please replace deprecated imports:
+
+>> from langchain.llms import Bedrock
+
+with new imports of:
+
+>> from langchain_community.llms import Bedrock
+You can use the langchain cli to **automatically** upgrade many imports. Please see documentation here <https://python.langchain.com/v0.2/docs/versions/v0_2/>
+  warn_deprecated(
+INFO:     Started server process [12802]
+INFO:     Waiting for application startup.
+2024-07-12 17:42:28,465 - INFO - Getting bedrock client...
+2024-07-12 17:42:28,470 - INFO - Found credentials in shared credentials file: ~/.aws/credentials
+2024-07-12 17:42:28,732 - INFO - Initializing Bedrock...
+2024-07-12 17:42:28,739 - INFO - Found credentials in shared credentials file: ~/.aws/credentials
+/opt/homebrew/anaconda3/envs/grainger_recommendations_chatbot-2/lib/python3.11/site-packages/langchain_core/_api/deprecation.py:139: LangChainDeprecationWarning: The class `Bedrock` was deprecated in LangChain 0.1.0 and will be removed in 0.2.0. Use BedrockLLM instead.
+  warn_deprecated(
+2024-07-12 17:42:28,993 - INFO - Initializing Titan Embeddings Model...
+2024-07-12 17:42:28,993 - INFO - Titan Embeddings Model initialized.
+2024-07-12 17:42:28,993 - INFO - Attempting to load file from: /Users/xnxn040/PycharmProjects/grainger_recommendations_chatbot/modules/web_extraction_tools/processed/grainger_products.parquet
+2024-07-12 17:42:29,028 - INFO - Attempting to load file from: /Users/xnxn040/PycharmProjects/grainger_recommendations_chatbot/modules/vector_index/data_source/documents.pkl
+2024-07-12 17:42:29,028 - INFO - Serialized documents file /Users/xnxn040/PycharmProjects/grainger_recommendations_chatbot/modules/vector_index/data_source/documents.pkl already exists. Loading...
+/opt/homebrew/anaconda3/envs/grainger_recommendations_chatbot-2/lib/python3.11/site-packages/langchain/_api/module_import.py:92: LangChainDeprecationWarning: Importing BedrockEmbeddings from langchain.embeddings is deprecated. Please replace deprecated imports:
+
+>> from langchain.embeddings import BedrockEmbeddings
+
+with new imports of:
+
+>> from langchain_community.embeddings import BedrockEmbeddings
+You can use the langchain cli to **automatically** upgrade many imports. Please see documentation here <https://python.langchain.com/v0.2/docs/versions/v0_2/>
+  warn_deprecated(
+/opt/homebrew/anaconda3/envs/grainger_recommendations_chatbot-2/lib/python3.11/site-packages/langchain/_api/module_import.py:92: LangChainDeprecationWarning: Importing FAISS from langchain.vectorstores is deprecated. Please replace deprecated imports:
+
+>> from langchain.vectorstores import FAISS
+
+with new imports of:
+
+>> from langchain_community.vectorstores import FAISS
+You can use the langchain cli to **automatically** upgrade many imports. Please see documentation here <https://python.langchain.com/v0.2/docs/versions/v0_2/>
+  warn_deprecated(
+/opt/homebrew/anaconda3/envs/grainger_recommendations_chatbot-2/lib/python3.11/site-packages/langchain/_api/module_import.py:92: LangChainDeprecationWarning: Importing Bedrock from langchain.llms is deprecated. Please replace deprecated imports:
+
+>> from langchain.llms import Bedrock
+
+with new imports of:
+
+>> from langchain_community.llms import Bedrock
+You can use the langchain cli to **automatically** upgrade many imports. Please see documentation here <https://python.langchain.com/v0.2/docs/versions/v0_2/>
+  warn_deprecated(
+2024-07-12 17:42:29,038 - INFO - Documents file loaded successfully!
+2024-07-12 17:42:29,038 - INFO - Structured documents created:
+2024-07-12 17:42:29,038 - INFO - Document 1 of 3993:
+2024-07-12 17:42:29,038 - INFO - 52WX73 Handheld Tape Dispenser: Light, For 3 in Max Tape Wd, For 3 in Tape Core Dia, Pistol APPROVED VENDOR <p>Handheld packaging tape dispensers hold a roll of self-adhesive packaging tape and have a
+2024-07-12 17:42:29,038 - INFO - Document 2 of 3993:
+2024-07-12 17:42:29,038 - INFO - 8ZF81 Humidity Sponge Indicator: 3 in Wd, 3 in Lg, 476 cu in Area Protected, Bag, 40 Bags per Pack, 40 PK CONTROL COMPANY <p>Tyvek-brand desiccant bags are tear-proof and dust-free and meet FDA specif
+2024-07-12 17:42:29,038 - INFO - Document 3 of 3993:
+2024-07-12 17:42:29,038 - INFO - 8X316 TIMBERLAND PRO Work Boot: W, 11 1/2, 6 in Work Boot Footwear, Men's, Wheat, 1 PR TIMBERLAND PRO 
+2024-07-12 17:42:29,038 - INFO - Document 4 of 3993:
+2024-07-12 17:42:29,038 - INFO - 31XL69 TPI CORP. Electric Wall & Ceiling Unit Heater: 208/240V AC, 1-phase, 11 in x 10-5/8 in x 9-5/8 in TPI CORP. <p>Standard suspended electric wall and ceiling unit heaters hang from a bracket or t
+2024-07-12 17:42:29,038 - INFO - Document 5 of 3993:
+2024-07-12 17:42:29,038 - INFO - 6FHC0 Traffic Cone: Day or Low Speed Roadway (40 MPH or Less), Non-Reflective, Black Base, 28 in Cone Ht APPROVED VENDOR <p>These traffic cones meet federal MUTCD (Manual on Uniform Traffic Control De
+2024-07-12 17:42:29,043 - INFO - Serialized index file /Users/xnxn040/PycharmProjects/grainger_recommendations_chatbot/modules/vector_index/vector_index.pkl
+2024-07-12 17:42:29,043 - INFO - Serialized file /Users/xnxn040/PycharmProjects/grainger_recommendations_chatbot/modules/vector_index/vector_index.pkl already exists. Loading...
+2024-07-12 17:42:29,048 - INFO - Loading faiss.
+2024-07-12 17:42:29,103 - INFO - Successfully loaded faiss.
+2024-07-12 17:42:29,121 - INFO - FAISS vector store loaded from pickle file.
+2024-07-12 17:42:29,124 - INFO - ====== WebDriver manager ======
+2024-07-12 17:42:29,318 - INFO - Get LATEST chromedriver version for google-chrome
+2024-07-12 17:42:29,372 - INFO - Get LATEST chromedriver version for google-chrome
+2024-07-12 17:42:29,423 - INFO - Driver [/Users/xnxn040/.wdm/drivers/chromedriver/mac64/126.0.6478.126/chromedriver-mac-arm64/chromedriver] found in cache
+INFO:     Application startup complete.
+ERROR:    [Errno 48] error while attempting to bind on address ('0.0.0.0', 8000): address already in use
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+Create new client
+  Using region: None
+  Using role: arn:aws:iam::905418421511:role/service-role/AmazonSageMaker-ExecutionRole-20240623T114364 ... successful!
+boto3 Bedrock client successfully created!
+bedrock(https://bedrock.us-east-1.amazonaws.com)
+Create new client
+  Using region: None
+  Using role: arn:aws:iam::905418421511:role/service-role/AmazonSageMaker-ExecutionRole-20240623T114364 ... successful!
+boto3 Bedrock client successfully created!
+bedrock-runtime(https://bedrock-runtime.us-east-1.amazonaws.com)
+2024-07-12 17:42:30.564 Port 8505 is already in use
+/opt/homebrew/anaconda3/envs/grainger_recommendations_chatbot-2/lib/python3.11/site-packages/langchain/_api/module_import.py:92: LangChainDeprecationWarning: Importing BedrockEmbeddings from langchain.embeddings is deprecated. Please replace deprecated imports:
+
+>> from langchain.embeddings import BedrockEmbeddings
+
+with new imports of:
+
+>> from langchain_community.embeddings import BedrockEmbeddings
+You can use the langchain cli to **automatically** upgrade many imports. Please see documentation here <https://python.langchain.com/v0.2/docs/versions/v0_2/>
+  warn_deprecated(
+/opt/homebrew/anaconda3/envs/grainger_recommendations_chatbot-2/lib/python3.11/site-packages/langchain/_api/module_import.py:92: LangChainDeprecationWarning: Importing FAISS from langchain.vectorstores is deprecated. Please replace deprecated imports:
+
+>> from langchain.vectorstores import FAISS
+
+with new imports of:
+
+>> from langchain_community.vectorstores import FAISS
+You can use the langchain cli to **automatically** upgrade many imports. Please see documentation here <https://python.langchain.com/v0.2/docs/versions/v0_2/>
+  warn_deprecated(
+/opt/homebrew/anaconda3/envs/grainger_recommendations_chatbot-2/lib/python3.11/site-packages/langchain/_api/module_import.py:92: LangChainDeprecationWarning: Importing Bedrock from langchain.llms is deprecated. Please replace deprecated imports:
+
+>> from langchain.llms import Bedrock
+
+with new imports of:
+
+>> from langchain_community.llms import Bedrock
+You can use the langchain cli to **automatically** upgrade many imports. Please see documentation here <https://python.langchain.com/v0.2/docs/versions/v0_2/>
+  warn_deprecated(
+INFO:     Started server process [13047]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+ERROR:    [Errno 48] error while attempting to bind on address ('0.0.0.0', 8000): address already in use
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+2024-07-12 17:46:00.362 Port 8505 is already in use
+/opt/homebrew/anaconda3/envs/grainger_recommendations_chatbot-2/lib/python3.11/site-packages/langchain/_api/module_import.py:92: LangChainDeprecationWarning: Importing BedrockEmbeddings from langchain.embeddings is deprecated. Please replace deprecated imports:
+
+>> from langchain.embeddings import BedrockEmbeddings
+
+with new imports of:
+
+>> from langchain_community.embeddings import BedrockEmbeddings
+You can use the langchain cli to **automatically** upgrade many imports. Please see documentation here <https://python.langchain.com/v0.2/docs/versions/v0_2/>
+  warn_deprecated(
+/opt/homebrew/anaconda3/envs/grainger_recommendations_chatbot-2/lib/python3.11/site-packages/langchain/_api/module_import.py:92: LangChainDeprecationWarning: Importing FAISS from langchain.vectorstores is deprecated. Please replace deprecated imports:
+
+>> from langchain.vectorstores import FAISS
+
+with new imports of:
+
+>> from langchain_community.vectorstores import FAISS
+You can use the langchain cli to **automatically** upgrade many imports. Please see documentation here <https://python.langchain.com/v0.2/docs/versions/v0_2/>
+  warn_deprecated(
+/opt/homebrew/anaconda3/envs/grainger_recommendations_chatbot-2/lib/python3.11/site-packages/langchain/_api/module_import.py:92: LangChainDeprecationWarning: Importing Bedrock from langchain.llms is deprecated. Please replace deprecated imports:
+
+>> from langchain.llms import Bedrock
+
+with new imports of:
+
+>> from langchain_community.llms import Bedrock
+You can use the langchain cli to **automatically** upgrade many imports. Please see documentation here <https://python.langchain.com/v0.2/docs/versions/v0_2/>
+  warn_deprecated(
+INFO:     Started server process [13077]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+ERROR:    [Errno 48] error while attempting to bind on address ('0.0.0.0', 8000): address already in use
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+2024-07-12 17:46:19.596 Port 8505 is already in use
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [12728]
+/opt/homebrew/anaconda3/envs/grainger_recommendations_chatbot-2/lib/python3.11/site-packages/langchain/_api/module_import.py:92: LangChainDeprecationWarning: Importing BedrockEmbeddings from langchain.embeddings is deprecated. Please replace deprecated imports:
+
+>> from langchain.embeddings import BedrockEmbeddings
+
+with new imports of:
+
+>> from langchain_community.embeddings import BedrockEmbeddings
+You can use the langchain cli to **automatically** upgrade many imports. Please see documentation here <https://python.langchain.com/v0.2/docs/versions/v0_2/>
+  warn_deprecated(
+/opt/homebrew/anaconda3/envs/grainger_recommendations_chatbot-2/lib/python3.11/site-packages/langchain/_api/module_import.py:92: LangChainDeprecationWarning: Importing FAISS from langchain.vectorstores is deprecated. Please replace deprecated imports:
+
+>> from langchain.vectorstores import FAISS
+
+with new imports of:
+
+>> from langchain_community.vectorstores import FAISS
+You can use the langchain cli to **automatically** upgrade many imports. Please see documentation here <https://python.langchain.com/v0.2/docs/versions/v0_2/>
+  warn_deprecated(
+/opt/homebrew/anaconda3/envs/grainger_recommendations_chatbot-2/lib/python3.11/site-packages/langchain/_api/module_import.py:92: LangChainDeprecationWarning: Importing Bedrock from langchain.llms is deprecated. Please replace deprecated imports:
+
+>> from langchain.llms import Bedrock
+
+with new imports of:
+
+>> from langchain_community.llms import Bedrock
+You can use the langchain cli to **automatically** upgrade many imports. Please see documentation here <https://python.langchain.com/v0.2/docs/versions/v0_2/>
+  warn_deprecated(
+INFO:     Started server process [13246]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+2024-07-12 17:47:15.932 Port 8505 is already in use
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [13246]
+/opt/homebrew/anaconda3/envs/grainger_recommendations_chatbot-2/lib/python3.11/site-packages/langchain/_api/module_import.py:92: LangChainDeprecationWarning: Importing BedrockEmbeddings from langchain.embeddings is deprecated. Please replace deprecated imports:
+
+>> from langchain.embeddings import BedrockEmbeddings
+
+with new imports of:
+
+>> from langchain_community.embeddings import BedrockEmbeddings
+You can use the langchain cli to **automatically** upgrade many imports. Please see documentation here <https://python.langchain.com/v0.2/docs/versions/v0_2/>
+  warn_deprecated(
+/opt/homebrew/anaconda3/envs/grainger_recommendations_chatbot-2/lib/python3.11/site-packages/langchain/_api/module_import.py:92: LangChainDeprecationWarning: Importing FAISS from langchain.vectorstores is deprecated. Please replace deprecated imports:
+
+>> from langchain.vectorstores import FAISS
+
+with new imports of:
+
+>> from langchain_community.vectorstores import FAISS
+You can use the langchain cli to **automatically** upgrade many imports. Please see documentation here <https://python.langchain.com/v0.2/docs/versions/v0_2/>
+  warn_deprecated(
+/opt/homebrew/anaconda3/envs/grainger_recommendations_chatbot-2/lib/python3.11/site-packages/langchain/_api/module_import.py:92: LangChainDeprecationWarning: Importing Bedrock from langchain.llms is deprecated. Please replace deprecated imports:
+
+>> from langchain.llms import Bedrock
+
+with new imports of:
+
+>> from langchain_community.llms import Bedrock
+You can use the langchain cli to **automatically** upgrade many imports. Please see documentation here <https://python.langchain.com/v0.2/docs/versions/v0_2/>
+  warn_deprecated(
+INFO:     Started server process [13690]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+2024-07-12 17:52:18.480 Port 8505 is already in use
+ERROR:    ASGI callable returned without starting response.
+INFO:     127.0.0.1:51691 - "POST /ask_question HTTP/1.1" 500 Internal Server Error
+  Stopping...
+/opt/homebrew/anaconda3/envs/grainger_recommendations_chatbot-2/lib/python3.11/site-packages/langchain/_api/module_import.py:92: LangChainDeprecationWarning: Importing BedrockEmbeddings from langchain.embeddings is deprecated. Please replace deprecated imports:
+
+>> from langchain.embeddings import BedrockEmbeddings
+
+with new imports of:
+
+>> from langchain_community.embeddings import BedrockEmbeddings
+You can use the langchain cli to **automatically** upgrade many imports. Please see documentation here <https://python.langchain.com/v0.2/docs/versions/v0_2/>
+  warn_deprecated(
+/opt/homebrew/anaconda3/envs/grainger_recommendations_chatbot-2/lib/python3.11/site-packages/langchain/_api/module_import.py:92: LangChainDeprecationWarning: Importing FAISS from langchain.vectorstores is deprecated. Please replace deprecated imports:
+
+>> from langchain.vectorstores import FAISS
+
+with new imports of:
+
+>> from langchain_community.vectorstores import FAISS
+You can use the langchain cli to **automatically** upgrade many imports. Please see documentation here <https://python.langchain.com/v0.2/docs/versions/v0_2/>
+  warn_deprecated(
+/opt/homebrew/anaconda3/envs/grainger_recommendations_chatbot-2/lib/python3.11/site-packages/langchain/_api/module_import.py:92: LangChainDeprecationWarning: Importing Bedrock from langchain.llms is deprecated. Please replace deprecated imports:
+
+>> from langchain.llms import Bedrock
+
+with new imports of:
+
+>> from langchain_community.llms import Bedrock
+You can use the langchain cli to **automatically** upgrade many imports. Please see documentation here <https://python.langchain.com/v0.2/docs/versions/v0_2/>
+  warn_deprecated(
+INFO:     Started server process [13990]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+ERROR:    [Errno 48] error while attempting to bind on address ('0.0.0.0', 8000): address already in use
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+  Stopping...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [13690]
+/opt/homebrew/anaconda3/envs/grainger_recommendations_chatbot-2/lib/python3.11/site-packages/langchain/_api/module_import.py:92: LangChainDeprecationWarning: Importing BedrockEmbeddings from langchain.embeddings is deprecated. Please replace deprecated imports:
+
+>> from langchain.embeddings import BedrockEmbeddings
+
+with new imports of:
+
+>> from langchain_community.embeddings import BedrockEmbeddings
+You can use the langchain cli to **automatically** upgrade many imports. Please see documentation here <https://python.langchain.com/v0.2/docs/versions/v0_2/>
+  warn_deprecated(
+/opt/homebrew/anaconda3/envs/grainger_recommendations_chatbot-2/lib/python3.11/site-packages/langchain/_api/module_import.py:92: LangChainDeprecationWarning: Importing FAISS from langchain.vectorstores is deprecated. Please replace deprecated imports:
+
+>> from langchain.vectorstores import FAISS
+
+with new imports of:
+
+>> from langchain_community.vectorstores import FAISS
+You can use the langchain cli to **automatically** upgrade many imports. Please see documentation here <https://python.langchain.com/v0.2/docs/versions/v0_2/>
+  warn_deprecated(
+/opt/homebrew/anaconda3/envs/grainger_recommendations_chatbot-2/lib/python3.11/site-packages/langchain/_api/module_import.py:92: LangChainDeprecationWarning: Importing Bedrock from langchain.llms is deprecated. Please replace deprecated imports:
+
+>> from langchain.llms import Bedrock
+
+with new imports of:
+
+>> from langchain_community.llms import Bedrock
+You can use the langchain cli to **automatically** upgrade many imports. Please see documentation here <https://python.langchain.com/v0.2/docs/versions/v0_2/>
+  warn_deprecated(
+INFO:     Started server process [14048]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+
+  You can now view your Streamlit app in your browser.
+
+  Local URL: http://localhost:8505
+  Network URL: http://10.52.150.95:8505
+
+  For better performance, install the Watchdog module:
+
+  $ xcode-select --install
+  $ pip install watchdog
+            
+ERROR:    ASGI callable returned without starting response.
+INFO:     127.0.0.1:52140 - "POST /ask_question HTTP/1.1" 500 Internal Server Error
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [14048]
+  Stopping...
+/opt/homebrew/anaconda3/envs/grainger_recommendations_chatbot-2/lib/python3.11/site-packages/langchain/_api/module_import.py:92: LangChainDeprecationWarning: Importing BedrockEmbeddings from langchain.embeddings is deprecated. Please replace deprecated imports:
+
+>> from langchain.embeddings import BedrockEmbeddings
+
+with new imports of:
+
+>> from langchain_community.embeddings import BedrockEmbeddings
+You can use the langchain cli to **automatically** upgrade many imports. Please see documentation here <https://python.langchain.com/v0.2/docs/versions/v0_2/>
+  warn_deprecated(
+/opt/homebrew/anaconda3/envs/grainger_recommendations_chatbot-2/lib/python3.11/site-packages/langchain/_api/module_import.py:92: LangChainDeprecationWarning: Importing FAISS from langchain.vectorstores is deprecated. Please replace deprecated imports:
+
+>> from langchain.vectorstores import FAISS
+
+with new imports of:
+
+>> from langchain_community.vectorstores import FAISS
+You can use the langchain cli to **automatically** upgrade many imports. Please see documentation here <https://python.langchain.com/v0.2/docs/versions/v0_2/>
+  warn_deprecated(
+/opt/homebrew/anaconda3/envs/grainger_recommendations_chatbot-2/lib/python3.11/site-packages/langchain/_api/module_import.py:92: LangChainDeprecationWarning: Importing Bedrock from langchain.llms is deprecated. Please replace deprecated imports:
+
+>> from langchain.llms import Bedrock
+
+with new imports of:
+
+>> from langchain_community.llms import Bedrock
+You can use the langchain cli to **automatically** upgrade many imports. Please see documentation here <https://python.langchain.com/v0.2/docs/versions/v0_2/>
+  warn_deprecated(
+INFO:     Started server process [14349]
+INFO:     Waiting for application startup.
+2024-07-12 18:01:55,397 - INFO - Getting bedrock client...
+2024-07-12 18:01:55,402 - INFO - Found credentials in shared credentials file: ~/.aws/credentials
+2024-07-12 18:01:55,675 - INFO - Initializing Bedrock...
+2024-07-12 18:01:55,680 - INFO - Found credentials in shared credentials file: ~/.aws/credentials
+/opt/homebrew/anaconda3/envs/grainger_recommendations_chatbot-2/lib/python3.11/site-packages/langchain_core/_api/deprecation.py:139: LangChainDeprecationWarning: The class `Bedrock` was deprecated in LangChain 0.1.0 and will be removed in 0.2.0. Use BedrockLLM instead.
+  warn_deprecated(
+2024-07-12 18:01:55,918 - INFO - Initializing Titan Embeddings Model...
+2024-07-12 18:01:55,918 - INFO - Titan Embeddings Model initialized.
+2024-07-12 18:01:55,918 - INFO - Attempting to load file from: /Users/xnxn040/PycharmProjects/grainger_recommendations_chatbot/modules/web_extraction_tools/processed/grainger_products.parquet
+2024-07-12 18:01:55,941 - INFO - Attempting to load file from: /Users/xnxn040/PycharmProjects/grainger_recommendations_chatbot/modules/vector_index/data_source/documents.pkl
+2024-07-12 18:01:55,942 - INFO - Serialized documents file /Users/xnxn040/PycharmProjects/grainger_recommendations_chatbot/modules/vector_index/data_source/documents.pkl already exists. Loading...
+/opt/homebrew/anaconda3/envs/grainger_recommendations_chatbot-2/lib/python3.11/site-packages/langchain/_api/module_import.py:92: LangChainDeprecationWarning: Importing BedrockEmbeddings from langchain.embeddings is deprecated. Please replace deprecated imports:
+
+>> from langchain.embeddings import BedrockEmbeddings
+
+with new imports of:
+
+>> from langchain_community.embeddings import BedrockEmbeddings
+You can use the langchain cli to **automatically** upgrade many imports. Please see documentation here <https://python.langchain.com/v0.2/docs/versions/v0_2/>
+  warn_deprecated(
+/opt/homebrew/anaconda3/envs/grainger_recommendations_chatbot-2/lib/python3.11/site-packages/langchain/_api/module_import.py:92: LangChainDeprecationWarning: Importing FAISS from langchain.vectorstores is deprecated. Please replace deprecated imports:
+
+>> from langchain.vectorstores import FAISS
+
+with new imports of:
+
+>> from langchain_community.vectorstores import FAISS
+You can use the langchain cli to **automatically** upgrade many imports. Please see documentation here <https://python.langchain.com/v0.2/docs/versions/v0_2/>
+  warn_deprecated(
+/opt/homebrew/anaconda3/envs/grainger_recommendations_chatbot-2/lib/python3.11/site-packages/langchain/_api/module_import.py:92: LangChainDeprecationWarning: Importing Bedrock from langchain.llms is deprecated. Please replace deprecated imports:
+
+>> from langchain.llms import Bedrock
+
+with new imports of:
+
+>> from langchain_community.llms import Bedrock
+You can use the langchain cli to **automatically** upgrade many imports. Please see documentation here <https://python.langchain.com/v0.2/docs/versions/v0_2/>
+  warn_deprecated(
+2024-07-12 18:01:55,951 - INFO - Documents file loaded successfully!
+2024-07-12 18:01:55,951 - INFO - Structured documents created:
+2024-07-12 18:01:55,951 - INFO - Document 1 of 3993:
+2024-07-12 18:01:55,951 - INFO - 52WX73 Handheld Tape Dispenser: Light, For 3 in Max Tape Wd, For 3 in Tape Core Dia, Pistol APPROVED VENDOR <p>Handheld packaging tape dispensers hold a roll of self-adhesive packaging tape and have a
+2024-07-12 18:01:55,951 - INFO - Document 2 of 3993:
+2024-07-12 18:01:55,951 - INFO - 8ZF81 Humidity Sponge Indicator: 3 in Wd, 3 in Lg, 476 cu in Area Protected, Bag, 40 Bags per Pack, 40 PK CONTROL COMPANY <p>Tyvek-brand desiccant bags are tear-proof and dust-free and meet FDA specif
+2024-07-12 18:01:55,951 - INFO - Document 3 of 3993:
+2024-07-12 18:01:55,951 - INFO - 8X316 TIMBERLAND PRO Work Boot: W, 11 1/2, 6 in Work Boot Footwear, Men's, Wheat, 1 PR TIMBERLAND PRO 
+2024-07-12 18:01:55,951 - INFO - Document 4 of 3993:
+2024-07-12 18:01:55,951 - INFO - 31XL69 TPI CORP. Electric Wall & Ceiling Unit Heater: 208/240V AC, 1-phase, 11 in x 10-5/8 in x 9-5/8 in TPI CORP. <p>Standard suspended electric wall and ceiling unit heaters hang from a bracket or t
+2024-07-12 18:01:55,951 - INFO - Document 5 of 3993:
+2024-07-12 18:01:55,951 - INFO - 6FHC0 Traffic Cone: Day or Low Speed Roadway (40 MPH or Less), Non-Reflective, Black Base, 28 in Cone Ht APPROVED VENDOR <p>These traffic cones meet federal MUTCD (Manual on Uniform Traffic Control De
+2024-07-12 18:01:55,955 - INFO - Serialized index file /Users/xnxn040/PycharmProjects/grainger_recommendations_chatbot/modules/vector_index/vector_index.pkl
+2024-07-12 18:01:55,955 - INFO - Serialized file /Users/xnxn040/PycharmProjects/grainger_recommendations_chatbot/modules/vector_index/vector_index.pkl already exists. Loading...
+2024-07-12 18:01:55,960 - INFO - Loading faiss.
+2024-07-12 18:01:56,017 - INFO - Successfully loaded faiss.
+2024-07-12 18:01:56,034 - INFO - FAISS vector store loaded from pickle file.
+2024-07-12 18:01:56,036 - INFO - ====== WebDriver manager ======
+2024-07-12 18:01:56,238 - INFO - Get LATEST chromedriver version for google-chrome
+2024-07-12 18:01:56,332 - INFO - Get LATEST chromedriver version for google-chrome
+2024-07-12 18:01:56,382 - INFO - Driver [/Users/xnxn040/.wdm/drivers/chromedriver/mac64/126.0.6478.126/chromedriver-mac-arm64/chromedriver] found in cache
+2024-07-12 18:01:56,959 - INFO - Startup complete.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+
+  You can now view your Streamlit app in your browser.
+
+  Local URL: http://localhost:8505
+  Network URL: http://10.52.150.95:8505
+
+  For better performance, install the Watchdog module:
+
+  $ xcode-select --install
+  $ pip install watchdog
+            
+/opt/homebrew/anaconda3/envs/grainger_recommendations_chatbot-2/lib/python3.11/site-packages/langchain_core/_api/deprecation.py:139: LangChainDeprecationWarning: The method `BaseLLM.__call__` was deprecated in langchain-core 0.1.7 and will be removed in 0.3.0. Use invoke instead.
+  warn_deprecated(
+2024-07-12 18:02:38,358 - INFO - Chat History passed to processor: []
+/opt/homebrew/anaconda3/envs/grainger_recommendations_chatbot-2/lib/python3.11/site-packages/langchain_core/_api/deprecation.py:139: LangChainDeprecationWarning: The method `Chain.run` was deprecated in langchain 0.1.0 and will be removed in 0.3.0. Use invoke instead.
+  warn_deprecated(
+2024-07-12 18:02:45,607 - ERROR - Error processing chat question: 'dfaa4fb6-f90c-4ac1-af4f-1d281ad6e866'
+2024-07-12 18:02:45,607 - ERROR - Error in /ask_question: 'dfaa4fb6-f90c-4ac1-af4f-1d281ad6e866'
+Create new client
+  Using region: None
+  Using role: arn:aws:iam::905418421511:role/service-role/AmazonSageMaker-ExecutionRole-20240623T114364 ... successful!
+boto3 Bedrock client successfully created!
+bedrock(https://bedrock.us-east-1.amazonaws.com)
+Create new client
+  Using region: None
+  Using role: arn:aws:iam::905418421511:role/service-role/AmazonSageMaker-ExecutionRole-20240623T114364 ... successful!
+boto3 Bedrock client successfully created!
+bedrock-runtime(https://bedrock-runtime.us-east-1.amazonaws.com)
+Time for extract_customer_attributes: 2.0303239822387695
+Time for split_process_and_message_from_response: 0.00048089027404785156
+INFO:     127.0.0.1:52522 - "POST /ask_question HTTP/1.1" 500 Internal Server Error
+
+  You can now view your Streamlit app in your browser.
+
+  Local URL: http://localhost:8505
+  Network URL: http://10.52.150.95:8505
+
+  For better performance, install the Watchdog module:
+
+  $ xcode-select --install
+  $ pip install watchdog
+            
+/opt/homebrew/anaconda3/envs/grainger_recommendations_chatbot-2/lib/python3.11/site-packages/langchain/_api/module_import.py:92: LangChainDeprecationWarning: Importing BedrockEmbeddings from langchain.embeddings is deprecated. Please replace deprecated imports:
+
+>> from langchain.embeddings import BedrockEmbeddings
+
+with new imports of:
+
+>> from langchain_community.embeddings import BedrockEmbeddings
+You can use the langchain cli to **automatically** upgrade many imports. Please see documentation here <https://python.langchain.com/v0.2/docs/versions/v0_2/>
+  warn_deprecated(
+/opt/homebrew/anaconda3/envs/grainger_recommendations_chatbot-2/lib/python3.11/site-packages/langchain/_api/module_import.py:92: LangChainDeprecationWarning: Importing FAISS from langchain.vectorstores is deprecated. Please replace deprecated imports:
+
+>> from langchain.vectorstores import FAISS
+
+with new imports of:
+
+>> from langchain_community.vectorstores import FAISS
+You can use the langchain cli to **automatically** upgrade many imports. Please see documentation here <https://python.langchain.com/v0.2/docs/versions/v0_2/>
+  warn_deprecated(
+/opt/homebrew/anaconda3/envs/grainger_recommendations_chatbot-2/lib/python3.11/site-packages/langchain/_api/module_import.py:92: LangChainDeprecationWarning: Importing Bedrock from langchain.llms is deprecated. Please replace deprecated imports:
+
+>> from langchain.llms import Bedrock
+
+with new imports of:
+
+>> from langchain_community.llms import Bedrock
+You can use the langchain cli to **automatically** upgrade many imports. Please see documentation here <https://python.langchain.com/v0.2/docs/versions/v0_2/>
+  warn_deprecated(
+INFO:     Started server process [14869]
+INFO:     Waiting for application startup.
+2024-07-12 18:09:38,805 - INFO - Getting bedrock client...
+2024-07-12 18:09:38,810 - INFO - Found credentials in shared credentials file: ~/.aws/credentials
+2024-07-12 18:09:39,090 - INFO - Initializing Bedrock...
+2024-07-12 18:09:39,095 - INFO - Found credentials in shared credentials file: ~/.aws/credentials
+/opt/homebrew/anaconda3/envs/grainger_recommendations_chatbot-2/lib/python3.11/site-packages/langchain_core/_api/deprecation.py:139: LangChainDeprecationWarning: The class `Bedrock` was deprecated in LangChain 0.1.0 and will be removed in 0.2.0. Use BedrockLLM instead.
+  warn_deprecated(
+2024-07-12 18:09:39,348 - INFO - Initializing Titan Embeddings Model...
+2024-07-12 18:09:39,348 - INFO - Titan Embeddings Model initialized.
+2024-07-12 18:09:39,348 - INFO - Attempting to load file from: /Users/xnxn040/PycharmProjects/grainger_recommendations_chatbot/modules/web_extraction_tools/processed/grainger_products.parquet
+2024-07-12 18:09:39,383 - INFO - Attempting to load file from: /Users/xnxn040/PycharmProjects/grainger_recommendations_chatbot/modules/vector_index/data_source/documents.pkl
+2024-07-12 18:09:39,383 - INFO - Serialized documents file /Users/xnxn040/PycharmProjects/grainger_recommendations_chatbot/modules/vector_index/data_source/documents.pkl already exists. Loading...
+/opt/homebrew/anaconda3/envs/grainger_recommendations_chatbot-2/lib/python3.11/site-packages/langchain/_api/module_import.py:92: LangChainDeprecationWarning: Importing BedrockEmbeddings from langchain.embeddings is deprecated. Please replace deprecated imports:
+
+>> from langchain.embeddings import BedrockEmbeddings
+
+with new imports of:
+
+>> from langchain_community.embeddings import BedrockEmbeddings
+You can use the langchain cli to **automatically** upgrade many imports. Please see documentation here <https://python.langchain.com/v0.2/docs/versions/v0_2/>
+  warn_deprecated(
+/opt/homebrew/anaconda3/envs/grainger_recommendations_chatbot-2/lib/python3.11/site-packages/langchain/_api/module_import.py:92: LangChainDeprecationWarning: Importing FAISS from langchain.vectorstores is deprecated. Please replace deprecated imports:
+
+>> from langchain.vectorstores import FAISS
+
+with new imports of:
+
+>> from langchain_community.vectorstores import FAISS
+You can use the langchain cli to **automatically** upgrade many imports. Please see documentation here <https://python.langchain.com/v0.2/docs/versions/v0_2/>
+  warn_deprecated(
+/opt/homebrew/anaconda3/envs/grainger_recommendations_chatbot-2/lib/python3.11/site-packages/langchain/_api/module_import.py:92: LangChainDeprecationWarning: Importing Bedrock from langchain.llms is deprecated. Please replace deprecated imports:
+
+>> from langchain.llms import Bedrock
+
+with new imports of:
+
+>> from langchain_community.llms import Bedrock
+You can use the langchain cli to **automatically** upgrade many imports. Please see documentation here <https://python.langchain.com/v0.2/docs/versions/v0_2/>
+  warn_deprecated(
+2024-07-12 18:09:39,392 - INFO - Documents file loaded successfully!
+2024-07-12 18:09:39,392 - INFO - Structured documents created:
+2024-07-12 18:09:39,392 - INFO - Document 1 of 3993:
+2024-07-12 18:09:39,392 - INFO - 52WX73 Handheld Tape Dispenser: Light, For 3 in Max Tape Wd, For 3 in Tape Core Dia, Pistol APPROVED VENDOR <p>Handheld packaging tape dispensers hold a roll of self-adhesive packaging tape and have a
+2024-07-12 18:09:39,392 - INFO - Document 2 of 3993:
+2024-07-12 18:09:39,392 - INFO - 8ZF81 Humidity Sponge Indicator: 3 in Wd, 3 in Lg, 476 cu in Area Protected, Bag, 40 Bags per Pack, 40 PK CONTROL COMPANY <p>Tyvek-brand desiccant bags are tear-proof and dust-free and meet FDA specif
+2024-07-12 18:09:39,392 - INFO - Document 3 of 3993:
+2024-07-12 18:09:39,392 - INFO - 8X316 TIMBERLAND PRO Work Boot: W, 11 1/2, 6 in Work Boot Footwear, Men's, Wheat, 1 PR TIMBERLAND PRO 
+2024-07-12 18:09:39,392 - INFO - Document 4 of 3993:
+2024-07-12 18:09:39,392 - INFO - 31XL69 TPI CORP. Electric Wall & Ceiling Unit Heater: 208/240V AC, 1-phase, 11 in x 10-5/8 in x 9-5/8 in TPI CORP. <p>Standard suspended electric wall and ceiling unit heaters hang from a bracket or t
+2024-07-12 18:09:39,392 - INFO - Document 5 of 3993:
+2024-07-12 18:09:39,392 - INFO - 6FHC0 Traffic Cone: Day or Low Speed Roadway (40 MPH or Less), Non-Reflective, Black Base, 28 in Cone Ht APPROVED VENDOR <p>These traffic cones meet federal MUTCD (Manual on Uniform Traffic Control De
+2024-07-12 18:09:39,397 - INFO - Serialized index file /Users/xnxn040/PycharmProjects/grainger_recommendations_chatbot/modules/vector_index/vector_index.pkl
+2024-07-12 18:09:39,397 - INFO - Serialized file /Users/xnxn040/PycharmProjects/grainger_recommendations_chatbot/modules/vector_index/vector_index.pkl already exists. Loading...
+2024-07-12 18:09:39,402 - INFO - Loading faiss.
+2024-07-12 18:09:39,455 - INFO - Successfully loaded faiss.
+2024-07-12 18:09:39,470 - INFO - FAISS vector store loaded from pickle file.
+2024-07-12 18:09:39,472 - INFO - ====== WebDriver manager ======
+2024-07-12 18:09:39,676 - INFO - Get LATEST chromedriver version for google-chrome
+2024-07-12 18:09:39,727 - INFO - Get LATEST chromedriver version for google-chrome
+2024-07-12 18:09:39,776 - INFO - Driver [/Users/xnxn040/.wdm/drivers/chromedriver/mac64/126.0.6478.126/chromedriver-mac-arm64/chromedriver] found in cache
+2024-07-12 18:09:40,500 - INFO - Startup complete.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+/opt/homebrew/anaconda3/envs/grainger_recommendations_chatbot-2/lib/python3.11/site-packages/langchain_core/_api/deprecation.py:139: LangChainDeprecationWarning: The method `BaseLLM.__call__` was deprecated in langchain-core 0.1.7 and will be removed in 0.3.0. Use invoke instead.
+  warn_deprecated(
+2024-07-12 18:09:56,837 - INFO - Chat History passed to processor: []
+/opt/homebrew/anaconda3/envs/grainger_recommendations_chatbot-2/lib/python3.11/site-packages/langchain_core/_api/deprecation.py:139: LangChainDeprecationWarning: The method `Chain.run` was deprecated in langchain 0.1.0 and will be removed in 0.3.0. Use invoke instead.
+  warn_deprecated(
+2024-07-12 18:10:03,043 - ERROR - Error processing chat question: '147b9d06-300a-4c1a-9f26-902d5360f963'
+2024-07-12 18:10:03,044 - ERROR - Error in /ask_question: '147b9d06-300a-4c1a-9f26-902d5360f963'
+Create new client
+  Using region: None
+  Using role: arn:aws:iam::905418421511:role/service-role/AmazonSageMaker-ExecutionRole-20240623T114364 ... successful!
+boto3 Bedrock client successfully created!
+bedrock(https://bedrock.us-east-1.amazonaws.com)
+Create new client
+  Using region: None
+  Using role: arn:aws:iam::905418421511:role/service-role/AmazonSageMaker-ExecutionRole-20240623T114364 ... successful!
+boto3 Bedrock client successfully created!
+bedrock-runtime(https://bedrock-runtime.us-east-1.amazonaws.com)
+Time for extract_customer_attributes: 1.9398491382598877
+Time for split_process_and_message_from_response: 0.0003902912139892578
+INFO:     127.0.0.1:53067 - "POST /ask_question HTTP/1.1" 500 Internal Server Error
+
+  You can now view your Streamlit app in your browser.
+
+  Local URL: http://localhost:8505
+  Network URL: http://10.52.150.95:8505
+
+  For better performance, install the Watchdog module:
+
+  $ xcode-select --install
+  $ pip install watchdog
+            
+/opt/homebrew/anaconda3/envs/grainger_recommendations_chatbot-2/lib/python3.11/site-packages/langchain/_api/module_import.py:92: LangChainDeprecationWarning: Importing BedrockEmbeddings from langchain.embeddings is deprecated. Please replace deprecated imports:
+
+>> from langchain.embeddings import BedrockEmbeddings
+
+with new imports of:
+
+>> from langchain_community.embeddings import BedrockEmbeddings
+You can use the langchain cli to **automatically** upgrade many imports. Please see documentation here <https://python.langchain.com/v0.2/docs/versions/v0_2/>
+  warn_deprecated(
+/opt/homebrew/anaconda3/envs/grainger_recommendations_chatbot-2/lib/python3.11/site-packages/langchain/_api/module_import.py:92: LangChainDeprecationWarning: Importing FAISS from langchain.vectorstores is deprecated. Please replace deprecated imports:
+
+>> from langchain.vectorstores import FAISS
+
+with new imports of:
+
+>> from langchain_community.vectorstores import FAISS
+You can use the langchain cli to **automatically** upgrade many imports. Please see documentation here <https://python.langchain.com/v0.2/docs/versions/v0_2/>
+  warn_deprecated(
+/opt/homebrew/anaconda3/envs/grainger_recommendations_chatbot-2/lib/python3.11/site-packages/langchain/_api/module_import.py:92: LangChainDeprecationWarning: Importing Bedrock from langchain.llms is deprecated. Please replace deprecated imports:
+
+>> from langchain.llms import Bedrock
+
+with new imports of:
+
+>> from langchain_community.llms import Bedrock
+You can use the langchain cli to **automatically** upgrade many imports. Please see documentation here <https://python.langchain.com/v0.2/docs/versions/v0_2/>
+  warn_deprecated(
+INFO:     Started server process [15373]
+INFO:     Waiting for application startup.
+2024-07-12 18:21:05,250 - INFO - Getting bedrock client...
+2024-07-12 18:21:05,256 - INFO - Found credentials in shared credentials file: ~/.aws/credentials
+2024-07-12 18:21:05,533 - INFO - Initializing Bedrock...
+2024-07-12 18:21:05,538 - INFO - Found credentials in shared credentials file: ~/.aws/credentials
+/opt/homebrew/anaconda3/envs/grainger_recommendations_chatbot-2/lib/python3.11/site-packages/langchain_core/_api/deprecation.py:139: LangChainDeprecationWarning: The class `Bedrock` was deprecated in LangChain 0.1.0 and will be removed in 0.2.0. Use BedrockLLM instead.
+  warn_deprecated(
+2024-07-12 18:21:05,770 - INFO - Initializing Titan Embeddings Model...
+2024-07-12 18:21:05,770 - INFO - Titan Embeddings Model initialized.
+2024-07-12 18:21:05,771 - INFO - Attempting to load file from: /Users/xnxn040/PycharmProjects/grainger_recommendations_chatbot/modules/web_extraction_tools/processed/grainger_products.parquet
+2024-07-12 18:21:05,811 - INFO - Attempting to load file from: /Users/xnxn040/PycharmProjects/grainger_recommendations_chatbot/modules/vector_index/data_source/documents.pkl
+2024-07-12 18:21:05,811 - INFO - Serialized documents file /Users/xnxn040/PycharmProjects/grainger_recommendations_chatbot/modules/vector_index/data_source/documents.pkl already exists. Loading...
+/opt/homebrew/anaconda3/envs/grainger_recommendations_chatbot-2/lib/python3.11/site-packages/langchain/_api/module_import.py:92: LangChainDeprecationWarning: Importing BedrockEmbeddings from langchain.embeddings is deprecated. Please replace deprecated imports:
+
+>> from langchain.embeddings import BedrockEmbeddings
+
+with new imports of:
+
+>> from langchain_community.embeddings import BedrockEmbeddings
+You can use the langchain cli to **automatically** upgrade many imports. Please see documentation here <https://python.langchain.com/v0.2/docs/versions/v0_2/>
+  warn_deprecated(
+/opt/homebrew/anaconda3/envs/grainger_recommendations_chatbot-2/lib/python3.11/site-packages/langchain/_api/module_import.py:92: LangChainDeprecationWarning: Importing FAISS from langchain.vectorstores is deprecated. Please replace deprecated imports:
+
+>> from langchain.vectorstores import FAISS
+
+with new imports of:
+
+>> from langchain_community.vectorstores import FAISS
+You can use the langchain cli to **automatically** upgrade many imports. Please see documentation here <https://python.langchain.com/v0.2/docs/versions/v0_2/>
+  warn_deprecated(
+/opt/homebrew/anaconda3/envs/grainger_recommendations_chatbot-2/lib/python3.11/site-packages/langchain/_api/module_import.py:92: LangChainDeprecationWarning: Importing Bedrock from langchain.llms is deprecated. Please replace deprecated imports:
+
+>> from langchain.llms import Bedrock
+
+with new imports of:
+
+>> from langchain_community.llms import Bedrock
+You can use the langchain cli to **automatically** upgrade many imports. Please see documentation here <https://python.langchain.com/v0.2/docs/versions/v0_2/>
+  warn_deprecated(
+2024-07-12 18:21:05,824 - INFO - Documents file loaded successfully!
+2024-07-12 18:21:05,824 - INFO - Structured documents created:
+2024-07-12 18:21:05,824 - INFO - Document 1 of 3993:
+2024-07-12 18:21:05,824 - INFO - 52WX73 Handheld Tape Dispenser: Light, For 3 in Max Tape Wd, For 3 in Tape Core Dia, Pistol APPROVED VENDOR <p>Handheld packaging tape dispensers hold a roll of self-adhesive packaging tape and have a
+2024-07-12 18:21:05,824 - INFO - Document 2 of 3993:
+2024-07-12 18:21:05,824 - INFO - 8ZF81 Humidity Sponge Indicator: 3 in Wd, 3 in Lg, 476 cu in Area Protected, Bag, 40 Bags per Pack, 40 PK CONTROL COMPANY <p>Tyvek-brand desiccant bags are tear-proof and dust-free and meet FDA specif
+2024-07-12 18:21:05,824 - INFO - Document 3 of 3993:
+2024-07-12 18:21:05,824 - INFO - 8X316 TIMBERLAND PRO Work Boot: W, 11 1/2, 6 in Work Boot Footwear, Men's, Wheat, 1 PR TIMBERLAND PRO 
+2024-07-12 18:21:05,824 - INFO - Document 4 of 3993:
+2024-07-12 18:21:05,824 - INFO - 31XL69 TPI CORP. Electric Wall & Ceiling Unit Heater: 208/240V AC, 1-phase, 11 in x 10-5/8 in x 9-5/8 in TPI CORP. <p>Standard suspended electric wall and ceiling unit heaters hang from a bracket or t
+2024-07-12 18:21:05,824 - INFO - Document 5 of 3993:
+2024-07-12 18:21:05,824 - INFO - 6FHC0 Traffic Cone: Day or Low Speed Roadway (40 MPH or Less), Non-Reflective, Black Base, 28 in Cone Ht APPROVED VENDOR <p>These traffic cones meet federal MUTCD (Manual on Uniform Traffic Control De
+2024-07-12 18:21:05,829 - INFO - Serialized index file /Users/xnxn040/PycharmProjects/grainger_recommendations_chatbot/modules/vector_index/vector_index.pkl
+2024-07-12 18:21:05,829 - INFO - Serialized file /Users/xnxn040/PycharmProjects/grainger_recommendations_chatbot/modules/vector_index/vector_index.pkl already exists. Loading...
+2024-07-12 18:21:05,833 - INFO - Loading faiss.
+2024-07-12 18:21:05,899 - INFO - Successfully loaded faiss.
+2024-07-12 18:21:05,917 - INFO - FAISS vector store loaded from pickle file.
+2024-07-12 18:21:05,921 - INFO - ====== WebDriver manager ======
+2024-07-12 18:21:06,144 - INFO - Get LATEST chromedriver version for google-chrome
+2024-07-12 18:21:06,198 - INFO - Get LATEST chromedriver version for google-chrome
+2024-07-12 18:21:06,248 - INFO - Driver [/Users/xnxn040/.wdm/drivers/chromedriver/mac64/126.0.6478.126/chromedriver-mac-arm64/chromedriver] found in cache
+2024-07-12 18:21:06,750 - INFO - Startup complete.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+2024-07-12 18:21:35,045 - INFO - Processing question: I NEED A HAT FOR SUN PROTECTION
+/opt/homebrew/anaconda3/envs/grainger_recommendations_chatbot-2/lib/python3.11/site-packages/langchain_core/_api/deprecation.py:139: LangChainDeprecationWarning: The method `BaseLLM.__call__` was deprecated in langchain-core 0.1.7 and will be removed in 0.3.0. Use invoke instead.
+  warn_deprecated(
+2024-07-12 18:21:37,066 - INFO - Chat History passed to processor: []
+/opt/homebrew/anaconda3/envs/grainger_recommendations_chatbot-2/lib/python3.11/site-packages/langchain_core/_api/deprecation.py:139: LangChainDeprecationWarning: The method `Chain.run` was deprecated in langchain 0.1.0 and will be removed in 0.3.0. Use invoke instead.
+  warn_deprecated(
+2024-07-12 18:21:45,735 - ERROR - Error processing chat question: object tuple can't be used in 'await' expression
+2024-07-12 18:21:45,736 - ERROR - Traceback (most recent call last):
+  File "/Users/xnxn040/PycharmProjects/grainger_recommendations_chatbot/modules/fast_api_main.py", line 121, in process_chat_question
+    message, response_json, customer_attributes_retrieved, time_to_get_attributes = await process_chat_question_with_customer_attribute_identifier(
+                                                                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object tuple can't be used in 'await' expression
+
+2024-07-12 18:21:45,736 - ERROR - Error in /ask_question: object tuple can't be used in 'await' expression
+2024-07-12 18:21:45,737 - ERROR - Traceback (most recent call last):
+  File "/Users/xnxn040/PycharmProjects/grainger_recommendations_chatbot/modules/fast_api_main.py", line 88, in ask_question
+    message, response_json, customer_attributes_retrieved, time_to_get_attributes = await process_chat_question(
+                                                                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/xnxn040/PycharmProjects/grainger_recommendations_chatbot/modules/fast_api_main.py", line 121, in process_chat_question
+    message, response_json, customer_attributes_retrieved, time_to_get_attributes = await process_chat_question_with_customer_attribute_identifier(
+                                                                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object tuple can't be used in 'await' expression
+
+Create new client
+  Using region: None
+  Using role: arn:aws:iam::905418421511:role/service-role/AmazonSageMaker-ExecutionRole-20240623T114364 ... successful!
+boto3 Bedrock client successfully created!
+bedrock(https://bedrock.us-east-1.amazonaws.com)
+Create new client
+  Using region: None
+  Using role: arn:aws:iam::905418421511:role/service-role/AmazonSageMaker-ExecutionRole-20240623T114364 ... successful!
+boto3 Bedrock client successfully created!
+bedrock-runtime(https://bedrock-runtime.us-east-1.amazonaws.com)
+Time for extract_customer_attributes: 2.019251823425293
+Time for split_process_and_message_from_response: 0.00043082237243652344
+INFO:     127.0.0.1:53890 - "POST /ask_question HTTP/1.1" 500 Internal Server Error
+
+  You can now view your Streamlit app in your browser.
+
+  Local URL: http://localhost:8505
+  Network URL: http://10.52.150.95:8505
+
+  For better performance, install the Watchdog module:
+
+  $ xcode-select --install
+  $ pip install watchdog
+            
+/opt/homebrew/anaconda3/envs/grainger_recommendations_chatbot-2/lib/python3.11/site-packages/langchain/_api/module_import.py:92: LangChainDeprecationWarning: Importing BedrockEmbeddings from langchain.embeddings is deprecated. Please replace deprecated imports:
+
+>> from langchain.embeddings import BedrockEmbeddings
+
+with new imports of:
+
+>> from langchain_community.embeddings import BedrockEmbeddings
+You can use the langchain cli to **automatically** upgrade many imports. Please see documentation here <https://python.langchain.com/v0.2/docs/versions/v0_2/>
+  warn_deprecated(
+/opt/homebrew/anaconda3/envs/grainger_recommendations_chatbot-2/lib/python3.11/site-packages/langchain/_api/module_import.py:92: LangChainDeprecationWarning: Importing FAISS from langchain.vectorstores is deprecated. Please replace deprecated imports:
+
+>> from langchain.vectorstores import FAISS
+
+with new imports of:
+
+>> from langchain_community.vectorstores import FAISS
+You can use the langchain cli to **automatically** upgrade many imports. Please see documentation here <https://python.langchain.com/v0.2/docs/versions/v0_2/>
+  warn_deprecated(
+/opt/homebrew/anaconda3/envs/grainger_recommendations_chatbot-2/lib/python3.11/site-packages/langchain/_api/module_import.py:92: LangChainDeprecationWarning: Importing Bedrock from langchain.llms is deprecated. Please replace deprecated imports:
+
+>> from langchain.llms import Bedrock
+
+with new imports of:
+
+>> from langchain_community.llms import Bedrock
+You can use the langchain cli to **automatically** upgrade many imports. Please see documentation here <https://python.langchain.com/v0.2/docs/versions/v0_2/>
+  warn_deprecated(
+INFO:     Started server process [15512]
+INFO:     Waiting for application startup.
+2024-07-12 18:23:53,149 - INFO - Getting bedrock client...
+2024-07-12 18:23:53,159 - INFO - Found credentials in shared credentials file: ~/.aws/credentials
+2024-07-12 18:23:53,598 - INFO - Initializing Bedrock...
+2024-07-12 18:23:53,603 - INFO - Found credentials in shared credentials file: ~/.aws/credentials
+/opt/homebrew/anaconda3/envs/grainger_recommendations_chatbot-2/lib/python3.11/site-packages/langchain_core/_api/deprecation.py:139: LangChainDeprecationWarning: The class `Bedrock` was deprecated in LangChain 0.1.0 and will be removed in 0.2.0. Use BedrockLLM instead.
+  warn_deprecated(
+2024-07-12 18:23:53,847 - INFO - Initializing Titan Embeddings Model...
+2024-07-12 18:23:53,847 - INFO - Titan Embeddings Model initialized.
+2024-07-12 18:23:53,847 - INFO - Attempting to load file from: /Users/xnxn040/PycharmProjects/grainger_recommendations_chatbot/modules/web_extraction_tools/processed/grainger_products.parquet
+2024-07-12 18:23:53,873 - INFO - Attempting to load file from: /Users/xnxn040/PycharmProjects/grainger_recommendations_chatbot/modules/vector_index/data_source/documents.pkl
+2024-07-12 18:23:53,873 - INFO - Serialized documents file /Users/xnxn040/PycharmProjects/grainger_recommendations_chatbot/modules/vector_index/data_source/documents.pkl already exists. Loading...
+/opt/homebrew/anaconda3/envs/grainger_recommendations_chatbot-2/lib/python3.11/site-packages/langchain/_api/module_import.py:92: LangChainDeprecationWarning: Importing BedrockEmbeddings from langchain.embeddings is deprecated. Please replace deprecated imports:
+
+>> from langchain.embeddings import BedrockEmbeddings
+
+with new imports of:
+
+>> from langchain_community.embeddings import BedrockEmbeddings
+You can use the langchain cli to **automatically** upgrade many imports. Please see documentation here <https://python.langchain.com/v0.2/docs/versions/v0_2/>
+  warn_deprecated(
+/opt/homebrew/anaconda3/envs/grainger_recommendations_chatbot-2/lib/python3.11/site-packages/langchain/_api/module_import.py:92: LangChainDeprecationWarning: Importing FAISS from langchain.vectorstores is deprecated. Please replace deprecated imports:
+
+>> from langchain.vectorstores import FAISS
+
+with new imports of:
+
+>> from langchain_community.vectorstores import FAISS
+You can use the langchain cli to **automatically** upgrade many imports. Please see documentation here <https://python.langchain.com/v0.2/docs/versions/v0_2/>
+  warn_deprecated(
+/opt/homebrew/anaconda3/envs/grainger_recommendations_chatbot-2/lib/python3.11/site-packages/langchain/_api/module_import.py:92: LangChainDeprecationWarning: Importing Bedrock from langchain.llms is deprecated. Please replace deprecated imports:
+
+>> from langchain.llms import Bedrock
+
+with new imports of:
+
+>> from langchain_community.llms import Bedrock
+You can use the langchain cli to **automatically** upgrade many imports. Please see documentation here <https://python.langchain.com/v0.2/docs/versions/v0_2/>
+  warn_deprecated(
+2024-07-12 18:23:53,883 - INFO - Documents file loaded successfully!
+2024-07-12 18:23:53,883 - INFO - Structured documents created:
+2024-07-12 18:23:53,883 - INFO - Document 1 of 3993:
+2024-07-12 18:23:53,883 - INFO - 52WX73 Handheld Tape Dispenser: Light, For 3 in Max Tape Wd, For 3 in Tape Core Dia, Pistol APPROVED VENDOR <p>Handheld packaging tape dispensers hold a roll of self-adhesive packaging tape and have a
+2024-07-12 18:23:53,883 - INFO - Document 2 of 3993:
+2024-07-12 18:23:53,883 - INFO - 8ZF81 Humidity Sponge Indicator: 3 in Wd, 3 in Lg, 476 cu in Area Protected, Bag, 40 Bags per Pack, 40 PK CONTROL COMPANY <p>Tyvek-brand desiccant bags are tear-proof and dust-free and meet FDA specif
+2024-07-12 18:23:53,883 - INFO - Document 3 of 3993:
+2024-07-12 18:23:53,883 - INFO - 8X316 TIMBERLAND PRO Work Boot: W, 11 1/2, 6 in Work Boot Footwear, Men's, Wheat, 1 PR TIMBERLAND PRO 
+2024-07-12 18:23:53,883 - INFO - Document 4 of 3993:
+2024-07-12 18:23:53,883 - INFO - 31XL69 TPI CORP. Electric Wall & Ceiling Unit Heater: 208/240V AC, 1-phase, 11 in x 10-5/8 in x 9-5/8 in TPI CORP. <p>Standard suspended electric wall and ceiling unit heaters hang from a bracket or t
+2024-07-12 18:23:53,883 - INFO - Document 5 of 3993:
+2024-07-12 18:23:53,883 - INFO - 6FHC0 Traffic Cone: Day or Low Speed Roadway (40 MPH or Less), Non-Reflective, Black Base, 28 in Cone Ht APPROVED VENDOR <p>These traffic cones meet federal MUTCD (Manual on Uniform Traffic Control De
+2024-07-12 18:23:53,888 - INFO - Serialized index file /Users/xnxn040/PycharmProjects/grainger_recommendations_chatbot/modules/vector_index/vector_index.pkl
+2024-07-12 18:23:53,888 - INFO - Serialized file /Users/xnxn040/PycharmProjects/grainger_recommendations_chatbot/modules/vector_index/vector_index.pkl already exists. Loading...
+2024-07-12 18:23:53,893 - INFO - Loading faiss.
+2024-07-12 18:23:53,967 - INFO - Successfully loaded faiss.
+2024-07-12 18:23:53,986 - INFO - FAISS vector store loaded from pickle file.
+2024-07-12 18:23:53,988 - INFO - ====== WebDriver manager ======
+2024-07-12 18:23:54,212 - INFO - Get LATEST chromedriver version for google-chrome
+2024-07-12 18:23:54,308 - INFO - Get LATEST chromedriver version for google-chrome
+2024-07-12 18:23:54,374 - INFO - Driver [/Users/xnxn040/.wdm/drivers/chromedriver/mac64/126.0.6478.126/chromedriver-mac-arm64/chromedriver] found in cache
+2024-07-12 18:23:54,869 - INFO - Startup complete.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+2024-07-12 18:24:18,383 - INFO - Received question: LOOKING FOR A HAT with session_id: 9ad51b13-a52e-4c80-86fc-c950d25d57d7
+2024-07-12 18:24:18,383 - INFO - Current chat history for session_id 9ad51b13-a52e-4c80-86fc-c950d25d57d7: []
+2024-07-12 18:24:18,383 - INFO - Processing question: LOOKING FOR A HAT
+/opt/homebrew/anaconda3/envs/grainger_recommendations_chatbot-2/lib/python3.11/site-packages/langchain_core/_api/deprecation.py:139: LangChainDeprecationWarning: The method `BaseLLM.__call__` was deprecated in langchain-core 0.1.7 and will be removed in 0.3.0. Use invoke instead.
+  warn_deprecated(
+2024-07-12 18:24:19,525 - INFO - Chat History passed to processor: []
+/opt/homebrew/anaconda3/envs/grainger_recommendations_chatbot-2/lib/python3.11/site-packages/langchain_core/_api/deprecation.py:139: LangChainDeprecationWarning: The method `Chain.run` was deprecated in langchain 0.1.0 and will be removed in 0.3.0. Use invoke instead.
+  warn_deprecated(
+2024-07-12 18:24:34,307 - ERROR - Error processing chat question: object tuple can't be used in 'await' expression
+2024-07-12 18:24:34,309 - ERROR - Traceback (most recent call last):
+  File "/Users/xnxn040/PycharmProjects/grainger_recommendations_chatbot/modules/fast_api_main.py", line 126, in process_chat_question
+    message, response_json, customer_attributes_retrieved, time_to_get_attributes = await process_chat_question_with_customer_attribute_identifier(
+                                                                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object tuple can't be used in 'await' expression
+
+2024-07-12 18:24:34,309 - ERROR - Error in /ask_question: object tuple can't be used in 'await' expression
+2024-07-12 18:24:34,309 - ERROR - Traceback (most recent call last):
+  File "/Users/xnxn040/PycharmProjects/grainger_recommendations_chatbot/modules/fast_api_main.py", line 89, in ask_question
+    message, response_json, customer_attributes_retrieved, time_to_get_attributes = await process_chat_question(
+                                                                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/xnxn040/PycharmProjects/grainger_recommendations_chatbot/modules/fast_api_main.py", line 126, in process_chat_question
+    message, response_json, customer_attributes_retrieved, time_to_get_attributes = await process_chat_question_with_customer_attribute_identifier(
+                                                                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object tuple can't be used in 'await' expression
+
+Create new client
+  Using region: None
+  Using role: arn:aws:iam::905418421511:role/service-role/AmazonSageMaker-ExecutionRole-20240623T114364 ... successful!
+boto3 Bedrock client successfully created!
+bedrock(https://bedrock.us-east-1.amazonaws.com)
+Create new client
+  Using region: None
+  Using role: arn:aws:iam::905418421511:role/service-role/AmazonSageMaker-ExecutionRole-20240623T114364 ... successful!
+boto3 Bedrock client successfully created!
+bedrock-runtime(https://bedrock-runtime.us-east-1.amazonaws.com)
+Invalid JSON: 
+
+Time for extract_customer_attributes: 1.1412460803985596
+Time for split_process_and_message_from_response: 0.0005350112915039062
+INFO:     127.0.0.1:54123 - "POST /ask_question HTTP/1.1" 500 Internal Server Error
+
+  You can now view your Streamlit app in your browser.
+
+  Local URL: http://localhost:8505
+  Network URL: http://10.52.150.95:8505
+
+  For better performance, install the Watchdog module:
+
+  $ xcode-select --install
+  $ pip install watchdog
+            
+/opt/homebrew/anaconda3/envs/grainger_recommendations_chatbot-2/lib/python3.11/site-packages/langchain/_api/module_import.py:92: LangChainDeprecationWarning: Importing BedrockEmbeddings from langchain.embeddings is deprecated. Please replace deprecated imports:
+
+>> from langchain.embeddings import BedrockEmbeddings
+
+with new imports of:
+
+>> from langchain_community.embeddings import BedrockEmbeddings
+You can use the langchain cli to **automatically** upgrade many imports. Please see documentation here <https://python.langchain.com/v0.2/docs/versions/v0_2/>
+  warn_deprecated(
+/opt/homebrew/anaconda3/envs/grainger_recommendations_chatbot-2/lib/python3.11/site-packages/langchain/_api/module_import.py:92: LangChainDeprecationWarning: Importing FAISS from langchain.vectorstores is deprecated. Please replace deprecated imports:
+
+>> from langchain.vectorstores import FAISS
+
+with new imports of:
+
+>> from langchain_community.vectorstores import FAISS
+You can use the langchain cli to **automatically** upgrade many imports. Please see documentation here <https://python.langchain.com/v0.2/docs/versions/v0_2/>
+  warn_deprecated(
+/opt/homebrew/anaconda3/envs/grainger_recommendations_chatbot-2/lib/python3.11/site-packages/langchain/_api/module_import.py:92: LangChainDeprecationWarning: Importing Bedrock from langchain.llms is deprecated. Please replace deprecated imports:
+
+>> from langchain.llms import Bedrock
+
+with new imports of:
+
+>> from langchain_community.llms import Bedrock
+You can use the langchain cli to **automatically** upgrade many imports. Please see documentation here <https://python.langchain.com/v0.2/docs/versions/v0_2/>
+  warn_deprecated(
+INFO:     Started server process [15759]
+INFO:     Waiting for application startup.
+2024-07-12 18:26:26,543 - INFO - Getting bedrock client...
+2024-07-12 18:26:26,555 - INFO - Found credentials in shared credentials file: ~/.aws/credentials
+2024-07-12 18:26:26,863 - INFO - Initializing Bedrock...
+2024-07-12 18:26:26,868 - INFO - Found credentials in shared credentials file: ~/.aws/credentials
+/opt/homebrew/anaconda3/envs/grainger_recommendations_chatbot-2/lib/python3.11/site-packages/langchain_core/_api/deprecation.py:139: LangChainDeprecationWarning: The class `Bedrock` was deprecated in LangChain 0.1.0 and will be removed in 0.2.0. Use BedrockLLM instead.
+  warn_deprecated(
+2024-07-12 18:26:27,163 - INFO - Initializing Titan Embeddings Model...
+2024-07-12 18:26:27,163 - INFO - Titan Embeddings Model initialized.
+2024-07-12 18:26:27,163 - INFO - Attempting to load file from: /Users/xnxn040/PycharmProjects/grainger_recommendations_chatbot/modules/web_extraction_tools/processed/grainger_products.parquet
+2024-07-12 18:26:27,212 - INFO - Attempting to load file from: /Users/xnxn040/PycharmProjects/grainger_recommendations_chatbot/modules/vector_index/data_source/documents.pkl
+2024-07-12 18:26:27,212 - INFO - Serialized documents file /Users/xnxn040/PycharmProjects/grainger_recommendations_chatbot/modules/vector_index/data_source/documents.pkl already exists. Loading...
+/opt/homebrew/anaconda3/envs/grainger_recommendations_chatbot-2/lib/python3.11/site-packages/langchain/_api/module_import.py:92: LangChainDeprecationWarning: Importing BedrockEmbeddings from langchain.embeddings is deprecated. Please replace deprecated imports:
+
+>> from langchain.embeddings import BedrockEmbeddings
+
+with new imports of:
+
+>> from langchain_community.embeddings import BedrockEmbeddings
+You can use the langchain cli to **automatically** upgrade many imports. Please see documentation here <https://python.langchain.com/v0.2/docs/versions/v0_2/>
+  warn_deprecated(
+/opt/homebrew/anaconda3/envs/grainger_recommendations_chatbot-2/lib/python3.11/site-packages/langchain/_api/module_import.py:92: LangChainDeprecationWarning: Importing FAISS from langchain.vectorstores is deprecated. Please replace deprecated imports:
+
+>> from langchain.vectorstores import FAISS
+
+with new imports of:
+
+>> from langchain_community.vectorstores import FAISS
+You can use the langchain cli to **automatically** upgrade many imports. Please see documentation here <https://python.langchain.com/v0.2/docs/versions/v0_2/>
+  warn_deprecated(
+/opt/homebrew/anaconda3/envs/grainger_recommendations_chatbot-2/lib/python3.11/site-packages/langchain/_api/module_import.py:92: LangChainDeprecationWarning: Importing Bedrock from langchain.llms is deprecated. Please replace deprecated imports:
+
+>> from langchain.llms import Bedrock
+
+with new imports of:
+
+>> from langchain_community.llms import Bedrock
+You can use the langchain cli to **automatically** upgrade many imports. Please see documentation here <https://python.langchain.com/v0.2/docs/versions/v0_2/>
+  warn_deprecated(
+2024-07-12 18:26:27,228 - INFO - Documents file loaded successfully!
+2024-07-12 18:26:27,229 - INFO - Structured documents created:
+2024-07-12 18:26:27,229 - INFO - Document 1 of 3993:
+2024-07-12 18:26:27,229 - INFO - 52WX73 Handheld Tape Dispenser: Light, For 3 in Max Tape Wd, For 3 in Tape Core Dia, Pistol APPROVED VENDOR <p>Handheld packaging tape dispensers hold a roll of self-adhesive packaging tape and have a
+2024-07-12 18:26:27,229 - INFO - Document 2 of 3993:
+2024-07-12 18:26:27,229 - INFO - 8ZF81 Humidity Sponge Indicator: 3 in Wd, 3 in Lg, 476 cu in Area Protected, Bag, 40 Bags per Pack, 40 PK CONTROL COMPANY <p>Tyvek-brand desiccant bags are tear-proof and dust-free and meet FDA specif
+2024-07-12 18:26:27,229 - INFO - Document 3 of 3993:
+2024-07-12 18:26:27,229 - INFO - 8X316 TIMBERLAND PRO Work Boot: W, 11 1/2, 6 in Work Boot Footwear, Men's, Wheat, 1 PR TIMBERLAND PRO 
+2024-07-12 18:26:27,229 - INFO - Document 4 of 3993:
+2024-07-12 18:26:27,229 - INFO - 31XL69 TPI CORP. Electric Wall & Ceiling Unit Heater: 208/240V AC, 1-phase, 11 in x 10-5/8 in x 9-5/8 in TPI CORP. <p>Standard suspended electric wall and ceiling unit heaters hang from a bracket or t
+2024-07-12 18:26:27,229 - INFO - Document 5 of 3993:
+2024-07-12 18:26:27,229 - INFO - 6FHC0 Traffic Cone: Day or Low Speed Roadway (40 MPH or Less), Non-Reflective, Black Base, 28 in Cone Ht APPROVED VENDOR <p>These traffic cones meet federal MUTCD (Manual on Uniform Traffic Control De
+2024-07-12 18:26:27,234 - INFO - Serialized index file /Users/xnxn040/PycharmProjects/grainger_recommendations_chatbot/modules/vector_index/vector_index.pkl
+2024-07-12 18:26:27,234 - INFO - Serialized file /Users/xnxn040/PycharmProjects/grainger_recommendations_chatbot/modules/vector_index/vector_index.pkl already exists. Loading...
+2024-07-12 18:26:27,238 - INFO - Loading faiss.
+2024-07-12 18:26:27,310 - INFO - Successfully loaded faiss.
+2024-07-12 18:26:27,326 - INFO - FAISS vector store loaded from pickle file.
+2024-07-12 18:26:27,328 - INFO - ====== WebDriver manager ======
+2024-07-12 18:26:27,538 - INFO - Get LATEST chromedriver version for google-chrome
+2024-07-12 18:26:27,589 - INFO - Get LATEST chromedriver version for google-chrome
+2024-07-12 18:26:27,644 - INFO - Driver [/Users/xnxn040/.wdm/drivers/chromedriver/mac64/126.0.6478.126/chromedriver-mac-arm64/chromedriver] found in cache
+2024-07-12 18:26:28,330 - INFO - Startup complete.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+2024-07-12 18:26:43,297 - INFO - Received question: Hats for sun protection with session_id: 0e55f14b-b525-4f4a-940f-1b0ef760207a
+2024-07-12 18:26:43,297 - INFO - Current chat history for session_id 0e55f14b-b525-4f4a-940f-1b0ef760207a: []
+2024-07-12 18:26:43,297 - INFO - Processing question: Hats for sun protection
+/opt/homebrew/anaconda3/envs/grainger_recommendations_chatbot-2/lib/python3.11/site-packages/langchain_core/_api/deprecation.py:139: LangChainDeprecationWarning: The method `BaseLLM.__call__` was deprecated in langchain-core 0.1.7 and will be removed in 0.3.0. Use invoke instead.
+  warn_deprecated(
+2024-07-12 18:26:45,849 - INFO - Chat History passed to processor: []
+/opt/homebrew/anaconda3/envs/grainger_recommendations_chatbot-2/lib/python3.11/site-packages/langchain_core/_api/deprecation.py:139: LangChainDeprecationWarning: The method `Chain.run` was deprecated in langchain 0.1.0 and will be removed in 0.3.0. Use invoke instead.
+  warn_deprecated(
+2024-07-12 18:26:53,635 - ERROR - Error processing chat question: object tuple can't be used in 'await' expression
+2024-07-12 18:26:53,637 - ERROR - Traceback (most recent call last):
+  File "/Users/xnxn040/PycharmProjects/grainger_recommendations_chatbot/modules/fast_api_main.py", line 126, in process_chat_question
+    message, response_json, customer_attributes_retrieved, time_to_get_attributes = await process_chat_question_with_customer_attribute_identifier(
+                                                                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object tuple can't be used in 'await' expression
+
+2024-07-12 18:26:53,637 - ERROR - Error in /ask_question: object tuple can't be used in 'await' expression
+2024-07-12 18:26:53,637 - ERROR - Traceback (most recent call last):
+  File "/Users/xnxn040/PycharmProjects/grainger_recommendations_chatbot/modules/fast_api_main.py", line 89, in ask_question
+    message, response_json, customer_attributes_retrieved, time_to_get_attributes = await process_chat_question(
+                                                                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/xnxn040/PycharmProjects/grainger_recommendations_chatbot/modules/fast_api_main.py", line 126, in process_chat_question
+    message, response_json, customer_attributes_retrieved, time_to_get_attributes = await process_chat_question_with_customer_attribute_identifier(
+                                                                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object tuple can't be used in 'await' expression
+
+Create new client
+  Using region: None
+  Using role: arn:aws:iam::905418421511:role/service-role/AmazonSageMaker-ExecutionRole-20240623T114364 ... successful!
+boto3 Bedrock client successfully created!
+bedrock(https://bedrock.us-east-1.amazonaws.com)
+Create new client
+  Using region: None
+  Using role: arn:aws:iam::905418421511:role/service-role/AmazonSageMaker-ExecutionRole-20240623T114364 ... successful!
+boto3 Bedrock client successfully created!
+bedrock-runtime(https://bedrock-runtime.us-east-1.amazonaws.com)
+Time for extract_customer_attributes: 2.551362991333008
+Time for split_process_and_message_from_response: 0.0005269050598144531
+INFO:     127.0.0.1:54322 - "POST /ask_question HTTP/1.1" 500 Internal Server Error
+
+  You can now view your Streamlit app in your browser.
+
+  Local URL: http://localhost:8505
+  Network URL: http://10.52.150.95:8505
+
+  For better performance, install the Watchdog module:
+
+  $ xcode-select --install
+  $ pip install watchdog
+            
+/opt/homebrew/anaconda3/envs/grainger_recommendations_chatbot-2/lib/python3.11/site-packages/langchain/_api/module_import.py:92: LangChainDeprecationWarning: Importing BedrockEmbeddings from langchain.embeddings is deprecated. Please replace deprecated imports:
+
+>> from langchain.embeddings import BedrockEmbeddings
+
+with new imports of:
+
+>> from langchain_community.embeddings import BedrockEmbeddings
+You can use the langchain cli to **automatically** upgrade many imports. Please see documentation here <https://python.langchain.com/v0.2/docs/versions/v0_2/>
+  warn_deprecated(
+/opt/homebrew/anaconda3/envs/grainger_recommendations_chatbot-2/lib/python3.11/site-packages/langchain/_api/module_import.py:92: LangChainDeprecationWarning: Importing FAISS from langchain.vectorstores is deprecated. Please replace deprecated imports:
+
+>> from langchain.vectorstores import FAISS
+
+with new imports of:
+
+>> from langchain_community.vectorstores import FAISS
+You can use the langchain cli to **automatically** upgrade many imports. Please see documentation here <https://python.langchain.com/v0.2/docs/versions/v0_2/>
+  warn_deprecated(
+/opt/homebrew/anaconda3/envs/grainger_recommendations_chatbot-2/lib/python3.11/site-packages/langchain/_api/module_import.py:92: LangChainDeprecationWarning: Importing Bedrock from langchain.llms is deprecated. Please replace deprecated imports:
+
+>> from langchain.llms import Bedrock
+
+with new imports of:
+
+>> from langchain_community.llms import Bedrock
+You can use the langchain cli to **automatically** upgrade many imports. Please see documentation here <https://python.langchain.com/v0.2/docs/versions/v0_2/>
+  warn_deprecated(
+INFO:     Started server process [15920]
+INFO:     Waiting for application startup.
+2024-07-12 18:29:12,224 - INFO - Getting bedrock client...
+2024-07-12 18:29:12,231 - INFO - Found credentials in shared credentials file: ~/.aws/credentials
+2024-07-12 18:29:12,544 - INFO - Initializing Bedrock...
+2024-07-12 18:29:12,551 - INFO - Found credentials in shared credentials file: ~/.aws/credentials
+/opt/homebrew/anaconda3/envs/grainger_recommendations_chatbot-2/lib/python3.11/site-packages/langchain_core/_api/deprecation.py:139: LangChainDeprecationWarning: The class `Bedrock` was deprecated in LangChain 0.1.0 and will be removed in 0.2.0. Use BedrockLLM instead.
+  warn_deprecated(
+2024-07-12 18:29:12,775 - INFO - Initializing Titan Embeddings Model...
+2024-07-12 18:29:12,775 - INFO - Titan Embeddings Model initialized.
+2024-07-12 18:29:12,775 - INFO - Attempting to load file from: /Users/xnxn040/PycharmProjects/grainger_recommendations_chatbot/modules/web_extraction_tools/processed/grainger_products.parquet
+2024-07-12 18:29:12,803 - INFO - Attempting to load file from: /Users/xnxn040/PycharmProjects/grainger_recommendations_chatbot/modules/vector_index/data_source/documents.pkl
+2024-07-12 18:29:12,803 - INFO - Serialized documents file /Users/xnxn040/PycharmProjects/grainger_recommendations_chatbot/modules/vector_index/data_source/documents.pkl already exists. Loading...
+/opt/homebrew/anaconda3/envs/grainger_recommendations_chatbot-2/lib/python3.11/site-packages/langchain/_api/module_import.py:92: LangChainDeprecationWarning: Importing BedrockEmbeddings from langchain.embeddings is deprecated. Please replace deprecated imports:
+
+>> from langchain.embeddings import BedrockEmbeddings
+
+with new imports of:
+
+>> from langchain_community.embeddings import BedrockEmbeddings
+You can use the langchain cli to **automatically** upgrade many imports. Please see documentation here <https://python.langchain.com/v0.2/docs/versions/v0_2/>
+  warn_deprecated(
+/opt/homebrew/anaconda3/envs/grainger_recommendations_chatbot-2/lib/python3.11/site-packages/langchain/_api/module_import.py:92: LangChainDeprecationWarning: Importing FAISS from langchain.vectorstores is deprecated. Please replace deprecated imports:
+
+>> from langchain.vectorstores import FAISS
+
+with new imports of:
+
+>> from langchain_community.vectorstores import FAISS
+You can use the langchain cli to **automatically** upgrade many imports. Please see documentation here <https://python.langchain.com/v0.2/docs/versions/v0_2/>
+  warn_deprecated(
+/opt/homebrew/anaconda3/envs/grainger_recommendations_chatbot-2/lib/python3.11/site-packages/langchain/_api/module_import.py:92: LangChainDeprecationWarning: Importing Bedrock from langchain.llms is deprecated. Please replace deprecated imports:
+
+>> from langchain.llms import Bedrock
+
+with new imports of:
+
+>> from langchain_community.llms import Bedrock
+You can use the langchain cli to **automatically** upgrade many imports. Please see documentation here <https://python.langchain.com/v0.2/docs/versions/v0_2/>
+  warn_deprecated(
+2024-07-12 18:29:12,813 - INFO - Documents file loaded successfully!
+2024-07-12 18:29:12,814 - INFO - Structured documents created:
+2024-07-12 18:29:12,814 - INFO - Document 1 of 3993:
+2024-07-12 18:29:12,814 - INFO - 52WX73 Handheld Tape Dispenser: Light, For 3 in Max Tape Wd, For 3 in Tape Core Dia, Pistol APPROVED VENDOR <p>Handheld packaging tape dispensers hold a roll of self-adhesive packaging tape and have a
+2024-07-12 18:29:12,814 - INFO - Document 2 of 3993:
+2024-07-12 18:29:12,814 - INFO - 8ZF81 Humidity Sponge Indicator: 3 in Wd, 3 in Lg, 476 cu in Area Protected, Bag, 40 Bags per Pack, 40 PK CONTROL COMPANY <p>Tyvek-brand desiccant bags are tear-proof and dust-free and meet FDA specif
+2024-07-12 18:29:12,814 - INFO - Document 3 of 3993:
+2024-07-12 18:29:12,814 - INFO - 8X316 TIMBERLAND PRO Work Boot: W, 11 1/2, 6 in Work Boot Footwear, Men's, Wheat, 1 PR TIMBERLAND PRO 
+2024-07-12 18:29:12,814 - INFO - Document 4 of 3993:
+2024-07-12 18:29:12,814 - INFO - 31XL69 TPI CORP. Electric Wall & Ceiling Unit Heater: 208/240V AC, 1-phase, 11 in x 10-5/8 in x 9-5/8 in TPI CORP. <p>Standard suspended electric wall and ceiling unit heaters hang from a bracket or t
+2024-07-12 18:29:12,814 - INFO - Document 5 of 3993:
+2024-07-12 18:29:12,814 - INFO - 6FHC0 Traffic Cone: Day or Low Speed Roadway (40 MPH or Less), Non-Reflective, Black Base, 28 in Cone Ht APPROVED VENDOR <p>These traffic cones meet federal MUTCD (Manual on Uniform Traffic Control De
+2024-07-12 18:29:12,818 - INFO - Serialized index file /Users/xnxn040/PycharmProjects/grainger_recommendations_chatbot/modules/vector_index/vector_index.pkl
+2024-07-12 18:29:12,818 - INFO - Serialized file /Users/xnxn040/PycharmProjects/grainger_recommendations_chatbot/modules/vector_index/vector_index.pkl already exists. Loading...
+2024-07-12 18:29:12,823 - INFO - Loading faiss.
+2024-07-12 18:29:12,893 - INFO - Successfully loaded faiss.
+2024-07-12 18:29:12,913 - INFO - FAISS vector store loaded from pickle file.
+2024-07-12 18:29:12,915 - INFO - ====== WebDriver manager ======
+2024-07-12 18:29:13,109 - INFO - Get LATEST chromedriver version for google-chrome
+2024-07-12 18:29:13,161 - INFO - Get LATEST chromedriver version for google-chrome
+2024-07-12 18:29:13,219 - INFO - Driver [/Users/xnxn040/.wdm/drivers/chromedriver/mac64/126.0.6478.126/chromedriver-mac-arm64/chromedriver] found in cache
+2024-07-12 18:29:13,720 - INFO - Startup complete.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+2024-07-12 18:29:22,854 - INFO - Received question: Hats for sun protection with session_id: 68b09769-9860-403b-8ba3-adf0d6fb4dd2
+2024-07-12 18:29:22,855 - INFO - Current chat history for session_id 68b09769-9860-403b-8ba3-adf0d6fb4dd2: []
+2024-07-12 18:29:22,855 - INFO - Processing question: Hats for sun protection
+/opt/homebrew/anaconda3/envs/grainger_recommendations_chatbot-2/lib/python3.11/site-packages/langchain_core/_api/deprecation.py:139: LangChainDeprecationWarning: The method `BaseLLM.__call__` was deprecated in langchain-core 0.1.7 and will be removed in 0.3.0. Use invoke instead.
+  warn_deprecated(
+2024-07-12 18:29:25,123 - INFO - Chat History passed to processor: []
+/opt/homebrew/anaconda3/envs/grainger_recommendations_chatbot-2/lib/python3.11/site-packages/langchain_core/_api/deprecation.py:139: LangChainDeprecationWarning: The method `Chain.run` was deprecated in langchain 0.1.0 and will be removed in 0.3.0. Use invoke instead.
+  warn_deprecated(
+2024-07-12 18:29:31,575 - INFO - chat_procesing: message: Here are two sun protection hats from the catalog:
+
+1CXK5 GLOWEAR BY ERGODYNE Baseball Cap: Orange, Universal, Baseball Hat Hat, Polyester, Gen Purpose GLOWEAR BY ERGODYNE Baseball hats have a curved brim that shades the eyes from sun to reduce eye strain and improve visibility.
+
+1CXK6 GLOWEAR BY ERGODYNE Baseball Cap: Green, Universal, Baseball Hat Hat, Polyester, Gen Purpose GLOWEAR BY ERGODYNE Baseball hats have a curved brim that shades the eyes from sun to reduce eye strain and improve visibility.
+2024-07-12 18:29:31,575 - INFO - chat_procesing: product_list_as_json: {'products': [{'product': 'GLOWEAR BY ERGODYNE Baseball Cap: Orange, Universal, Baseball Hat Hat, Polyester, Gen Purpose GLOWEAR BY ERGODYNE Baseball hats have a curved brim that shades the eyes from sun to reduce eye strain and improve visibility.', 'code': '1CXK5'}, {'product': 'GLOWEAR BY ERGODYNE Baseball Cap: Green, Universal, Baseball Hat Hat, Polyester, Gen Purpose GLOWEAR BY ERGODYNE Baseball hats have a curved brim that shades the eyes from sun to reduce eye strain and improve visibility.', 'code': '1CXK6'}]}
+2024-07-12 18:29:31,576 - ERROR - Error processing chat question: object tuple can't be used in 'await' expression
+2024-07-12 18:29:31,577 - ERROR - Traceback (most recent call last):
+  File "/Users/xnxn040/PycharmProjects/grainger_recommendations_chatbot/modules/fast_api_main.py", line 126, in process_chat_question
+    message, response_json, customer_attributes_retrieved, time_to_get_attributes = await process_chat_question_with_customer_attribute_identifier(
+                                                                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object tuple can't be used in 'await' expression
+
+2024-07-12 18:29:31,577 - ERROR - Error in /ask_question: object tuple can't be used in 'await' expression
+2024-07-12 18:29:31,577 - ERROR - Traceback (most recent call last):
+  File "/Users/xnxn040/PycharmProjects/grainger_recommendations_chatbot/modules/fast_api_main.py", line 89, in ask_question
+    message, response_json, customer_attributes_retrieved, time_to_get_attributes = await process_chat_question(
+                                                                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/xnxn040/PycharmProjects/grainger_recommendations_chatbot/modules/fast_api_main.py", line 126, in process_chat_question
+    message, response_json, customer_attributes_retrieved, time_to_get_attributes = await process_chat_question_with_customer_attribute_identifier(
+                                                                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object tuple can't be used in 'await' expression
+
+Create new client
+  Using region: None
+  Using role: arn:aws:iam::905418421511:role/service-role/AmazonSageMaker-ExecutionRole-20240623T114364 ... successful!
+boto3 Bedrock client successfully created!
+bedrock(https://bedrock.us-east-1.amazonaws.com)
+Create new client
+  Using region: None
+  Using role: arn:aws:iam::905418421511:role/service-role/AmazonSageMaker-ExecutionRole-20240623T114364 ... successful!
+boto3 Bedrock client successfully created!
+bedrock-runtime(https://bedrock-runtime.us-east-1.amazonaws.com)
+Time for extract_customer_attributes: 2.2666890621185303
+Time for split_process_and_message_from_response: 0.00037598609924316406
+INFO:     127.0.0.1:54535 - "POST /ask_question HTTP/1.1" 500 Internal Server Error
+
+  You can now view your Streamlit app in your browser.
+
+  Local URL: http://localhost:8505
+  Network URL: http://10.52.150.95:8505
+
+  For better performance, install the Watchdog module:
+
+  $ xcode-select --install
+  $ pip install watchdog
+            
+/opt/homebrew/anaconda3/envs/grainger_recommendations_chatbot-2/lib/python3.11/site-packages/langchain/_api/module_import.py:92: LangChainDeprecationWarning: Importing BedrockEmbeddings from langchain.embeddings is deprecated. Please replace deprecated imports:
+
+>> from langchain.embeddings import BedrockEmbeddings
+
+with new imports of:
+
+>> from langchain_community.embeddings import BedrockEmbeddings
+You can use the langchain cli to **automatically** upgrade many imports. Please see documentation here <https://python.langchain.com/v0.2/docs/versions/v0_2/>
+  warn_deprecated(
+/opt/homebrew/anaconda3/envs/grainger_recommendations_chatbot-2/lib/python3.11/site-packages/langchain/_api/module_import.py:92: LangChainDeprecationWarning: Importing FAISS from langchain.vectorstores is deprecated. Please replace deprecated imports:
+
+>> from langchain.vectorstores import FAISS
+
+with new imports of:
+
+>> from langchain_community.vectorstores import FAISS
+You can use the langchain cli to **automatically** upgrade many imports. Please see documentation here <https://python.langchain.com/v0.2/docs/versions/v0_2/>
+  warn_deprecated(
+/opt/homebrew/anaconda3/envs/grainger_recommendations_chatbot-2/lib/python3.11/site-packages/langchain/_api/module_import.py:92: LangChainDeprecationWarning: Importing Bedrock from langchain.llms is deprecated. Please replace deprecated imports:
+
+>> from langchain.llms import Bedrock
+
+with new imports of:
+
+>> from langchain_community.llms import Bedrock
+You can use the langchain cli to **automatically** upgrade many imports. Please see documentation here <https://python.langchain.com/v0.2/docs/versions/v0_2/>
+  warn_deprecated(
+INFO:     Started server process [16074]
+INFO:     Waiting for application startup.
+2024-07-12 18:32:30,979 - INFO - Getting bedrock client...
+2024-07-12 18:32:30,984 - INFO - Found credentials in shared credentials file: ~/.aws/credentials
+2024-07-12 18:32:31,234 - INFO - Initializing Bedrock...
+2024-07-12 18:32:31,239 - INFO - Found credentials in shared credentials file: ~/.aws/credentials
+/opt/homebrew/anaconda3/envs/grainger_recommendations_chatbot-2/lib/python3.11/site-packages/langchain_core/_api/deprecation.py:139: LangChainDeprecationWarning: The class `Bedrock` was deprecated in LangChain 0.1.0 and will be removed in 0.2.0. Use BedrockLLM instead.
+  warn_deprecated(
+2024-07-12 18:32:31,460 - INFO - Initializing Titan Embeddings Model...
+2024-07-12 18:32:31,460 - INFO - Titan Embeddings Model initialized.
+2024-07-12 18:32:31,460 - INFO - Attempting to load file from: /Users/xnxn040/PycharmProjects/grainger_recommendations_chatbot/modules/web_extraction_tools/processed/grainger_products.parquet
+2024-07-12 18:32:31,485 - INFO - Attempting to load file from: /Users/xnxn040/PycharmProjects/grainger_recommendations_chatbot/modules/vector_index/data_source/documents.pkl
+2024-07-12 18:32:31,485 - INFO - Serialized documents file /Users/xnxn040/PycharmProjects/grainger_recommendations_chatbot/modules/vector_index/data_source/documents.pkl already exists. Loading...
+/opt/homebrew/anaconda3/envs/grainger_recommendations_chatbot-2/lib/python3.11/site-packages/langchain/_api/module_import.py:92: LangChainDeprecationWarning: Importing BedrockEmbeddings from langchain.embeddings is deprecated. Please replace deprecated imports:
+
+>> from langchain.embeddings import BedrockEmbeddings
+
+with new imports of:
+
+>> from langchain_community.embeddings import BedrockEmbeddings
+You can use the langchain cli to **automatically** upgrade many imports. Please see documentation here <https://python.langchain.com/v0.2/docs/versions/v0_2/>
+  warn_deprecated(
+/opt/homebrew/anaconda3/envs/grainger_recommendations_chatbot-2/lib/python3.11/site-packages/langchain/_api/module_import.py:92: LangChainDeprecationWarning: Importing FAISS from langchain.vectorstores is deprecated. Please replace deprecated imports:
+
+>> from langchain.vectorstores import FAISS
+
+with new imports of:
+
+>> from langchain_community.vectorstores import FAISS
+You can use the langchain cli to **automatically** upgrade many imports. Please see documentation here <https://python.langchain.com/v0.2/docs/versions/v0_2/>
+  warn_deprecated(
+/opt/homebrew/anaconda3/envs/grainger_recommendations_chatbot-2/lib/python3.11/site-packages/langchain/_api/module_import.py:92: LangChainDeprecationWarning: Importing Bedrock from langchain.llms is deprecated. Please replace deprecated imports:
+
+>> from langchain.llms import Bedrock
+
+with new imports of:
+
+>> from langchain_community.llms import Bedrock
+You can use the langchain cli to **automatically** upgrade many imports. Please see documentation here <https://python.langchain.com/v0.2/docs/versions/v0_2/>
+  warn_deprecated(
+2024-07-12 18:32:31,494 - INFO - Documents file loaded successfully!
+2024-07-12 18:32:31,494 - INFO - Structured documents created:
+2024-07-12 18:32:31,494 - INFO - Document 1 of 3993:
+2024-07-12 18:32:31,494 - INFO - 52WX73 Handheld Tape Dispenser: Light, For 3 in Max Tape Wd, For 3 in Tape Core Dia, Pistol APPROVED VENDOR <p>Handheld packaging tape dispensers hold a roll of self-adhesive packaging tape and have a
+2024-07-12 18:32:31,494 - INFO - Document 2 of 3993:
+2024-07-12 18:32:31,494 - INFO - 8ZF81 Humidity Sponge Indicator: 3 in Wd, 3 in Lg, 476 cu in Area Protected, Bag, 40 Bags per Pack, 40 PK CONTROL COMPANY <p>Tyvek-brand desiccant bags are tear-proof and dust-free and meet FDA specif
+2024-07-12 18:32:31,494 - INFO - Document 3 of 3993:
+2024-07-12 18:32:31,494 - INFO - 8X316 TIMBERLAND PRO Work Boot: W, 11 1/2, 6 in Work Boot Footwear, Men's, Wheat, 1 PR TIMBERLAND PRO 
+2024-07-12 18:32:31,494 - INFO - Document 4 of 3993:
+2024-07-12 18:32:31,494 - INFO - 31XL69 TPI CORP. Electric Wall & Ceiling Unit Heater: 208/240V AC, 1-phase, 11 in x 10-5/8 in x 9-5/8 in TPI CORP. <p>Standard suspended electric wall and ceiling unit heaters hang from a bracket or t
+2024-07-12 18:32:31,494 - INFO - Document 5 of 3993:
+2024-07-12 18:32:31,494 - INFO - 6FHC0 Traffic Cone: Day or Low Speed Roadway (40 MPH or Less), Non-Reflective, Black Base, 28 in Cone Ht APPROVED VENDOR <p>These traffic cones meet federal MUTCD (Manual on Uniform Traffic Control De
+2024-07-12 18:32:31,498 - INFO - Serialized index file /Users/xnxn040/PycharmProjects/grainger_recommendations_chatbot/modules/vector_index/vector_index.pkl
+2024-07-12 18:32:31,498 - INFO - Serialized file /Users/xnxn040/PycharmProjects/grainger_recommendations_chatbot/modules/vector_index/vector_index.pkl already exists. Loading...
+2024-07-12 18:32:31,503 - INFO - Loading faiss.
+2024-07-12 18:32:31,561 - INFO - Successfully loaded faiss.
+2024-07-12 18:32:31,579 - INFO - FAISS vector store loaded from pickle file.
+2024-07-12 18:32:31,580 - INFO - ====== WebDriver manager ======
+2024-07-12 18:32:31,802 - INFO - Get LATEST chromedriver version for google-chrome
+2024-07-12 18:32:31,855 - INFO - Get LATEST chromedriver version for google-chrome
+2024-07-12 18:32:31,910 - INFO - Driver [/Users/xnxn040/.wdm/drivers/chromedriver/mac64/126.0.6478.126/chromedriver-mac-arm64/chromedriver] found in cache
+2024-07-12 18:32:32,587 - INFO - Startup complete.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+2024-07-12 18:32:49,085 - INFO - Received question: Hat for sun protection with session_id: 2e499377-85f9-4010-b650-963d82ab67ae
+2024-07-12 18:32:49,086 - INFO - Current chat history for session_id 2e499377-85f9-4010-b650-963d82ab67ae: []
+2024-07-12 18:32:49,086 - INFO - Processing question: Hat for sun protection
+/opt/homebrew/anaconda3/envs/grainger_recommendations_chatbot-2/lib/python3.11/site-packages/langchain_core/_api/deprecation.py:139: LangChainDeprecationWarning: The method `BaseLLM.__call__` was deprecated in langchain-core 0.1.7 and will be removed in 0.3.0. Use invoke instead.
+  warn_deprecated(
+2024-07-12 18:32:50,917 - INFO - Chat History passed to processor: []
+/opt/homebrew/anaconda3/envs/grainger_recommendations_chatbot-2/lib/python3.11/site-packages/langchain_core/_api/deprecation.py:139: LangChainDeprecationWarning: The method `Chain.run` was deprecated in langchain 0.1.0 and will be removed in 0.3.0. Use invoke instead.
+  warn_deprecated(
+2024-07-12 18:32:58,629 - INFO - chat_procesing: message: Here are some hat options that can provide sun protection:
+
+GLOWEAR BY ERGODYNE Baseball Cap (Code: 1CXK5) - Orange baseball hat with curved brim to shade eyes. Polyester material. 
+
+GLOWEAR BY ERGODYNE Baseball Cap (Code: 1CXK6) - Green baseball hat with curved brim to shade eyes. Polyester material.
+
+CONDOR Baseball Hat (Code: 25F541) - Orange baseball hat with curved brim to shade eyes. Polyester material.
+2024-07-12 18:32:58,629 - INFO - chat_procesing: product_list_as_json: {'products': [{'product': 'GLOWEAR BY ERGODYNE Baseball Cap: Orange, Universal, Baseball Hat Hat, Polyester, Gen Purpose GLOWEAR BY ERGODYNE Baseball hats have a curved brim that shades the eyes from sun to reduce eye strain and improve visibility.', 'code': '1CXK5'}, {'product': 'GLOWEAR BY ERGODYNE Baseball Cap: Green, Universal, Baseball Hat Hat, Polyester, Gen Purpose GLOWEAR BY ERGODYNE Baseball hats have a curved brim that shades the eyes from sun to reduce eye strain and improve visibility.', 'code': '1CXK6'}, {'product': 'CONDOR Baseball Hat: Orange, Universal, Front Brim Hat Hat, Polyester, Gen Purpose CONDOR Baseball hats have a curved brim that shades the eyes from sun to reduce eye strain and improve visibility.', 'code': '25F541'}]}
+2024-07-12 18:32:58,629 - INFO - Message: Here are some hat options that can provide sun protection:
+
+GLOWEAR BY ERGODYNE Baseball Cap (Code: 1CXK5) - Orange baseball hat with curved brim to shade eyes. Polyester material. 
+
+GLOWEAR BY ERGODYNE Baseball Cap (Code: 1CXK6) - Green baseball hat with curved brim to shade eyes. Polyester material.
+
+CONDOR Baseball Hat (Code: 25F541) - Orange baseball hat with curved brim to shade eyes. Polyester material.
+2024-07-12 18:32:58,629 - INFO - Response json: {'products': [{'product': 'GLOWEAR BY ERGODYNE Baseball Cap: Orange, Universal, Baseball Hat Hat, Polyester, Gen Purpose GLOWEAR BY ERGODYNE Baseball hats have a curved brim that shades the eyes from sun to reduce eye strain and improve visibility.', 'code': '1CXK5'}, {'product': 'GLOWEAR BY ERGODYNE Baseball Cap: Green, Universal, Baseball Hat Hat, Polyester, Gen Purpose GLOWEAR BY ERGODYNE Baseball hats have a curved brim that shades the eyes from sun to reduce eye strain and improve visibility.', 'code': '1CXK6'}, {'product': 'CONDOR Baseball Hat: Orange, Universal, Front Brim Hat Hat, Polyester, Gen Purpose CONDOR Baseball hats have a curved brim that shades the eyes from sun to reduce eye strain and improve visibility.', 'code': '25F541'}]}
+2024-07-12 18:32:58,629 - INFO - Customer attributes retrieved: {'Industry': 'Other', 'Size': 'Individual Customer', 'SustainabilityFocus': False, 'InventoryManager': False, 'Location': ''}
+2024-07-12 18:32:58,629 - INFO - Time to get attributes: 1.8317887783050537
+2024-07-12 18:32:58,629 - ERROR - Error processing chat question: '2e499377-85f9-4010-b650-963d82ab67ae'
+2024-07-12 18:32:58,632 - ERROR - Traceback (most recent call last):
+  File "/Users/xnxn040/PycharmProjects/grainger_recommendations_chatbot/modules/fast_api_main.py", line 136, in process_chat_question
+    session_store[session_id].append(
+    ~~~~~~~~~~~~~^^^^^^^^^^^^
+KeyError: '2e499377-85f9-4010-b650-963d82ab67ae'
+
+2024-07-12 18:32:58,632 - ERROR - Error in /ask_question: '2e499377-85f9-4010-b650-963d82ab67ae'
+2024-07-12 18:32:58,632 - ERROR - Traceback (most recent call last):
+  File "/Users/xnxn040/PycharmProjects/grainger_recommendations_chatbot/modules/fast_api_main.py", line 89, in ask_question
+    message, response_json, customer_attributes_retrieved, time_to_get_attributes = await process_chat_question(
+                                                                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/xnxn040/PycharmProjects/grainger_recommendations_chatbot/modules/fast_api_main.py", line 136, in process_chat_question
+    session_store[session_id].append(
+    ~~~~~~~~~~~~~^^^^^^^^^^^^
+KeyError: '2e499377-85f9-4010-b650-963d82ab67ae'
+
+Create new client
+  Using region: None
+  Using role: arn:aws:iam::905418421511:role/service-role/AmazonSageMaker-ExecutionRole-20240623T114364 ... successful!
+boto3 Bedrock client successfully created!
+bedrock(https://bedrock.us-east-1.amazonaws.com)
+Create new client
+  Using region: None
+  Using role: arn:aws:iam::905418421511:role/service-role/AmazonSageMaker-ExecutionRole-20240623T114364 ... successful!
+boto3 Bedrock client successfully created!
+bedrock-runtime(https://bedrock-runtime.us-east-1.amazonaws.com)
+Time for extract_customer_attributes: 1.8305540084838867
+Time for split_process_and_message_from_response: 0.0005853176116943359
+INFO:     127.0.0.1:54805 - "POST /ask_question HTTP/1.1" 500 Internal Server Error

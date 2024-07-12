@@ -12,7 +12,7 @@
 #         self._df = None
 #
 #     @classmethod
-#     def get_instance(cls, parquet_file_path="modules/vector_index/processed/grainger_products.parquet"):
+#     def get_instance(cls, parquet_file_path="modules/vector_index/processed/grainger_products_newer.parquet"):
 #         logging.info("Entering dataframe get_instance method")
 #         if cls._instance is None:
 #             try:

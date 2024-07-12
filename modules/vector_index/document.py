@@ -55,14 +55,20 @@ def initialize_embeddings_and_faiss():
     logging.info("Titan Embeddings Model initialized.")
 
     # Load processed data from Parquet file
-    current_dir = os.path.dirname(os.path.abspath(__file__))
-    parquet_file_path = os.path.join(os.path.join(current_dir, "processed/grainger_products.parquet"))
+    current_dir = os.path.dirname(__file__)
+    parquet_file_path = os.path.join(current_dir, '../web_extraction_tools/processed/grainger_products.parquet')
     logging.info(f"Attempting to load file from: {parquet_file_path}")
     # Load processed data from Parquet file
     documents = []
     df = pd.read_parquet(parquet_file_path)
 
-    serialized_documents_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'processed/documents.pkl')
+    # Create serialized source doc for FAISS
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    data_source_dir = os.path.join(current_dir, 'data_source')
+    # Ensure the directory exists
+    os.makedirs(data_source_dir, exist_ok=True)
+
+    serialized_documents_file = os.path.join(data_source_dir, 'documents.pkl')
     if os.path.exists(serialized_documents_file):
         logging.info(f"Serialized documents file {serialized_documents_file} already exists. Loading...")
         with open(serialized_documents_file, 'rb') as file:

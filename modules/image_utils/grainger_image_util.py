@@ -7,6 +7,7 @@ import pandas as pd
 import time
 import asyncio
 
+tag = 'grainger_image_util'
 
 async def get_images(recommendations_list, df):
     image_tasks = []
@@ -18,7 +19,7 @@ async def get_images(recommendations_list, df):
         for item in recommendations_list:
             parts = item.split(', ')
             code = parts[-1]
-
+            logging.info(f"{tag} item.part[-1]: {parts[-1]} item.part[0]: {parts[0]}")
             if code in df['Code'].values:
                 if code not in checked:
                     start_time = time.time()

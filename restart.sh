@@ -28,7 +28,7 @@ echo "Ports are now free."
  nohup uvicorn modules.fast_api_main:app --host 0.0.0.0 --port 8000 > >(tee -a nohup.out) 2>&1 &
 
 # Wait a few seconds for FastAPI to start
-sleep 3
+sleep 5
 
 # Start Streamlit on port 8505
  nohup streamlit run streamlit_ui.py --server.port 8505 > >(tee -a nohup.out) 2>&1 &

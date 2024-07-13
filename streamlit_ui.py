@@ -1,11 +1,12 @@
-import base64
-import asyncio
-import io
 import logging
+import aiohttp
+from PIL import Image, ImageDraw, ImageFont
+import io
+import base64
 import time
+import asyncio
 import httpx
 import streamlit as st
-from PIL import Image
 import json
 
 tag = "StreamlitInterface"
@@ -72,16 +73,25 @@ class StreamlitInterface:
                 return []
 
             events = []
+            event = {}
             async for line in response.aiter_lines():
-                if line:
-                    try:
-                        event = json.loads(line)
+                if line.strip() == "":
+                    if event:
                         events.append(event)
+                        event = {}
+                    continue
+
+                if line.startswith("event:"):
+                    event["event"] = line[len("event:"):].strip()
+                elif line.startswith("data:"):
+                    data = line[len("data:"):].strip()
+                    try:
+                        event["data"] = json.loads(data)
                     except json.JSONDecodeError as e:
                         logging.error(f"Failed to decode JSON: {e}, line: {line}")
-                        continue
                 else:
-                    logging.warning("Received empty line in stream.")
+                    logging.warning(f"Unexpected line in SSE stream: {line}")
+
             return events
 
     def display_message(self, center_col, data):
@@ -120,13 +130,23 @@ if __name__ == "__main__":
 
 
 
-# import asyncio
-# import io
+
+
+
+
+
+
+
+
 # import logging
+# import aiohttp
+# from PIL import Image, ImageDraw, ImageFont
+# import io
+# import base64
 # import time
+# import asyncio
 # import httpx
 # import streamlit as st
-# from PIL import Image
 # import json
 #
 # tag = "StreamlitInterface"
@@ -194,8 +214,18 @@ if __name__ == "__main__":
 #
 #             events = []
 #             async for line in response.aiter_lines():
-#                 if line:
-#                     events.append(json.loads(line))
+#                 if line.strip() == "":
+#                     continue
+#                 try:
+#                     if line.startswith("data:"):
+#                         event_data = line[len("data:"):].strip()
+#                         event = json.loads(event_data)
+#                         events.append(event)
+#                     else:
+#                         logging.warning(f"Unexpected line in SSE stream: {line}")
+#                 except json.JSONDecodeError as e:
+#                     logging.error(f"Failed to decode JSON: {e}, line: {line}")
+#                     continue
 #             return events
 #
 #     def display_message(self, center_col, data):
@@ -207,7 +237,7 @@ if __name__ == "__main__":
 #     def display_images(self, col3, data):
 #         for image_info in data:
 #             try:
-#                 img = Image.open(io.BytesIO(image_info["image_data"]))
+#                 img = Image.open(io.BytesIO(base64.b64decode(image_info["image_data"])))
 #                 col3.image(img, caption=f"Grainger Product Image ({image_info['code']})", use_column_width=True)
 #             except Exception as e:
 #                 logging.error(f"Error displaying image: {e}")
@@ -231,3 +261,7 @@ if __name__ == "__main__":
 #
 # if __name__ == "__main__":
 #     main()
+#
+#
+#
+#

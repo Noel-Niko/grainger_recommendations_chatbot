@@ -30,13 +30,16 @@ session_store = {}
 
 logging.basicConfig(level=logging.INFO)
 
+
 class ChatRequest(BaseModel):
     question: str
     clear_history: bool = False
 
+
 class ImageResponse(BaseModel):
     code: str
     image_data: bytes
+
 
 @app.on_event("startup")
 async def startup_event():
@@ -52,6 +55,7 @@ async def startup_event():
     except Exception as e:
         logging.error(f"Error during startup: {str(e)}")
 
+
 @app.on_event("shutdown")
 async def shutdown_event():
     try:
@@ -60,12 +64,14 @@ async def shutdown_event():
     except Exception as e:
         logging.error(f"Error during shutdown: {str(e)}")
 
+
 @app.get("/initialize_session")
 async def initialize_session():
     session_id = str(uuid.uuid4())
     session_store[session_id] = []  # Initialize an empty chat history for this session
     logging.info(f"{tag}/ Session initialized with ID: {session_id}")
     return {"session_id": session_id}
+
 
 @app.post("/ask_question")
 async def ask_question(chat_request: ChatRequest, request: Request):
@@ -123,6 +129,7 @@ async def ask_question(chat_request: ChatRequest, request: Request):
         logging.error(traceback.format_exc())
         raise HTTPException(status_code=500, detail="Internal Server Error")
 
+
 async def process_chat_question(question, clear_history, session_id):
     try:
         if clear_history:
@@ -154,6 +161,7 @@ async def process_chat_question(question, clear_history, session_id):
         logging.error(traceback.format_exc())
         raise
 
+
 async def fetch_images(products):
     try:
         recommendations_list = [f"{product['product']}, {product['code']}" for product in products]
@@ -164,11 +172,7 @@ async def fetch_images(products):
         image_responses = []
         for image_info in image_data:
             try:
-                img = Image.open(io.BytesIO(image_info["Image Data"]))
-                img_byte_arr = io.BytesIO()
-                img.save(img_byte_arr, format='PNG')
-                img_byte_arr = img_byte_arr.getvalue()
-                encoded_image = base64.b64encode(img_byte_arr).decode('utf-8')
+                encoded_image = base64.b64encode(image_info["Image Data"]).decode('utf-8')
                 image_responses.append({
                     "code": image_info["Code"],
                     "image_data": encoded_image
@@ -180,6 +184,7 @@ async def fetch_images(products):
         logging.error(f"Error fetching images: {e}")
         logging.error(traceback.format_exc())
         raise HTTPException(status_code=500, detail="Error fetching images")
+
 
 async def fetch_reviews(products):
     try:
@@ -204,18 +209,22 @@ async def fetch_reviews(products):
         logging.error(traceback.format_exc())
         raise HTTPException(status_code=500, detail="Error fetching reviews")
 
+
 # Health check endpoint
 @app.get("/health")
 async def health_check():
     return JSONResponse(content={"status": "healthy"})
 
+
 @app.get("/")
 async def read_root():
     return {"message": "Welcome to the Grainger Recommendations API"}
 
+
 @app.get("/favicon.ico")
 async def favicon():
     return JSONResponse(content={"message": "No favicon available"}, status_code=204)
+
 
 if __name__ == "__main__":
     import uvicorn

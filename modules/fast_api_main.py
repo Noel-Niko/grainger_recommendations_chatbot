@@ -1,3 +1,4 @@
+import json
 import logging
 import sys
 import uuid
@@ -21,6 +22,7 @@ from modules.web_extraction_tools.product_reviews.call_selenium_for_review_async
     async_navigate_to_reviews_selenium
 from fastapi.middleware.cors import CORSMiddleware
 
+tag = "fast_api_main"
 app = FastAPI()
 
 # app.add_middleware(
@@ -82,7 +84,7 @@ async def shutdown_event():
 async def initialize_session():
     session_id = str(uuid.uuid4())
     session_store[session_id] = []  # Initialize an empty chat history for this session
-    logging.info(f"Session initialized with ID: {session_id}")
+    logging.info(f"{tag}/ Session initialized with ID: {session_id}")
     return {"session_id": session_id}
 
 
@@ -98,12 +100,12 @@ async def ask_question(chat_request: ChatRequest, request: Request):
             raise HTTPException(status_code=400, detail="Invalid Session ID")
 
         start_time = time.time()
-        logging.info(f"Received question: {chat_request.question} with session_id: {session_id}")
+        logging.info(f"{tag}/ Received question: {chat_request.question} with session_id: {session_id}")
         message, response_json, customer_attributes_retrieved, time_to_get_attributes = await process_chat_question(
             chat_request.question, chat_request.clear_history, session_id)
 
         products = response_json.get('products', [])
-        logging.info(f"Products retrieved: {products}")
+        logging.info(f"{tag}/ Products retrieved: {products}")
 
         # Use asyncio.gather to await multiple async functions concurrently
         image_data, reviews_data = await asyncio.gather(
@@ -112,13 +114,14 @@ async def ask_question(chat_request: ChatRequest, request: Request):
         )
 
         time_taken = time.time() - start_time
-        logging.info(f"Total time taken for ask_question: {time_taken} seconds")
+        logging.info(f"{tag}/ Total time taken for ask_question: {time_taken} seconds")
 
         return ChatResponse(
             message=message,
             response_json=response_json,
             time_taken=time_taken,
-            customer_attributes_retrieved=customer_attributes_retrieved,
+            customer_attributes_retrieved=json.loads(customer_attributes_retrieved) if isinstance(
+                customer_attributes_retrieved, str) else customer_attributes_retrieved,
             time_to_get_attributes=time_to_get_attributes
         )
     except Exception as e:
@@ -130,27 +133,27 @@ async def ask_question(chat_request: ChatRequest, request: Request):
 async def process_chat_question(question, clear_history, session_id):
     try:
         if clear_history:
-            logging.info(f"Clearing chat history for session_id: {session_id}")
+            logging.info(f"{tag}/ Clearing chat history for session_id: {session_id}")
             session_store[session_id] = []
 
         chat_history = session_store.get(session_id, [])
-        logging.info(f"Current chat history for session_id {session_id}: {chat_history}")
+        logging.info(f"{tag}/ Current chat history for session_id {session_id}: {chat_history}")
 
-        logging.info(f"Processing question: {question}")
+        logging.info(f"{tag}/ Processing question: {question}")
         message, response_json, customer_attributes_retrieved, time_to_get_attributes = process_chat_question_with_customer_attribute_identifier(
             question,
             vectorstore_faiss_doc,
             llm,
             chat_history
         )
-        logging.info(f"Message: {message}")
-        logging.info(f"Response json: {response_json}")
-        logging.info(f"Customer attributes retrieved: {customer_attributes_retrieved}")
-        logging.info(f"Time to get attributes: {time_to_get_attributes}")
+        logging.info(f"{tag}/ Message: {message}")
+        logging.info(f"{tag}/ Response json: {response_json}")
+        logging.info(f"{tag}/ Customer attributes retrieved: {customer_attributes_retrieved}")
+        logging.info(f"{tag}/ Time to get attributes: {time_to_get_attributes}")
         session_store[session_id].append(
             [f"QUESTION: {question}. MESSAGE: {message}. CUSTOMER ATTRIBUTES: {customer_attributes_retrieved}"])
-        logging.info(f"Updated chat history for session_id {session_id}: {session_store[session_id]}")
-        logging.info(f"Processed question: {question} with message: {message}")
+        logging.info(f"{tag}/ Updated chat history for session_id {session_id}: {session_store[session_id]}")
+        logging.info(f"{tag}/ Processed question: {question} with message: {message}")
 
         return message, response_json, customer_attributes_retrieved, time_to_get_attributes
     except Exception as e:
@@ -162,9 +165,9 @@ async def process_chat_question(question, clear_history, session_id):
 async def fetch_images(products):
     try:
         recommendations_list = [f"{product['product']}, {product['code']}" for product in products]
-        logging.info(f"Fetching images for products: {recommendations_list}")
+        logging.info(f"{tag}/ Fetching images for products: {recommendations_list}")
         image_data, total_image_time = await get_images(recommendations_list, df)
-        logging.info(f"Total time to fetch images: {total_image_time} seconds")
+        logging.info(f"{tag}/ Total time to fetch images: {total_image_time} seconds")
 
         image_responses = []
         for image_info in image_data:
@@ -188,7 +191,7 @@ async def fetch_reviews(products):
         reviews = []
         for product in products:
             product_info = f"{product['product']}, {product['code']}"
-            logging.info(f"Fetching reviews for product: {product_info}")
+            logging.info(f"{tag}/ Fetching reviews for product: {product_info}")
             reviews_data = await async_navigate_to_reviews_selenium(product_info, driver)
             if reviews_data:
                 reviews.append({
@@ -197,9 +200,9 @@ async def fetch_reviews(products):
                     "average_recommendation_percent": reviews_data['Average Recommendation Percent'],
                     "review_texts": reviews_data['Review Texts']
                 })
-                logging.info(f"Reviews for product {product['code']}: {reviews_data}")
+                logging.info(f"{tag}/ Reviews for product {product['code']}: {reviews_data}")
             else:
-                logging.info(f"No reviews found for product {product['code']}")
+                logging.info(f"{tag}/ No reviews found for product {product['code']}")
         return reviews
     except Exception as e:
         logging.error(f"Error fetching reviews: {e}")
@@ -316,12 +319,12 @@ if __name__ == "__main__":
 #             raise HTTPException(status_code=400, detail="Session ID is required")
 #
 #         start_time = time.time()
-#         logging.info(f"Received question: {chat_request.question} with session_id: {session_id}")
+#         logging.info(f"{tag}/ Received question: {chat_request.question} with session_id: {session_id}")
 #         message, response_json, customer_attributes_retrieved, time_to_get_attributes = await process_chat_question(
 #             chat_request.question, chat_request.clear_history, session_id)
 #
 #         products = response_json.get('products', [])
-#         logging.info(f"Products retrieved: {products}")
+#         logging.info(f"{tag}/ Products retrieved: {products}")
 #
 #         # Use asyncio.gather to await multiple async functions concurrently
 #         image_data, reviews_data = await asyncio.gather(
@@ -330,7 +333,7 @@ if __name__ == "__main__":
 #         )
 #
 #         time_taken = time.time() - start_time
-#         logging.info(f"Total time taken for ask_question: {time_taken} seconds")
+#         logging.info(f"{tag}/ Total time taken for ask_question: {time_taken} seconds")
 #
 #         return ChatResponse(
 #             message=message,
@@ -351,23 +354,23 @@ if __name__ == "__main__":
 #             session_store[session_id] = []
 #
 #         chat_history = session_store.get(session_id, [])
-#         logging.info(f"Current chat history for session_id {session_id}: {chat_history}")
+#         logging.info(f"{tag}/ Current chat history for session_id {session_id}: {chat_history}")
 #
-#         logging.info(f"Processing question: {question}")
+#         logging.info(f"{tag}/ Processing question: {question}")
 #         message, response_json, customer_attributes_retrieved, time_to_get_attributes = process_chat_question_with_customer_attribute_identifier(
 #             question,
 #             vectorstore_faiss_doc,
 #             llm,
 #             chat_history
 #         )
-#         logging.info(f"Message: {message}")
-#         logging.info(f"Response json: {response_json}")
-#         logging.info(f"Customer attributes retrieved: {customer_attributes_retrieved}")
-#         logging.info(f"Time to get attributes: {time_to_get_attributes}")
+#         logging.info(f"{tag}/ Message: {message}")
+#         logging.info(f"{tag}/ Response json: {response_json}")
+#         logging.info(f"{tag}/ Customer attributes retrieved: {customer_attributes_retrieved}")
+#         logging.info(f"{tag}/ Time to get attributes: {time_to_get_attributes}")
 #         session_store[session_id].append(
 #             [f"QUESTION: {question}. MESSAGE: {message}. CUSTOMER ATTRIBUTES: {customer_attributes_retrieved}"])
-#         logging.info(f"Updated chat history for session_id {session_id}: {session_store[session_id]}")
-#         logging.info(f"Processed question: {question} with message: {message}")
+#         logging.info(f"{tag}/ Updated chat history for session_id {session_id}: {session_store[session_id]}")
+#         logging.info(f"{tag}/ Processed question: {question} with message: {message}")
 #
 #         return message, response_json, customer_attributes_retrieved, time_to_get_attributes
 #     except Exception as e:
@@ -378,9 +381,9 @@ if __name__ == "__main__":
 # async def fetch_images(products):
 #     try:
 #         recommendations_list = [f"{product['product']}, {product['code']}" for product in products]
-#         logging.info(f"Fetching images for products: {recommendations_list}")
+#         logging.info(f"{tag}/ Fetching images for products: {recommendations_list}")
 #         image_data, total_image_time = await get_images(recommendations_list, df)
-#         logging.info(f"Total time to fetch images: {total_image_time} seconds")
+#         logging.info(f"{tag}/ Total time to fetch images: {total_image_time} seconds")
 #
 #         image_responses = []
 #         for image_info in image_data:
@@ -403,7 +406,7 @@ if __name__ == "__main__":
 #         reviews = []
 #         for product in products:
 #             product_info = f"{product['product']}, {product['code']}"
-#             logging.info(f"Fetching reviews for product: {product_info}")
+#             logging.info(f"{tag}/ Fetching reviews for product: {product_info}")
 #             reviews_data = await async_navigate_to_reviews_selenium(product_info, driver)
 #             if reviews_data:
 #                 reviews.append({
@@ -412,9 +415,9 @@ if __name__ == "__main__":
 #                     "average_recommendation_percent": reviews_data['Average Recommendation Percent'],
 #                     "review_texts": reviews_data['Review Texts']
 #                 })
-#                 logging.info(f"Reviews for product {product['code']}: {reviews_data}")
+#                 logging.info(f"{tag}/ Reviews for product {product['code']}: {reviews_data}")
 #             else:
-#                 logging.info(f"No reviews found for product {product['code']}")
+#                 logging.info(f"{tag}/ No reviews found for product {product['code']}")
 #         return reviews
 #     except Exception as e:
 #         logging.error(f"Error fetching reviews: {e}")

@@ -22,7 +22,7 @@ from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
 from webdriver_manager.chrome import ChromeDriverManager
 from starlette.websockets import WebSocketDisconnect
-
+import httpx
 
 tag = "fast_api_main"
 app = FastAPI()
@@ -46,9 +46,10 @@ class ResourceManager:
             logging.error(f"WebDriver failed to start: {e}")
             self.driver = None
 
+        self.http_client = httpx.AsyncClient(limits=httpx.Limits(max_connections=30, max_keepalive_connections=10))
+
     async def refresh_bedrock_embeddings(self):
         self.bedrock_embeddings, self.vectorstore_faiss_doc, self.df, self.llm = initialize_embeddings_and_faiss()
-
 resource_manager = ResourceManager()
 
 @app.on_event("startup")
@@ -59,6 +60,7 @@ async def startup_event():
 async def shutdown_event():
     if resource_manager.driver:
         resource_manager.driver.quit()
+    await resource_manager.http_client.aclose()
     logging.info("Shutdown complete.")
 
 class ChatRequest(BaseModel):
@@ -182,8 +184,6 @@ async def fetch_images(request: Request, resource_manager: ResourceManager = Dep
         logging.error(traceback.format_exc())
         raise HTTPException(status_code=500, detail="Error fetching images")
 
-
-
 @app.post("/fetch_reviews")
 async def fetch_reviews(request: Request, resource_manager: ResourceManager = Depends(get_resource_manager)):
     logging.info(f"{tag}/ Received request to fetch reviews.")
@@ -243,11 +243,17 @@ async def websocket_endpoint(websocket: WebSocket):
                 if review:
                     await websocket.send_text(json.dumps(review))
             await websocket.send_text(json.dumps({"end_of_reviews": True}))
+    except WebSocketDisconnect:
+        logging.info("WebSocket disconnected")
     except Exception as e:
         logging.error(f"Error in websocket endpoint: {e}")
         logging.error(traceback.format_exc())
     finally:
-        await websocket.close()
+        try:
+            await websocket.close()
+        except RuntimeError:
+            logging.warning("WebSocket already closed")
+
 
 # Health check endpoint
 @app.get("/health")

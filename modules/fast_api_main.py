@@ -1,8 +1,11 @@
 import asyncio
 import logging
 import json
+import time
 import traceback
 import uuid
+
+from botocore.exceptions import ClientError
 from fastapi import FastAPI, HTTPException, Request, Depends, WebSocket
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
@@ -20,7 +23,7 @@ from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
 from webdriver_manager.chrome import ChromeDriverManager
 from starlette.websockets import WebSocketDisconnect
-
+import httpx
 
 tag = "fast_api_main"
 app = FastAPI()
@@ -44,6 +47,8 @@ class ResourceManager:
             logging.error(f"WebDriver failed to start: {e}")
             self.driver = None
 
+        self.http_client = httpx.AsyncClient(limits=httpx.Limits(max_connections=20, max_keepalive_connections=15))
+
     async def refresh_bedrock_embeddings(self):
         self.bedrock_embeddings, self.vectorstore_faiss_doc, self.df, self.llm = initialize_embeddings_and_faiss()
 
@@ -57,6 +62,7 @@ async def startup_event():
 async def shutdown_event():
     if resource_manager.driver:
         resource_manager.driver.quit()
+    await resource_manager.http_client.aclose()
     logging.info("Shutdown complete.")
 
 class ChatRequest(BaseModel):
@@ -180,43 +186,6 @@ async def fetch_images(request: Request, resource_manager: ResourceManager = Dep
         logging.error(traceback.format_exc())
         raise HTTPException(status_code=500, detail="Error fetching images")
 
-
-@app.websocket("/ws/reviews")
-async def websocket_endpoint(websocket: WebSocket):
-    await websocket.accept()
-    try:
-        while True:
-            data = await websocket.receive_text()
-            products = json.loads(data)
-            for product in products:
-                product_info = f"{product['product']}, {product['code']}"
-                logging.info(f"{tag}/ Fetching reviews for product: {product_info}")
-
-                if resource_manager.driver:
-                    try:
-                        reviews_data = await async_navigate_to_reviews_selenium(product_info, resource_manager.driver)
-                    except Exception as e:
-                        logging.error(f"{tag}/ Error navigating to reviews for {product_info}: {str(e)}")
-                        continue
-
-                    if reviews_data:
-                        review = {
-                            "code": product['code'],
-                            "average_star_rating": reviews_data['Average Star Rating'],
-                            "average_recommendation_percent": reviews_data['Average Recommendation Percent'],
-                            "review_texts": reviews_data['Review Texts']
-                        }
-                        await websocket.send_text(json.dumps(review))
-                        logging.info(f"{tag}/ Reviews for product {product['code']}: {reviews_data}")
-                    else:
-                        logging.info(f"{tag}/ No reviews found for product {product['code']}")
-            await websocket.send_text(json.dumps({"end_of_reviews": True}))
-    except WebSocketDisconnect:
-        logging.info(f"{tag}/ WebSocket connection closed")
-    except Exception as e:
-        logging.error(f"{tag}/ Error in WebSocket endpoint: {str(e)}")
-        logging.error(traceback.format_exc())
-
 @app.post("/fetch_reviews")
 async def fetch_reviews(request: Request, resource_manager: ResourceManager = Depends(get_resource_manager)):
     logging.info(f"{tag}/ Received request to fetch reviews.")
@@ -224,39 +193,73 @@ async def fetch_reviews(request: Request, resource_manager: ResourceManager = De
         products = await request.json()
         logging.info(f"{tag}/ Received products for review fetching: {products}")
 
-        for product in products:
-            product_info = f"{product['product']}, {product['code']}"
-            logging.info(f"{tag}/ Fetching reviews for product: {product_info}")
-
-            if resource_manager.driver:
-                try:
-                    reviews_data = await async_navigate_to_reviews_selenium(product_info, resource_manager.driver)
-                except Exception as e:
-                    logging.error(f"{tag}/ Error navigating to reviews for {product_info}: {str(e)}")
-                    continue
-
-                if reviews_data:
-                    review = {
-                        "code": product['code'],
-                        "average_star_rating": reviews_data['Average Star Rating'],
-                        "average_recommendation_percent": reviews_data['Average Recommendation Percent'],
-                        "review_texts": reviews_data['Review Texts']
-                    }
-                    if product['code'] not in session_store:
-                        session_store[product['code']] = []
-                    session_store[product['code']].append(review)
-                    logging.info(f"{tag}/ Reviews for product {product['code']}: {reviews_data}")
-                else:
-                    logging.info(f"{tag}/ No reviews found for product {product['code']}")
-            else:
-                logging.error(f"{tag}/ WebDriver is not initialized for product {product['code']}")
+        review_tasks = [fetch_review_for_product(product, resource_manager) for product in products]
+        reviews = await asyncio.gather(*review_tasks)
+        reviews = [review for review in reviews if review is not None]
 
         logging.info(f"{tag}/ Completed review fetching for all products.")
-        return {"status": "Reviews processing started"}
+        return {"status": "Reviews processing started", "reviews": reviews}
     except Exception as e:
         logging.error(f"{tag}/ Error fetching reviews: {e}")
         logging.error(traceback.format_exc())
         raise HTTPException(status_code=500, detail="Error fetching reviews")
+
+async def fetch_review_for_product(product, resource_manager):
+    product_info = f"{product['product']}, {product['code']}"
+    logging.info(f"{tag}/ Fetching reviews for product: {product_info}")
+
+    if resource_manager.driver:
+        try:
+            reviews_data = await async_navigate_to_reviews_selenium(product_info, resource_manager.driver)
+        except Exception as e:
+            logging.error(f"{tag}/ Error navigating to reviews for {product_info}: {str(e)}")
+            return None
+
+        if reviews_data:
+            review = {
+                "code": product['code'],
+                "average_star_rating": reviews_data['Average Star Rating'],
+                "average_recommendation_percent": reviews_data['Average Recommendation Percent'],
+                "review_texts": reviews_data['Review Texts']
+            }
+            logging.info(f"{tag}/ Reviews for product {product['code']}: {reviews_data}")
+            return review
+        else:
+            logging.info(f"{tag}/ No reviews found for product {product['code']}")
+            return None
+    else:
+        logging.error(f"{tag}/ WebDriver is not initialized for product {product['code']}")
+        return None
+
+
+@app.websocket("/ws/reviews")
+async def websocket_endpoint(websocket: WebSocket):
+    logging.info(f"{tag}/ Starting reviews at {time.time()}")
+    await websocket.accept()
+    try:
+        while True:
+            data = await websocket.receive_text()
+            products = json.loads(data)
+
+            review_tasks = [fetch_review_for_product(product, resource_manager) for product in products]
+
+            # Iterate over completed tasks and send each review to the client immediately
+            for review_task in asyncio.as_completed(review_tasks):
+                logging.info(f"{tag}/ Sending review at {time.time()}")
+                review = await review_task
+                if review:
+                    await websocket.send_text(json.dumps(review))
+            await websocket.send_text(json.dumps({"end_of_reviews": True}))
+    except WebSocketDisconnect:
+        logging.info("WebSocket disconnected")
+    except Exception as e:
+        logging.error(f"Error in websocket endpoint: {e}")
+        logging.error(traceback.format_exc())
+    finally:
+        try:
+            await websocket.close()
+        except RuntimeError:
+            logging.warning("WebSocket already closed")
 
 
 # Health check endpoint

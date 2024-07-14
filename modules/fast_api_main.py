@@ -46,10 +46,11 @@ class ResourceManager:
             logging.error(f"WebDriver failed to start: {e}")
             self.driver = None
 
-        self.http_client = httpx.AsyncClient(limits=httpx.Limits(max_connections=30, max_keepalive_connections=10))
+        self.http_client = httpx.AsyncClient(limits=httpx.Limits(max_connections=20, max_keepalive_connections=15))
 
     async def refresh_bedrock_embeddings(self):
         self.bedrock_embeddings, self.vectorstore_faiss_doc, self.df, self.llm = initialize_embeddings_and_faiss()
+
 resource_manager = ResourceManager()
 
 @app.on_event("startup")

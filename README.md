@@ -1,7 +1,7 @@
 # grainger_recommendations_chatbot
 
 ## Key Features: 
-  - Asynchronous calls for data returning a response as soon as available without waiting for the images or reviews.
+  - Asynchronous calls and use of a websocket for "reviews" to return a responses as soon as available.
   - Utilizes Anthropic instead of OpenAi, and through its use of AWS Bedrock Anthropic can be switched for any of the many LLM models available.
   - Uses Named Entity Recognition to categorize the customer and personalize responses.
     - This could also be used for generating analytic data on customers.

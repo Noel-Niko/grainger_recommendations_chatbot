@@ -191,15 +191,24 @@ async def websocket_endpoint(websocket: WebSocket, session_id: str):
         logging.error(f"Error in WebSocket connection: {e}")
         await websocket.close()
 
+
 @app.post("/fetch_reviews")
 async def fetch_reviews(request: Request, resource_manager: ResourceManager = Depends(get_resource_manager)):
     try:
         products = await request.json()
+        logging.info(f"{tag}/ Received products for review fetching: {products}")
+
         for product in products:
             product_info = f"{product['product']}, {product['code']}"
             logging.info(f"{tag}/ Fetching reviews for product: {product_info}")
+
             if resource_manager.driver:
-                reviews_data = await async_navigate_to_reviews_selenium(product_info, resource_manager.driver)
+                try:
+                    reviews_data = await async_navigate_to_reviews_selenium(product_info, resource_manager.driver)
+                except Exception as e:
+                    logging.error(f"{tag}/ Error navigating to reviews: {str(e)}")
+                    continue
+
                 if reviews_data:
                     review = {
                         "code": product['code'],
@@ -214,12 +223,15 @@ async def fetch_reviews(request: Request, resource_manager: ResourceManager = De
                 else:
                     logging.info(f"{tag}/ No reviews found for product {product['code']}")
             else:
-                logging.error("WebDriver is not initialized.")
+                logging.error(f"{tag}/ WebDriver is not initialized for product {product['code']}")
+
+        logging.info(f"{tag}/ Completed review fetching for all products.")
         return {"status": "Reviews processing started"}
     except Exception as e:
-        logging.error(f"Error fetching reviews: {e}")
+        logging.error(f"{tag}/ Error fetching reviews: {e}")
         logging.error(traceback.format_exc())
         raise HTTPException(status_code=500, detail="Error fetching reviews")
+
 
 # Health check endpoint
 @app.get("/health")

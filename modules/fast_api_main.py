@@ -3,13 +3,11 @@ import logging
 import json
 import traceback
 import uuid
-
-from botocore.exceptions import ClientError
-from fastapi import FastAPI, HTTPException, Request, Depends
+from fastapi import FastAPI, HTTPException, Request, Depends, WebSocket
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
+from typing import List
 from selenium.common import WebDriverException
-
 from modules.image_utils.grainger_image_util import get_images
 from modules.vector_index.chat_processor import process_chat_question_with_customer_attribute_identifier
 from modules.vector_index.document import initialize_embeddings_and_faiss
@@ -28,7 +26,6 @@ app = FastAPI()
 session_store = {}
 
 logging.basicConfig(level=logging.INFO)
-
 
 class ResourceManager:
     def __init__(self):
@@ -50,11 +47,9 @@ class ResourceManager:
 
 resource_manager = ResourceManager()
 
-
 @app.on_event("startup")
 async def startup_event():
     logging.info("Startup complete.")
-
 
 @app.on_event("shutdown")
 async def shutdown_event():
@@ -62,15 +57,12 @@ async def shutdown_event():
         resource_manager.driver.quit()
     logging.info("Shutdown complete.")
 
-
 class ChatRequest(BaseModel):
     question: str
     clear_history: bool = False
 
-
 async def get_resource_manager():
     return resource_manager
-
 
 @app.post("/ask_question")
 async def ask_question(
@@ -123,7 +115,6 @@ async def ask_question(
         logging.error(traceback.format_exc())
         raise HTTPException(status_code=500, detail="Internal Server Error")
 
-
 async def process_chat_question(question, clear_history, session_id, resource_manager):
     try:
         if clear_history:
@@ -158,7 +149,6 @@ async def process_chat_question(question, clear_history, session_id, resource_ma
         logging.error(traceback.format_exc())
         raise
 
-
 @app.post("/fetch_images")
 async def fetch_images(request: Request, resource_manager: ResourceManager = Depends(get_resource_manager)):
     try:
@@ -188,35 +178,48 @@ async def fetch_images(request: Request, resource_manager: ResourceManager = Dep
         logging.error(traceback.format_exc())
         raise HTTPException(status_code=500, detail="Error fetching images")
 
+@app.websocket("/ws/{session_id}")
+async def websocket_endpoint(websocket: WebSocket, session_id: str):
+    await websocket.accept()
+    try:
+        while True:
+            await asyncio.sleep(1)
+            if session_id in session_store and session_store[session_id]:
+                review = session_store[session_id].pop(0)
+                await websocket.send_text(json.dumps(review))
+    except Exception as e:
+        logging.error(f"Error in WebSocket connection: {e}")
+        await websocket.close()
 
 @app.post("/fetch_reviews")
 async def fetch_reviews(request: Request, resource_manager: ResourceManager = Depends(get_resource_manager)):
     try:
         products = await request.json()
-        reviews = []
         for product in products:
             product_info = f"{product['product']}, {product['code']}"
             logging.info(f"{tag}/ Fetching reviews for product: {product_info}")
             if resource_manager.driver:
                 reviews_data = await async_navigate_to_reviews_selenium(product_info, resource_manager.driver)
                 if reviews_data:
-                    reviews.append({
+                    review = {
                         "code": product['code'],
                         "average_star_rating": reviews_data['Average Star Rating'],
                         "average_recommendation_percent": reviews_data['Average Recommendation Percent'],
                         "review_texts": reviews_data['Review Texts']
-                    })
+                    }
+                    if product['code'] not in session_store:
+                        session_store[product['code']] = []
+                    session_store[product['code']].append(review)
                     logging.info(f"{tag}/ Reviews for product {product['code']}: {reviews_data}")
                 else:
                     logging.info(f"{tag}/ No reviews found for product {product['code']}")
             else:
                 logging.error("WebDriver is not initialized.")
-        return reviews
+        return {"status": "Reviews processing started"}
     except Exception as e:
         logging.error(f"Error fetching reviews: {e}")
         logging.error(traceback.format_exc())
         raise HTTPException(status_code=500, detail="Error fetching reviews")
-
 
 # Health check endpoint
 @app.get("/health")

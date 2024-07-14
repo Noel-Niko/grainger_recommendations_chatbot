@@ -4,14 +4,15 @@ import io
 import base64
 import time
 import asyncio
+
 import httpx
+import websockets
 import streamlit as st
 from PIL import Image
 import json
 
 tag = "StreamlitInterface"
 backendUrl = "http://127.0.0.1:8000"
-
 
 class StreamlitInterface:
     def __init__(self):
@@ -49,10 +50,10 @@ class StreamlitInterface:
 
             if response and response.status_code == 200:
                 data = response.json()
-                self.display_message(center_col, data)
+                self.display_message(center_col, data, start_time)
                 products = data['products']
                 asyncio.run(self.fetch_and_display_images(col3, products))
-                asyncio.run(self.fetch_and_display_reviews(center_col, products))
+                asyncio.run(self.websocket_reviews(center_col))
             else:
                 logging.error(f"Failed to process question: {response.text if response else 'No response'}")
 
@@ -85,19 +86,18 @@ class StreamlitInterface:
             else:
                 logging.error(f"Failed to fetch images: {response.text}")
 
-    async def fetch_and_display_reviews(self, center_col, products):
-        url = f"{backendUrl}/fetch_reviews"
-        headers = {"Content-Type": "application/json", "session-id": self.session_id}
-        async with httpx.AsyncClient() as client:
-            response = await client.post(url, headers=headers, json=products, timeout=120)
-            if response.status_code == 200:
-                self.display_reviews(center_col, response.json())
-            else:
-                logging.error(f"Failed to fetch reviews: {response.text}")
+    async def websocket_reviews(self, center_col):
+        url = f"ws://{backendUrl}/ws/{self.session_id}"
+        async with websockets.connect(url) as websocket:
+            while True:
+                review = await websocket.recv()
+                self.display_review(center_col, json.loads(review))
 
-    def display_message(self, center_col, data):
+    def display_message(self, center_col, data, start_time):
         center_col.subheader("Response:")
         center_col.write(data["message"])
+        message_time = time.time() - start_time
+        center_col.write(f"Time taken to generate message: {message_time}")
         center_col.write(f"Customer attributes identified: {data['customer_attributes_retrieved']}")
         center_col.write(f"Time taken to generate customer attributes: {data['time_to_get_attributes']}")
 
@@ -111,15 +111,14 @@ class StreamlitInterface:
         time_to_generate_images = time.time() - start_time
         col3.write(f"Total time taken to generate images: {time_to_generate_images}")
 
-    def display_reviews(self, center_col, data):
+    def display_review(self, center_col, review):
         center_col.subheader('Extracted Reviews:')
-        for review in data:
-            center_col.write(f"Product ID: {review['code']}")
-            center_col.write(f"Average Star Rating: {review['average_star_rating']}")
-            center_col.write(f"Average Recommendation Percent: {review['average_recommendation_percent']}")
-            center_col.write("Review Texts:")
-            for idx, review_text in enumerate(review['review_texts'], start=1):
-                center_col.write(f"\nReview {idx}: {review_text}")
+        center_col.write(f"Product ID: {review['code']}")
+        center_col.write(f"Average Star Rating: {review['average_star_rating']}")
+        center_col.write(f"Average Recommendation Percent: {review['average_recommendation_percent']}")
+        center_col.write("Review Texts:")
+        for idx, review_text in enumerate(review['review_texts'], start=1):
+            center_col.write(f"\nReview {idx}: {review_text}")
 
 def main():
     if 'chat_history' not in st.session_state:

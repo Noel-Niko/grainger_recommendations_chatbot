@@ -1,6 +1,5 @@
 import logging
-import aiohttp
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image
 import io
 import base64
 import time
@@ -70,37 +69,39 @@ class StreamlitInterface:
             response = await client.post(url, headers=headers, json=payload, timeout=None)
             if response.status_code != 200:
                 logging.error(f"Failed to process chat question: {response.text}")
-                return []
+                return
 
-            events = []
-            event = {}
             async for line in response.aiter_lines():
                 if line.strip() == "":
-                    if event:
-                        events.append(event)
-                        event = {}
                     continue
 
                 if line.startswith("event:"):
-                    event["event"] = line[len("event:"):].strip()
+                    event_type = line[len("event:"):].strip()
                 elif line.startswith("data:"):
                     data = line[len("data:"):].strip()
                     try:
-                        event["data"] = json.loads(data)
+                        data_dict = json.loads(data)
+                        if event_type == "message":
+                            self.display_message(None,
+                                                 data_dict)  # Assuming display_message can handle no column parameter
+                        elif event_type == "images":
+                            self.display_images(None, data_dict)  # Adjust according to your display methods
+                        elif event_type == "reviews":
+                            self.display_reviews(None, data_dict)  # Adjust according to your display methods
                     except json.JSONDecodeError as e:
                         logging.error(f"Failed to decode JSON: {e}, line: {line}")
-                else:
-                    logging.warning(f"Unexpected line in SSE stream: {line}")
-
-            return events
 
     def display_message(self, center_col, data):
+        if isinstance(data, str):
+            data = json.loads(data)
         center_col.subheader("Response:")
         center_col.write(data["message"])
         center_col.write(f"Customer attributes identified: {data['customer_attributes_retrieved']}")
         center_col.write(f"Time taken to generate customer attributes: {data['time_to_get_attributes']}")
 
     def display_images(self, col3, data):
+        if isinstance(data, str):
+            data = json.loads(data)
         for image_info in data:
             try:
                 img = Image.open(io.BytesIO(base64.b64decode(image_info["image_data"])))
@@ -109,6 +110,8 @@ class StreamlitInterface:
                 logging.error(f"Error displaying image: {e}")
 
     def display_reviews(self, center_col, data):
+        if isinstance(data, str):
+            data = json.loads(data)
         center_col.subheader('Extracted Reviews:')
         for review in data:
             center_col.write(f"Product ID: {review['code']}")
@@ -127,9 +130,6 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-
-
 
 
 
@@ -213,19 +213,25 @@ if __name__ == "__main__":
 #                 return []
 #
 #             events = []
+#             event = {}
 #             async for line in response.aiter_lines():
 #                 if line.strip() == "":
-#                     continue
-#                 try:
-#                     if line.startswith("data:"):
-#                         event_data = line[len("data:"):].strip()
-#                         event = json.loads(event_data)
+#                     if event:
 #                         events.append(event)
-#                     else:
-#                         logging.warning(f"Unexpected line in SSE stream: {line}")
-#                 except json.JSONDecodeError as e:
-#                     logging.error(f"Failed to decode JSON: {e}, line: {line}")
+#                         event = {}
 #                     continue
+#
+#                 if line.startswith("event:"):
+#                     event["event"] = line[len("event:"):].strip()
+#                 elif line.startswith("data:"):
+#                     data = line[len("data:"):].strip()
+#                     try:
+#                         event["data"] = json.loads(data)
+#                     except json.JSONDecodeError as e:
+#                         logging.error(f"Failed to decode JSON: {e}, line: {line}")
+#                 else:
+#                     logging.warning(f"Unexpected line in SSE stream: {line}")
+#
 #             return events
 #
 #     def display_message(self, center_col, data):
@@ -261,7 +267,4 @@ if __name__ == "__main__":
 #
 # if __name__ == "__main__":
 #     main()
-#
-#
-#
 #

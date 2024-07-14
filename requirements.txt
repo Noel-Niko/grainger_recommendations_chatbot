@@ -36,3 +36,8 @@ aiohttp
 kubernetes
 fastapi
 uvicorn
+sse-starlette
+httpx
+
+pydantic
+websockets

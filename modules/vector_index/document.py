@@ -1,8 +1,10 @@
 import logging
 import os
 import pickle
+import sys
 from concurrent.futures import ThreadPoolExecutor
 
+import boto3
 import pandas as pd
 from langchain.embeddings import BedrockEmbeddings
 from langchain.vectorstores import FAISS
@@ -12,6 +14,10 @@ from .bedrock_initializer import bedrock
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
+current_dir = os.path.dirname(__file__)
+project_root = os.path.abspath(os.path.join(current_dir, '..'))
+sys.path.append(project_root)
+
 
 class Document:
     def __init__(self, page_content, metadata):
@@ -19,21 +25,36 @@ class Document:
         self.metadata = metadata
 
 
-def initialize_embeddings_and_faiss():
-    # os.environ["AWS_DEFAULT_REGION"] = "us-east-1"
+def get_boto3_session():
+    role_arn = os.environ.get("BEDROCK_ASSUME_ROLE")
+    if not role_arn:
+        logging.error("Environment variable 'BEDROCK_ASSUME_ROLE' is not set")
+        raise ValueError("Environment variable 'BEDROCK_ASSUME_ROLE' is not set")
 
-    # Initialize Bedrock clients
-    logging.info("Getting bedrock client...")
-    boto3_bedrock = bedrock.get_bedrock_client(
-        assumed_role=os.environ.get("BEDROCK_ASSUME_ROLE"),
-        region=os.environ.get("AWS_DEFAULT_REGION"),
-        runtime=False
-    )
-    logging.info("Initializing Bedrock...")
-    bedrock_runtime = bedrock.get_bedrock_client(
-        assumed_role=os.environ.get("BEDROCK_ASSUME_ROLE"),
-        region=os.environ.get("AWS_DEFAULT_REGION")
-    )
+    try:
+        session = boto3.Session()
+        sts_client = session.client('sts')
+
+        assume_role_object = sts_client.assume_role(
+            RoleArn=role_arn,
+            RoleSessionName="AssumeRoleSession1"
+        )
+        credentials = assume_role_object['Credentials']
+        return boto3.Session(
+            aws_access_key_id=credentials['AccessKeyId'],
+            aws_secret_access_key=credentials['SecretAccessKey'],
+            aws_session_token=credentials['SessionToken']
+        )
+    except Exception as e:
+        logging.error(f"Error assuming role: {str(e)}")
+        raise
+
+
+def initialize_embeddings_and_faiss():
+    boto3_session = get_boto3_session()
+
+    logging.info("Initializing Bedrock clients...")
+    bedrock_runtime_client = boto3_session.client('bedrock-runtime')
 
     # Load or create LLM instance
     model_parameter = {
@@ -46,36 +67,34 @@ def initialize_embeddings_and_faiss():
     llm = Bedrock(
         model_id="anthropic.claude-v2",
         model_kwargs=model_parameter,
-        client=bedrock_runtime
+        client=bedrock_runtime_client
     )
 
     # Initialize Titan Embeddings Model
     logging.info("Initializing Titan Embeddings Model...")
-    bedrock_embeddings = BedrockEmbeddings(model_id="amazon.titan-embed-text-v1", client=bedrock_runtime)
+    bedrock_embeddings = BedrockEmbeddings(model_id="amazon.titan-embed-text-v1", client=bedrock_runtime_client)
     logging.info("Titan Embeddings Model initialized.")
 
     # Load processed data from Parquet file
-    current_dir = os.path.dirname(__file__)
-    parquet_file_path = os.path.join(current_dir, '../web_extraction_tools/processed/grainger_products.parquet')
+    relative_path = '../web_extraction_tools/processed/grainger_products.parquet'
+    parquet_file_path = os.path.join(current_dir, relative_path)
+    parquet_file_path = os.path.abspath(parquet_file_path)
     logging.info(f"Attempting to load file from: {parquet_file_path}")
-    # Load processed data from Parquet file
-    documents = []
     df = pd.read_parquet(parquet_file_path)
 
     # Create serialized source doc for FAISS
-    current_dir = os.path.dirname(os.path.abspath(__file__))
+    documents = []
     data_source_dir = os.path.join(current_dir, 'data_source')
-    # Ensure the directory exists
     os.makedirs(data_source_dir, exist_ok=True)
-
     serialized_documents_file = os.path.join(data_source_dir, 'documents.pkl')
+    logging.info(f"Attempting to load file from: {serialized_documents_file}")
     if os.path.exists(serialized_documents_file):
         logging.info(f"Serialized documents file {serialized_documents_file} already exists. Loading...")
         with open(serialized_documents_file, 'rb') as file:
-            documents = pickle.load(open(serialized_documents_file, "rb"))
+            documents = pickle.load(file)
             logging.info("Documents file loaded successfully!")
     else:
-        logging.error("Error loading serialized_documents_file")
+        logging.error("Error loading serialized_documents_file at " + serialized_documents_file)
         logging.info("Generating new df")
         for index, row in df.iterrows():
             page_content = f"{row['Code']} {row['Name']} {row['Brand']} {row['Description'] if pd.notna(row['Description']) else ''}"
@@ -95,6 +114,7 @@ def initialize_embeddings_and_faiss():
 
     # Check if serialized FAISS index exists
     serialized_index_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'vector_index.pkl')
+    logging.info(f"Serialized index file {serialized_index_file}")
     if os.path.exists(serialized_index_file):
         logging.info(f"Serialized file {serialized_index_file} already exists. Loading...")
         with open(serialized_index_file, 'rb') as file:
@@ -116,9 +136,8 @@ def initialize_embeddings_and_faiss():
 
     return bedrock_embeddings, vectorstore_faiss_doc, df, llm
 
-
-# TODO: consider replacing similarity with mmr for a mix of relevant results while avoiding redundancy
-def parallel_search(queries, vectorstore_faiss_doc, k=10, search_type='similarity', num_threads=4):
+# 'similarity' is standard 'mmr' for greater variety
+def parallel_search(queries, vectorstore_faiss_doc, k=10, search_type='mmr', num_threads=4):
     def search_faiss(query):
         return vectorstore_faiss_doc.search(query, k=k, search_type=search_type)
 

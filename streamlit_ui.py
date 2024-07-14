@@ -1,3 +1,4 @@
+import streamlit as st
 import logging
 import uuid
 import io
@@ -5,7 +6,6 @@ import base64
 import time
 import asyncio
 import httpx
-import streamlit as st
 from PIL import Image
 import json
 import websockets
@@ -38,28 +38,32 @@ class StreamlitInterface:
         logging.info("Asking question")
         question = st.text_input("Enter your question:", value="", placeholder="", key="unique_key_for_question")
         if question:
-            start_time = time.time()
-            logging.info(f"Question entered: {question}")
+            try:
+                with st.spinner("Processing..."):
+                    start_time = time.time()
+                    logging.info(f"Question entered: {question}")
 
-            # Call FastAPI to process the chat question
-            headers = {"session-id": self.session_id}
-            payload = {"question": question, "clear_history": False}
-            url = f"{backendUrl}/ask_question"
+                    # Call FastAPI to process the chat question
+                    headers = {"session-id": self.session_id}
+                    payload = {"question": question, "clear_history": False}
+                    url = f"{backendUrl}/ask_question"
 
-            response = self.retry_http_post(url, headers, payload, timeout=120)
+                    response = self.retry_http_post(url, headers, payload, timeout=120)
 
-            if response and response.status_code == 200:
-                data = response.json()
-                self.display_message(center_col, data, start_time)
-                products = data['products']
-                asyncio.run(self.fetch_and_display_images(col3, products))
-                logging.info(f"Calling websocket_reviews with products: {products}")
-                asyncio.run(self.websocket_reviews(center_col, products))
-            else:
-                logging.error(f"Failed to process question: {response.text if response else 'No response'}")
+                    if response and response.status_code == 200:
+                        data = response.json()
+                        self.display_message(center_col, data, start_time)
+                        products = data['products']
+                        asyncio.run(self.fetch_and_display_images(col3, products))
+                        asyncio.run(self.websocket_reviews(center_col, products))
+                    else:
+                        logging.error(f"Failed to process question: {response.text if response else 'No response'}")
 
-            total_time = time.time() - start_time
-            center_col.write(f"Total time to answer question: {total_time}")
+                    total_time = time.time() - start_time
+                    center_col.write(f"Total time to answer question: {total_time}")
+            except Exception as e:
+                logging.error(f"Error while asking question: {e}")
+                st.error(f"An error occurred: {e}")
 
     def retry_http_post(self, url, headers, payload, timeout, retries=5, delay=5):
         """Retry HTTP POST request if it fails."""
@@ -80,53 +84,77 @@ class StreamlitInterface:
         start_time = time.time()
         url = f"{backendUrl}/fetch_images"
         headers = {"Content-Type": "application/json", "session-id": self.session_id}
-        async with httpx.AsyncClient() as client:
-            response = await client.post(url, headers=headers, json=products, timeout=120)
-            if response.status_code == 200:
-                self.display_images(col3, response.json(), start_time)
-            else:
-                logging.error(f"Failed to fetch images: {response.text}")
+        try:
+            with st.spinner("Fetching images..."):
+                async with httpx.AsyncClient() as client:
+                    response = await client.post(url, headers=headers, json=products, timeout=120)
+                    if response.status_code == 200:
+                        self.display_images(col3, response.json(), start_time)
+                    else:
+                        logging.error(f"Failed to fetch images: {response.text}")
+        except Exception as e:
+            logging.error(f"Error fetching images: {e}")
+            st.error(f"An error occurred while fetching images: {e}")
 
     async def websocket_reviews(self, center_col, products):
-        async with websockets.connect(websocketUrl) as websocket:
-            await websocket.send(json.dumps(products))
-            async for message in websocket:
-                review = json.loads(message)
-                self.display_review(center_col, review)
-                if review.get("end_of_reviews"):
-                    break
+        try:
+            with st.spinner("Fetching reviews..."):
+                async with websockets.connect(websocketUrl) as websocket:
+                    await websocket.send(json.dumps(products))
+                    async for message in websocket:
+                        review = json.loads(message)
+                        self.display_review(center_col, review)
+                        if review.get("end_of_reviews"):
+                            break
+        except Exception as e:
+            logging.error(f"Error fetching reviews: {e}")
+            st.error(f"An error occurred while fetching reviews: {e}")
 
     def display_message(self, center_col, data, start_time):
-        center_col.subheader("Response:")
-        center_col.write(data["message"])
-        message_time = time.time() - start_time
-        center_col.write(f"Time taken to generate message: {message_time}")
-        center_col.write(f"Customer attributes identified: {data['customer_attributes_retrieved']}")
-        center_col.write(f"Time taken to generate customer attributes: {data['time_to_get_attributes']}")
+        try:
+            with st.spinner("Displaying message..."):
+                center_col.subheader("Response:")
+                center_col.write(data["message"])
+                message_time = time.time() - start_time
+                center_col.write(f"Time taken to generate message: {message_time}")
+                center_col.write(f"Customer attributes identified: {data['customer_attributes_retrieved']}")
+                center_col.write(f"Time taken to generate customer attributes: {data['time_to_get_attributes']}")
+        except Exception as e:
+            logging.error(f"Error displaying message: {e}")
+            st.error(f"An error occurred while displaying message: {e}")
 
     def display_images(self, col3, data, start_time):
-        for image_info in data:
-            try:
-                img = Image.open(io.BytesIO(base64.b64decode(image_info["image_data"])))
-                col3.image(img, caption=f"Grainger Product Image ({image_info['code']})", use_column_width=True)
-            except Exception as e:
-                logging.error(f"Error displaying image: {e}")
-        time_to_generate_images = time.time() - start_time
-        col3.write(f"Total time taken to generate images: {time_to_generate_images}")
+        try:
+            with st.spinner("Displaying images..."):
+                for image_info in data:
+                    try:
+                        img = Image.open(io.BytesIO(base64.b64decode(image_info["image_data"])))
+                        col3.image(img, caption=f"Grainger Product Image ({image_info['code']})", use_column_width=True)
+                    except Exception as e:
+                        logging.error(f"Error displaying image: {e}")
+                time_to_generate_images = time.time() - start_time
+                col3.write(f"Total time taken to generate images: {time_to_generate_images}")
+        except Exception as e:
+            logging.error(f"Error displaying images: {e}")
+            st.error(f"An error occurred while displaying images: {e}")
 
     def display_review(self, center_col, review):
-        logging.info(f"Displaying review: {review}")
-        if 'code' in review:
-            center_col.subheader('Extracted Review:')
-            center_col.write(f"Product ID: {review['code']}")
-            center_col.write(f"Average Star Rating: {review['average_star_rating']}")
-            center_col.write(f"Average Recommendation Percent: {review['average_recommendation_percent']}")
-            center_col.write("Review Texts:")
-            for idx, review_text in enumerate(review['review_texts'], start=1):
-                center_col.write(f"\nReview {idx}: {review_text}")
-        else:
-            logging.error(f"Missing 'code' in review: {review}")
-
+        try:
+            with st.spinner("Displaying review..."):
+                logging.info(f"Displaying review: {review}")
+                if 'code' in review:
+                    center_col.subheader('Extracted Review:')
+                    center_col.write(f"Product ID: {review['code']}")
+                    center_col.write(f"Average Star Rating: {review['average_star_rating']}")
+                    center_col.write(f"Average Recommendation Percent: {review['average_recommendation_percent']}")
+                    center_col.write("Review Texts:")
+                    for idx, review_text in enumerate(review['review_texts'], start=1):
+                        center_col.write(f"\nReview {idx}: {review_text}")
+                else:
+                    logging.error(f"Missing 'code' in review: {review}")
+        except Exception as e:
+            logging.error(f"Error displaying review: {e}")
+            st.error(f"An error occurred while displaying review: {e}")
 
 def main():
     if 'chat_history' not in st.session_state:

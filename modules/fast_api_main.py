@@ -1,6 +1,7 @@
 import asyncio
 import logging
 import json
+import time
 import traceback
 import uuid
 
@@ -230,8 +231,10 @@ async def fetch_review_for_product(product, resource_manager):
         logging.error(f"{tag}/ WebDriver is not initialized for product {product['code']}")
         return None
 
+
 @app.websocket("/ws/reviews")
 async def websocket_endpoint(websocket: WebSocket):
+    logging.info(f"{tag}/ Starting reviews at {time.time()}")
     await websocket.accept()
     try:
         while True:
@@ -239,7 +242,10 @@ async def websocket_endpoint(websocket: WebSocket):
             products = json.loads(data)
 
             review_tasks = [fetch_review_for_product(product, resource_manager) for product in products]
+
+            # Iterate over completed tasks and send each review to the client immediately
             for review_task in asyncio.as_completed(review_tasks):
+                logging.info(f"{tag}/ Sending review at {time.time()}")
                 review = await review_task
                 if review:
                     await websocket.send_text(json.dumps(review))

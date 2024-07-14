@@ -14,22 +14,18 @@ export BEDROCK_ASSUME_ROLE=$bedrock_assume_role
 AWS_REGION="${AWS_REGION:-${AWS_DEFAULT_REGION:-us-east-1}}"
 export AWS_REGION
 
-# Define the range of ports to try
-port_range=(8000 8001 8500 8505 9000 9001 9002 9003 9004 9004 9006 9007 9008 9009)
+# Execute the function
+kill_processes_on_ports
 
-for port in "${port_range[@]}"; do
-    # Use Python to check if the port is available
-    python -c "import socket; s = socket.socket(socket.AF_INET, socket.SOCK_STREAM); s.bind(('localhost', $port)); s.close(); print('Port $port is available')" > /dev/null 2>&1
-    if [ $? -eq 0 ]; then
-        # Port is available, start Streamlit with this port
-        echo "Starting Streamlit Application..."
-        exec  streamlit run modules/main.py --server.port=$port --server.address=0.0.0.0 || { echo "Streamlit failed to start"; exit 1; }
-        break
-    fi
-done
+echo "Ports are now free."
 
-if [ $? -ne 0 ]; then
-    echo "No available port found in the specified range."
-    echo "Initialization failed. Exiting."
-    exit 1
-fi
+# Start FastAPI on port 8000
+ nohup uvicorn modules.fast_api_main:app --host 0.0.0.0 --port 8000 > >(tee -a nohup.out) 2>&1 &
+
+# Wait a few seconds for FastAPI to start
+sleep 5
+
+# Start Streamlit on port 8505
+ nohup streamlit run streamlit_ui.py --server.port 8505 > >(tee -a nohup.out) 2>&1 &
+
+ echo "FastAPI and Streamlit services have been restarted."

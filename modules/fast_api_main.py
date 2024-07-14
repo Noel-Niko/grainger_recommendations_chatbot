@@ -36,16 +36,17 @@ class ResourceManager:
         options = Options()
         options.add_argument("--headless")
         options.add_argument("--disable-gpu")
-        service = Service(ChromeDriverManager().install())
         try:
+            logging.info("Initializing ChromeDriver...")
+            service = Service(ChromeDriverManager().install())
             self.driver = webdriver.Chrome(service=service, options=options)
+            logging.info("ChromeDriver initialized successfully.")
         except WebDriverException as e:
             logging.error(f"WebDriver failed to start: {e}")
             self.driver = None
 
     async def refresh_bedrock_embeddings(self):
         self.bedrock_embeddings, self.vectorstore_faiss_doc, self.df, self.llm = initialize_embeddings_and_faiss()
-
 
 resource_manager = ResourceManager()
 

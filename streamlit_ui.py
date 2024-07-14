@@ -115,13 +115,18 @@ class StreamlitInterface:
         col3.write(f"Total time taken to generate images: {time_to_generate_images}")
 
     def display_review(self, center_col, review):
-        center_col.subheader('Extracted Review:')
-        center_col.write(f"Product ID: {review['code']}")
-        center_col.write(f"Average Star Rating: {review['average_star_rating']}")
-        center_col.write(f"Average Recommendation Percent: {review['average_recommendation_percent']}")
-        center_col.write("Review Texts:")
-        for idx, review_text in enumerate(review['review_texts'], start=1):
-            center_col.write(f"\nReview {idx}: {review_text}")
+        logging.info(f"Displaying review: {review}")
+        if 'code' in review:
+            center_col.subheader('Extracted Review:')
+            center_col.write(f"Product ID: {review['code']}")
+            center_col.write(f"Average Star Rating: {review['average_star_rating']}")
+            center_col.write(f"Average Recommendation Percent: {review['average_recommendation_percent']}")
+            center_col.write("Review Texts:")
+            for idx, review_text in enumerate(review['review_texts'], start=1):
+                center_col.write(f"\nReview {idx}: {review_text}")
+        else:
+            logging.error(f"Missing 'code' in review: {review}")
+
 
 def main():
     if 'chat_history' not in st.session_state:

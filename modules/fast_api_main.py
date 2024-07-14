@@ -19,6 +19,8 @@ from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
 from webdriver_manager.chrome import ChromeDriverManager
+from starlette.websockets import WebSocketDisconnect
+
 
 tag = "fast_api_main"
 app = FastAPI()
@@ -178,6 +180,7 @@ async def fetch_images(request: Request, resource_manager: ResourceManager = Dep
         logging.error(traceback.format_exc())
         raise HTTPException(status_code=500, detail="Error fetching images")
 
+
 @app.websocket("/ws/reviews")
 async def websocket_endpoint(websocket: WebSocket):
     await websocket.accept()
@@ -185,8 +188,6 @@ async def websocket_endpoint(websocket: WebSocket):
         while True:
             data = await websocket.receive_text()
             products = json.loads(data)
-            logging.info(f"{tag}/ WebSocket received products for review fetching: {products}")
-
             for product in products:
                 product_info = f"{product['product']}, {product['code']}"
                 logging.info(f"{tag}/ Fetching reviews for product: {product_info}")
@@ -209,19 +210,12 @@ async def websocket_endpoint(websocket: WebSocket):
                         logging.info(f"{tag}/ Reviews for product {product['code']}: {reviews_data}")
                     else:
                         logging.info(f"{tag}/ No reviews found for product {product['code']}")
-                else:
-                    logging.error(f"{tag}/ WebDriver is not initialized for product {product['code']}")
-
-            # Notify the client that review fetching is completed
             await websocket.send_text(json.dumps({"end_of_reviews": True}))
-            logging.info(f"{tag}/ Completed review fetching for all products.")
-
     except WebSocketDisconnect:
-        logging.info(f"{tag}/ WebSocket client disconnected")
+        logging.info(f"{tag}/ WebSocket connection closed")
     except Exception as e:
-        logging.error(f"{tag}/ WebSocket error: {e}")
+        logging.error(f"{tag}/ Error in WebSocket endpoint: {str(e)}")
         logging.error(traceback.format_exc())
-
 
 @app.post("/fetch_reviews")
 async def fetch_reviews(request: Request, resource_manager: ResourceManager = Depends(get_resource_manager)):

@@ -53,6 +53,7 @@ class StreamlitInterface:
                 self.display_message(center_col, data, start_time)
                 products = data['products']
                 asyncio.run(self.fetch_and_display_images(col3, products))
+                logging.info(f"Calling websocket_reviews with products: {products}")
                 asyncio.run(self.websocket_reviews(center_col, products))
             else:
                 logging.error(f"Failed to process question: {response.text if response else 'No response'}")
@@ -98,7 +99,7 @@ class StreamlitInterface:
     def display_message(self, center_col, data, start_time):
         center_col.subheader("Response:")
         center_col.write(data["message"])
-        message_time=time.time()-start_time
+        message_time = time.time() - start_time
         center_col.write(f"Time taken to generate message: {message_time}")
         center_col.write(f"Customer attributes identified: {data['customer_attributes_retrieved']}")
         center_col.write(f"Time taken to generate customer attributes: {data['time_to_get_attributes']}")

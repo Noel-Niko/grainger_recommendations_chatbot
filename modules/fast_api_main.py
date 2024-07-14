@@ -178,22 +178,54 @@ async def fetch_images(request: Request, resource_manager: ResourceManager = Dep
         logging.error(traceback.format_exc())
         raise HTTPException(status_code=500, detail="Error fetching images")
 
-@app.websocket("/ws/{session_id}")
-async def websocket_endpoint(websocket: WebSocket, session_id: str):
+@app.websocket("/ws/reviews")
+async def websocket_endpoint(websocket: WebSocket):
     await websocket.accept()
     try:
         while True:
-            await asyncio.sleep(1)
-            if session_id in session_store and session_store[session_id]:
-                review = session_store[session_id].pop(0)
-                await websocket.send_text(json.dumps(review))
+            data = await websocket.receive_text()
+            products = json.loads(data)
+            logging.info(f"{tag}/ WebSocket received products for review fetching: {products}")
+
+            for product in products:
+                product_info = f"{product['product']}, {product['code']}"
+                logging.info(f"{tag}/ Fetching reviews for product: {product_info}")
+
+                if resource_manager.driver:
+                    try:
+                        reviews_data = await async_navigate_to_reviews_selenium(product_info, resource_manager.driver)
+                    except Exception as e:
+                        logging.error(f"{tag}/ Error navigating to reviews for {product_info}: {str(e)}")
+                        continue
+
+                    if reviews_data:
+                        review = {
+                            "code": product['code'],
+                            "average_star_rating": reviews_data['Average Star Rating'],
+                            "average_recommendation_percent": reviews_data['Average Recommendation Percent'],
+                            "review_texts": reviews_data['Review Texts']
+                        }
+                        await websocket.send_text(json.dumps(review))
+                        logging.info(f"{tag}/ Reviews for product {product['code']}: {reviews_data}")
+                    else:
+                        logging.info(f"{tag}/ No reviews found for product {product['code']}")
+                else:
+                    logging.error(f"{tag}/ WebDriver is not initialized for product {product['code']}")
+
+            # Notify the client that review fetching is completed
+            await websocket.send_text(json.dumps({"end_of_reviews": True}))
+            logging.info(f"{tag}/ Completed review fetching for all products.")
+
+    except WebSocketDisconnect:
+        logging.info(f"{tag}/ WebSocket client disconnected")
     except Exception as e:
-        logging.error(f"Error in WebSocket connection: {e}")
-        await websocket.close()
+        logging.error(f"{tag}/ WebSocket error: {e}")
+        logging.error(traceback.format_exc())
 
 
 @app.post("/fetch_reviews")
 async def fetch_reviews(request: Request, resource_manager: ResourceManager = Depends(get_resource_manager)):
+    logging.info(f"{tag}/ Received request to fetch reviews.")
     try:
         products = await request.json()
         logging.info(f"{tag}/ Received products for review fetching: {products}")
@@ -206,7 +238,7 @@ async def fetch_reviews(request: Request, resource_manager: ResourceManager = De
                 try:
                     reviews_data = await async_navigate_to_reviews_selenium(product_info, resource_manager.driver)
                 except Exception as e:
-                    logging.error(f"{tag}/ Error navigating to reviews: {str(e)}")
+                    logging.error(f"{tag}/ Error navigating to reviews for {product_info}: {str(e)}")
                     continue
 
                 if reviews_data:

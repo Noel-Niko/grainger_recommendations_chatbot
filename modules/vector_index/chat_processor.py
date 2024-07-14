@@ -10,6 +10,7 @@ from .response_parser import split_process_and_message_from_response
 
 tag = 'chat_processor'
 
+
 def process_chat_question_with_customer_attribute_identifier(question, document, llm, chat_history):
     start_time = time.time()
     prompt_template3 = """Human: Extract list of products (do not repeat or duplicate) and their respective Code's 
@@ -70,9 +71,6 @@ def process_chat_question_with_customer_attribute_identifier(question, document,
             except json.JSONDecodeError as e:
                 logging.error(f"{tag}/ Failed to fix JSON format: {str(e)}")
                 product_list_as_json = None
-
-        if product_list_as_json is not None:
-            chat_history.append(product_list_as_json['products'])
 
         return message, product_list_as_json, str(customer_attributes_retrieved), time_to_get_attributes
 

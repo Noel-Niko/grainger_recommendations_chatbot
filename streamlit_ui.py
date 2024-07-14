@@ -1,4 +1,6 @@
 import logging
+import uuid
+
 from PIL import Image
 import io
 import base64
@@ -14,22 +16,22 @@ backendUrl = "http://127.0.0.1:8000"
 class StreamlitInterface:
     def __init__(self):
         self.session_id = None
+        if "session_id" not in st.session_state:
+            st.session_state.session_id = str(uuid.uuid4())
+        self.session_id = st.session_state.session_id
 
-    def initialize_session(self):
-        response = httpx.get(f"{backendUrl}/initialize_session")
-        if response.status_code == 200:
-            self.session_id = response.json().get("session_id")
-            logging.info(f"{tag}/ Initialized session with ID: {self.session_id}")
-        else:
-            logging.error("Failed to initialize session")
+    # def initialize_session(self):
+    #     response = httpx.get(f"{backendUrl}/initialize_session")
+    #     if response.status_code == 200:
+    #         self.session_id = response.json().get("session_id")
+    #         logging.info(f"{tag}/ Initialized session with ID: {self.session_id}")
+    #     else:
+    #         logging.error("Failed to initialize session")
 
     def run(self):
         st.set_page_config(layout="wide")
         st.button("Clear History", on_click=self.clear_chat_history)
         st.title("Grainger Recommendations Chatbot")
-
-        if not self.session_id:
-            self.initialize_session()
 
         main_column, side_column = st.columns([2, 1])
 
@@ -64,21 +66,22 @@ class StreamlitInterface:
                 logging.error(f"Failed to process question: {response.text}")
 
             total_time = time.time() - start_time
-            center_col.write(f"Total time to answer: {total_time}")
+            center_col.write(f"Total time to answer question: {total_time}")
 
     async def fetch_and_display_images(self, col3, products):
+        start_time = time.time()
         url = f"{backendUrl}/fetch_images"
-        headers = {"Content-Type": "application/json"}
+        headers = {"Content-Type": "application/json", "session-id": self.session_id}
         async with httpx.AsyncClient() as client:
             response = await client.post(url, headers=headers, json=products, timeout=120)
             if response.status_code == 200:
-                self.display_images(col3, response.json())
+                self.display_images(col3, response.json(), start_time)
             else:
                 logging.error(f"Failed to fetch images: {response.text}")
 
     async def fetch_and_display_reviews(self, center_col, products):
         url = f"{backendUrl}/fetch_reviews"
-        headers = {"Content-Type": "application/json"}
+        headers = {"Content-Type": "application/json", "session-id": self.session_id}
         async with httpx.AsyncClient() as client:
             response = await client.post(url, headers=headers, json=products, timeout=120)
             if response.status_code == 200:
@@ -92,13 +95,15 @@ class StreamlitInterface:
         center_col.write(f"Customer attributes identified: {data['customer_attributes_retrieved']}")
         center_col.write(f"Time taken to generate customer attributes: {data['time_to_get_attributes']}")
 
-    def display_images(self, col3, data):
+    def display_images(self, col3, data, start_time):
         for image_info in data:
             try:
                 img = Image.open(io.BytesIO(base64.b64decode(image_info["image_data"])))
                 col3.image(img, caption=f"Grainger Product Image ({image_info['code']})", use_column_width=True)
             except Exception as e:
                 logging.error(f"Error displaying image: {e}")
+        time_to_generate_images = time.time() - start_time
+        col3.write(f"Total time taken to generate images: {time_to_generate_images}")
 
     def display_reviews(self, center_col, data):
         center_col.subheader('Extracted Reviews:')

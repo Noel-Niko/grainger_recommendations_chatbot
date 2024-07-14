@@ -2,11 +2,20 @@
 
 cd /app
 
+aws_access_key_id=$(cat aws_access_key_id)
+export AWS_ACCESS_KEY_ID=$aws_access_key_id
+
+aws_secret_access_key=$(cat aws_secret_access_key)
+export AWS_SECRET_ACCESS_KEY=$aws_secret_access_key
+
+bedrock_assume_role=$(cat bedrock_assume_role)
+export BEDROCK_ASSUME_ROLE=$bedrock_assume_role
+
 AWS_REGION="${AWS_REGION:-${AWS_DEFAULT_REGION:-us-east-1}}"
 export AWS_REGION
 
 # Define the range of ports to try
-port_range=(8000 8001 8500 8505 9000, 9001, 9002, 9003, 9004, 9004, 9006, 9007, 9008, 9009)
+port_range=(8000 8001 8500 8505 9000 9001 9002 9003 9004 9004 9006 9007 9008 9009)
 
 for port in "${port_range[@]}"; do
     # Use Python to check if the port is available

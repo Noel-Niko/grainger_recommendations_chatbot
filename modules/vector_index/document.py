@@ -26,12 +26,17 @@ class Document:
 
 
 def get_boto3_session():
+    role_arn = os.environ.get("BEDROCK_ASSUME_ROLE")
+    if not role_arn:
+        logging.error("Environment variable 'BEDROCK_ASSUME_ROLE' is not set")
+        raise ValueError("Environment variable 'BEDROCK_ASSUME_ROLE' is not set")
+
     try:
         session = boto3.Session()
         sts_client = session.client('sts')
 
         assume_role_object = sts_client.assume_role(
-            RoleArn=os.environ.get("BEDROCK_ASSUME_ROLE"),
+            RoleArn=role_arn,
             RoleSessionName="AssumeRoleSession1"
         )
         credentials = assume_role_object['Credentials']
@@ -46,8 +51,6 @@ def get_boto3_session():
 
 
 def initialize_embeddings_and_faiss():
-    os.environ["AWS_DEFAULT_REGION"] = "us-east-1"
-
     boto3_session = get_boto3_session()
 
     logging.info("Initializing Bedrock clients...")
@@ -134,7 +137,6 @@ def initialize_embeddings_and_faiss():
     return bedrock_embeddings, vectorstore_faiss_doc, df, llm
 
 
-# TODO: consider replacing 'similarity' with mmr for a mix of relevant results while avoiding redundancy
 def parallel_search(queries, vectorstore_faiss_doc, k=10, search_type='similarity', num_threads=4):
     def search_faiss(query):
         return vectorstore_faiss_doc.search(query, k=k, search_type=search_type)

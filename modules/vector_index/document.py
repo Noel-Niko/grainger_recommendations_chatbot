@@ -137,7 +137,7 @@ def initialize_embeddings_and_faiss():
     return bedrock_embeddings, vectorstore_faiss_doc, df, llm
 
 # 'similarity' is standard 'mmr' for greater variety
-def parallel_search(queries, vectorstore_faiss_doc, k=10, search_type='mmr', num_threads=4):
+def parallel_search(queries, vectorstore_faiss_doc, k=5, search_type='similarity', num_threads=5):
     def search_faiss(query):
         return vectorstore_faiss_doc.search(query, k=k, search_type=search_type)
 

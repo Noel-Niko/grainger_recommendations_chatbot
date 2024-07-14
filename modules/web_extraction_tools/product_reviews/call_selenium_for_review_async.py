@@ -58,31 +58,31 @@ async def async_navigate_to_reviews_selenium(product_id, driver):
 
     search_url = f'https://www.zoro.com/search?q={product_id}'
     await asyncio.to_thread(driver.get, search_url)
-    await asyncio.sleep(2)  # Wait for the page to load
+    await asyncio.sleep(1)  # Wait for the page to load
 
     try:
-        await asyncio.to_thread(WebDriverWait(driver, 10).until, EC.presence_of_element_located((By.CSS_SELECTOR, 'a.product-card-image__link')))
+        await asyncio.to_thread(WebDriverWait(driver, 3).until, EC.presence_of_element_located((By.CSS_SELECTOR, 'a.product-card-image__link')))
     except TimeoutError:
-        print("Product link not found within 10 seconds.")
+        print("Product link not found within 3 seconds.")
         return []
 
     # Find the specific product link using CSS selector
     product_link = await asyncio.to_thread(driver.find_element, By.CSS_SELECTOR, 'a.product-card-image__link')
     product_url = await asyncio.to_thread(product_link.get_attribute, 'href')
     await asyncio.to_thread(driver.get, product_url)
-    await asyncio.sleep(2)  # Wait for the product page to load
+    await asyncio.sleep(1)  # Wait for the product page to load
 
     try:
-        await asyncio.to_thread(WebDriverWait(driver, 10).until, EC.presence_of_element_located((By.CSS_SELECTOR, 'a[href*="reviews"]')))
+        await asyncio.to_thread(WebDriverWait(driver, 3).until, EC.presence_of_element_located((By.CSS_SELECTOR, 'a[href*="reviews"]')))
     except TimeoutError:
-        print("Reviews link not found within 10 seconds.")
+        print("Reviews link not found within 3 seconds.")
         return []
 
     # Find the reviews link using CSS selector
     reviews_link = await asyncio.to_thread(driver.find_element, By.CSS_SELECTOR, 'a[href*="reviews"]')
     reviews_url = await asyncio.to_thread(reviews_link.get_attribute, 'href')
     await asyncio.to_thread(driver.get, reviews_url)
-    await asyncio.sleep(2)  # Wait for the reviews page to load
+    await asyncio.sleep(1)  # Wait for the reviews page to load
 
     html_content = driver.page_source
 

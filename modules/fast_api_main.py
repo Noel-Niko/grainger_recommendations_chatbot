@@ -13,8 +13,7 @@ from selenium.common import WebDriverException
 from modules.image_utils.grainger_image_util import get_images
 from modules.vector_index.chat_processor import process_chat_question_with_customer_attribute_identifier
 from modules.vector_index.document import initialize_embeddings_and_faiss
-from modules.web_extraction_tools.product_reviews.call_selenium_for_review_async import \
-    async_navigate_to_reviews_selenium
+from modules.web_extraction_tools.product_reviews.call_selenium_for_review_async import async_navigate_to_reviews_selenium
 import base64
 import io
 from PIL import Image
@@ -58,7 +57,8 @@ async def startup_event():
 
 @app.on_event("shutdown")
 async def shutdown_event():
-    resource_manager.driver.quit()
+    if resource_manager.driver:
+        resource_manager.driver.quit()
     logging.info("Shutdown complete.")
 
 
@@ -83,7 +83,7 @@ async def ask_question(
             raise HTTPException(status_code=400, detail="Session ID is required")
 
         if session_id not in session_store:
-            session_store[session_id] = {}
+            session_store[session_id] = []  # Initialize as an empty list
             logging.info(f" {tag}/ Adding new session ID {session_id} to session_store")
 
         logging.info(f"{tag}/ Received question: {chat_request.question} with session_id: {session_id}")
@@ -143,11 +143,14 @@ async def process_chat_question(question, clear_history, session_id, resource_ma
         logging.info(f"{tag}/ Response json: {response_json}")
         logging.info(f"{tag}/ Customer attributes retrieved: {customer_attributes_retrieved}")
         logging.info(f"{tag}/ Time to get attributes: {time_to_get_attributes}")
+
         chat_history.append(
-            [f"QUESTION: {question}. MESSAGE: {message}. CUSTOMER ATTRIBUTES: {customer_attributes_retrieved}"])
+            f"QUESTION: {question}. MESSAGE: {message}. CUSTOMER ATTRIBUTES: {customer_attributes_retrieved}")
         session_store[session_id] = chat_history
+
         logging.info(f"{tag}/ Updated chat history for session_id {session_id}: {session_store[session_id]}")
         logging.info(f"{tag}/ Processed question: {question} with message: {message}")
+
         return message, response_json, customer_attributes_retrieved, time_to_get_attributes
     except Exception as e:
         logging.error(f"{tag}/ Error processing chat question: {str(e)}")

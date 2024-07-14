@@ -45,7 +45,7 @@ class StreamlitInterface:
 
                     # Call FastAPI to process the chat question
                     headers = {"session-id": self.session_id}
-                    payload = {"question": question, "clear_history": False}
+                    payload = {"session_id": self.session_id, "question": question, "clear_history": False}
                     url = f"{backendUrl}/ask_question"
 
                     response = self.retry_http_post(url, headers, payload, timeout=120)
@@ -62,8 +62,8 @@ class StreamlitInterface:
                     total_time = time.time() - start_time
                     center_col.write(f"Total time to answer question: {total_time}")
             except Exception as e:
-                logging.error(f"Error while asking question: {e}")
-                st.error(f"An error occurred: {e}")
+                logging.error(f"Error in ask_question: {e}")
+                st.error(f"An error occurred while processing the question: {e}")
 
     def retry_http_post(self, url, headers, payload, timeout, retries=5, delay=5):
         """Retry HTTP POST request if it fails."""
@@ -81,11 +81,11 @@ class StreamlitInterface:
         return None
 
     async def fetch_and_display_images(self, col3, products):
-        start_time = time.time()
-        url = f"{backendUrl}/fetch_images"
-        headers = {"Content-Type": "application/json", "session-id": self.session_id}
         try:
             with st.spinner("Fetching images..."):
+                start_time = time.time()
+                url = f"{backendUrl}/fetch_images"
+                headers = {"Content-Type": "application/json", "session-id": self.session_id}
                 async with httpx.AsyncClient() as client:
                     response = await client.post(url, headers=headers, json=products, timeout=120)
                     if response.status_code == 200:
@@ -107,7 +107,7 @@ class StreamlitInterface:
                         if review.get("end_of_reviews"):
                             break
         except Exception as e:
-            logging.error(f"Error fetching reviews: {e}")
+            logging.error(f"Error in websocket_reviews: {e}")
             st.error(f"An error occurred while fetching reviews: {e}")
 
     def display_message(self, center_col, data, start_time):

@@ -10,10 +10,11 @@ from .response_parser import split_process_and_message_from_response
 
 tag = 'chat_processor'
 
+logging.basicConfig(level=logging.INFO, stream=sys.stdout)
 
 def process_chat_question_with_customer_attribute_identifier(question, document, llm, chat_history):
     start_time = time.time()
-    prompt_template3 = """Human: Extract list of products (do not repeat or duplicate) and their respective Code's 
+    prompt_template = """Human: Extract a list of products (do not repeat or duplicate) and their respective Codes 
                         from catalog that answer the user question.
                 The catalog of products is provided under <catalog></catalog> tags below.
                 <catalog>
@@ -22,12 +23,12 @@ def process_chat_question_with_customer_attribute_identifier(question, document,
                 Question: {question}
 
                 The output should be a json of the form <products>[{{"product": <description of the product from the catalog>, "code":<code of the product from the catalog>}}, ...]</products> for me to process.
-                Also, provide a user-readable message responding in full to the question with all the of the information to display to the user in the form <response>{{message}}</response>.
-                Skip the preamble and always return valid json.
+                Also, provide a user-readable message responding in full to the question speaking as a friendly salesperson chatbot with all the of the information to display to the user in the form <response>{{message}}</response>.
+                Skip the preamble and always return valid json including empty json if not products are found.
                 Assistant: """
 
     PROMPT = PromptTemplate(
-        template=prompt_template3, input_variables=["context", "question"]
+        template=prompt_template, input_variables=["context", "question"]
     )
 
     search_index_get_answer_from_llm = RetrievalQA.from_chain_type(
@@ -55,6 +56,7 @@ def process_chat_question_with_customer_attribute_identifier(question, document,
         logging.info(f"{tag}/ chat_procesing: product_list_as_json: {product_list_as_json}")
 
         # Ensure product_list_as_json is valid JSON
+        logging.info(f"{tag}/ product_list_as_json: {product_list_as_json}")
         try:
             # Convert to string if not already
             if isinstance(product_list_as_json, dict):

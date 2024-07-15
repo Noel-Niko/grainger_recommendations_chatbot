@@ -32,7 +32,7 @@ class StreamlitInterface:
             self.ask_question(main_column, side_column)
 
     def clear_chat_history(self):
-        st.session_state.chat_history = []
+        st.session_state.chat_history = True
 
     def ask_question(self, center_col, col3):
         logging.info("Asking question")
@@ -45,10 +45,13 @@ class StreamlitInterface:
 
                     # Call FastAPI to process the chat question
                     headers = {"session-id": self.session_id}
-                    payload = {"session_id": self.session_id, "question": question, "clear_history": False}
+                    payload = {"session_id": self.session_id, "question": question, "clear_history": st.session_state.chat_history}
                     url = f"{backendUrl}/ask_question"
+                    # Reset chat history after processing the question prn
+                    if st.session_state.chat_history is True:
+                        st.session_state.chat_history = False
 
-                    response = self.retry_http_post(url, headers, payload, timeout=120)
+                    response = self.retry_http_post(url, headers, payload, timeout=20, center_col=center_col)
 
                     if response and response.status_code == 200:
                         data = response.json()
@@ -65,7 +68,7 @@ class StreamlitInterface:
                 logging.error(f"Error in ask_question: {e}")
                 st.error(f"An error occurred while processing the question: {e}")
 
-    def retry_http_post(self, url, headers, payload, timeout, retries=5, delay=5):
+    def retry_http_post(self, url, headers, payload, timeout, retries=2, delay=5, center_col=None):
         """Retry HTTP POST request if it fails."""
         for attempt in range(retries):
             try:
@@ -78,6 +81,7 @@ class StreamlitInterface:
                 logging.error(f"Attempt {attempt + 1} failed: {str(e)}")
             time.sleep(delay)
         logging.error(f"All {retries} attempts failed.")
+        center_col.write(f"Sorry unable to process your request. Please try again.")
         return None
 
     async def fetch_and_display_images(self, col3, products):
@@ -158,7 +162,7 @@ class StreamlitInterface:
 
 def main():
     if 'chat_history' not in st.session_state:
-        st.session_state.chat_history = []
+        st.session_state.chat_history = False
 
     interface = StreamlitInterface()
     interface.run()

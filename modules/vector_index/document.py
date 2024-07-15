@@ -12,7 +12,7 @@ from langchain_aws import Bedrock
 
 from .bedrock_initializer import bedrock
 
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s',  handlers=[logging.StreamHandler()])
 
 current_dir = os.path.dirname(__file__)
 project_root = os.path.abspath(os.path.join(current_dir, '..'))
@@ -97,7 +97,9 @@ def initialize_embeddings_and_faiss():
         logging.error("Error loading serialized_documents_file at " + serialized_documents_file)
         logging.info("Generating new df")
         for index, row in df.iterrows():
-            page_content = f"{row['Code']} {row['Name']} {row['Brand']} {row['Description'] if pd.notna(row['Description']) else ''}"
+            description = row['Description'] if pd.notna(row['Description']) else ''
+            price = row['Price'] if pd.notna(row['Price']) else ''
+            page_content = f"{row['Code']} {row['Name']} {price} {description}"
             metadata = {
                 'Brand': row['Brand'],
                 'Code': row['Code'],

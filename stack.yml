@@ -1,9 +1,11 @@
 Resources:
+  # ECS Cluster
   ECSCluster:
     Type: AWS::ECS::Cluster
     Properties:
       ClusterName: grainger-recommendations-cluster
 
+  # IAM Role for ECS Instances
   ECSClusterInstanceRole:
     Type: AWS::IAM::Role
     Properties:
@@ -31,16 +33,15 @@ Resources:
                   - ecs:Submit*
                   - logs:CreateLogStream
                   - logs:PutLogEvents
-                  - ecs:CreateCluster
-                  - ecs:DeregisterContainerInstance
-                  - ecs:DiscoverPollEndpoint
                   - ecr:GetAuthorizationToken
-                  - ecr:BatchCheckLayerAvailability                    - ecr:GetDownloadUrlForLayer
+                  - ecr:BatchCheckLayerAvailability
+                  - ecr:GetDownloadUrlForLayer
                   - ecr:BatchGetImage
                   - s3:GetObject
                   - s3:PutObject
                 Resource: "*"
 
+  # Instance Profile for ECS Instances
   ECSInstanceProfile:
     Type: AWS::IAM::InstanceProfile
     Properties:
@@ -48,6 +49,7 @@ Resources:
       Roles:
         - !Ref ECSClusterInstanceRole
 
+  # Launch Configuration for Auto Scaling Group
   ECSLaunchConfiguration:
     Type: AWS::AutoScaling::LaunchConfiguration
     Properties:
@@ -63,6 +65,7 @@ Resources:
           echo ECS_CLUSTER=${ECSCluster} >> /etc/ecs/ecs.config
           service ecs start
 
+  # Auto Scaling Group
   ECSAutoScalingGroup:
     Type: AWS::AutoScaling::AutoScalingGroup
     Properties:
@@ -79,6 +82,7 @@ Resources:
           PropagateAtLaunch: true
     DependsOn: ECSLaunchConfiguration
 
+  # ECS Task Definition
   ECSTaskDefinition:
     Type: AWS::ECS::TaskDefinition
     Properties:
@@ -94,6 +98,7 @@ Resources:
             - ContainerPort: 8501
           MemoryReservation: 4096
 
+  # ECS Service
   ECSService:
     Type: AWS::ECS::Service
     Properties:
@@ -109,6 +114,7 @@ Resources:
             - sg-0857f1e3a154956da
     DependsOn: ECSCluster
 
+  # Application Load Balancer
   ECSALB:
     Type: AWS::ElasticLoadBalancingV2::LoadBalancer
     Properties:
@@ -126,6 +132,7 @@ Resources:
         - Key: Name
           Value: grainger-recommendations-alb
 
+  # ALB Listener
   ECSALBListener:
     Type: AWS::ElasticLoadBalancingV2::Listener
     Properties:
@@ -136,6 +143,7 @@ Resources:
         - Type: forward
           TargetGroupArn: !Ref ECSTG
 
+  # ALB Target Group
   ECSTG:
     Type: AWS::ElasticLoadBalancingV2::TargetGroup
     Properties:

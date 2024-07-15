@@ -37,12 +37,14 @@ ENV PYTHONPATH="/app:${PYTHONPATH}"
 RUN apt-get update && apt-get install -y swig
 
 # Install pip required install(s)
-RUN pip install -r requirements.txt
+RUN pip install --upgrade pip setuptools wheel \
+    && pip install -r requirements.txt --verbose
 
 # Clean up to reduce image size
 RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 EXPOSE 8000
+EXPOSE 8505
 
 # Make the script executable
 RUN chmod +x /app/start.sh

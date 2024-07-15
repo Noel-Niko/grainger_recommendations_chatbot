@@ -1,6 +1,6 @@
 #!/bin/bash
 
-aws_access_key_id=$(cat aws_access_key_id)
+
 aws_access_key_id=$(cat aws_access_key_id)
 export AWS_ACCESS_KEY_ID=$aws_access_key_id
 

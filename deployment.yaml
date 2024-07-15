@@ -5,11 +5,13 @@ metadata:
 type: Opaque
 stringData:
   AWS_ACCESS_KEY_ID: |-
-    {{ printf .Files.Get "aws_access_key_id" | b64enc }}
+    {{ .Values.aws_access_key_id | b64enc }}
   AWS_SECRET_ACCESS_KEY: |-
-    {{ printf .Files.Get "aws_secret_access_key" | b64enc }}
+    {{ .Values.aws_secret_access_key | b64enc }}
+  AWS_SESSION_TOKEN: |-
+    {{ .Values.aws_session_token | b64enc }}
   BEDROCK_ASSUME_ROLE: |-
-    {{ printf .Files.Get "bedrock_assume_role" | b64enc }}
+    {{ .Values.bedrock_assume_role | b64enc }}
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -34,7 +36,7 @@ spec:
         - name: PORT
           value: "8501"
         - name: AWS_REGION
-          value: us-east-1  # Specify your AWS region here
+          value: "${AWS_REGION:-${AWS_DEFAULT_REGION:-us-east-1}}"
         - name: AWS_ACCESS_KEY_ID
           valueFrom:
             secretKeyRef:
@@ -50,6 +52,11 @@ spec:
             secretKeyRef:
               name: aws-credentials
               key: AWS_SESSION_TOKEN
+        - name: BEDROCK_ASSUME_ROLE
+          valueFrom:
+            secretKeyRef:
+              name: aws-credentials
+              key: BEDROCK_ASSUME_ROLE
 ---
 apiVersion: v1
 kind: Service
@@ -62,7 +69,7 @@ spec:
   ports:
   - protocol: TCP
     port: 80  # The port on which the service will be accessible
-    targetPort: 8501  # The port on which the application is listening inside the container
+    targetPort: 8505  # The port on which the application is listening inside the container
     nodePort: 30505  # The port on which the service will be exposed on each Node
 ---
 apiVersion: networking.k8s.io/v1

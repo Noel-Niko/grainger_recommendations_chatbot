@@ -14,18 +14,18 @@ export BEDROCK_ASSUME_ROLE=$bedrock_assume_role
 AWS_REGION="${AWS_REGION:-${AWS_DEFAULT_REGION:-us-east-1}}"
 export AWS_REGION
 
-# Execute the function
-kill_processes_on_ports
+# Define the port for FastAPI
+FASTAPI_PORT=8000
 
-echo "Ports are now free."
-
-# Start FastAPI on port 8000
- nohup uvicorn modules.fast_api_main:app --host 0.0.0.0 --port 8000 > >(tee -a nohup.out) 2>&1 &
+# Start FastAPI
+echo "Starting FastAPI Application on port $FASTAPI_PORT..."
+nohup uvicorn modules.fast_api_main:app --host 0.0.0.0 --port $FASTAPI_PORT > >(tee -a nohup.out) 2>&1 &
 
 # Wait a few seconds for FastAPI to start
 sleep 5
 
-# Start Streamlit on port 8505
- nohup streamlit run streamlit_ui.py --server.port 8505 > >(tee -a nohup.out) 2>&1 &
+# Start Streamlit UI on port 8505
+echo "Starting Streamlit UI on port 8505..."
+nohup streamlit run streamlit_ui.py --server.port 8505 > >(tee -a nohup.out) 2>&1 &
 
- echo "FastAPI and Streamlit services have been restarted."
+echo "Both FastAPI and Streamlit are running."

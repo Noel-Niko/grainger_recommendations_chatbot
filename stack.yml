@@ -31,6 +31,14 @@ Resources:
                   - ecs:Submit*
                   - logs:CreateLogStream
                   - logs:PutLogEvents
+                  - ecs:CreateCluster
+                  - ecs:DeregisterContainerInstance
+                  - ecs:DiscoverPollEndpoint
+                  - ecr:GetAuthorizationToken
+                  - ecr:BatchCheckLayerAvailability                    - ecr:GetDownloadUrlForLayer
+                  - ecr:BatchGetImage
+                  - s3:GetObject
+                  - s3:PutObject
                 Resource: "*"
 
   ECSInstanceProfile:
@@ -44,7 +52,7 @@ Resources:
     Type: AWS::AutoScaling::LaunchConfiguration
     Properties:
       ImageId: ami-0e5d65fb7cb2158eb
-      InstanceType: t3.medium
+      InstanceType: m5.large  # Ensure this has sufficient resources
       IamInstanceProfile: !Ref ECSInstanceProfile
       KeyName: grainger_recs
       SecurityGroups:
@@ -53,6 +61,7 @@ Resources:
         Fn::Base64: !Sub |
           #!/bin/bash
           echo ECS_CLUSTER=${ECSCluster} >> /etc/ecs/ecs.config
+          service ecs start
 
   ECSAutoScalingGroup:
     Type: AWS::AutoScaling::AutoScalingGroup
@@ -61,9 +70,9 @@ Resources:
         - subnet-0918f902632532b95
         - subnet-0487499961164e5cd
       LaunchConfigurationName: !Ref ECSLaunchConfiguration
-      MinSize: 1
+      MinSize: 2
       MaxSize: 4
-      DesiredCapacity: 1
+      DesiredCapacity: 2
       Tags:
         - Key: Name
           Value: grainger-recommendations-ecs-instance

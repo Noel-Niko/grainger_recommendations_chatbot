@@ -40,6 +40,20 @@ Resources:
       Roles:
         - !Ref ECSClusterInstanceRole
 
+  ECSLaunchConfiguration:
+    Type: AWS::AutoScaling::LaunchConfiguration
+    Properties:
+      ImageId: ami-0e5d65fb7cb2158eb
+      InstanceType: t3.medium
+      IamInstanceProfile: !Ref ECSInstanceProfile
+      KeyName: grainger_recs
+      SecurityGroups:
+        - sg-0857f1e3a154956da
+      UserData:
+        Fn::Base64: !Sub |
+          #!/bin/bash
+          echo ECS_CLUSTER=${ECSCluster} >> /etc/ecs/ecs.config
+
   ECSAutoScalingGroup:
     Type: AWS::AutoScaling::AutoScalingGroup
     Properties:
@@ -54,20 +68,7 @@ Resources:
         - Key: Name
           Value: grainger-recommendations-ecs-instance
           PropagateAtLaunch: true
-
-  ECSLaunchConfiguration:
-    Type: AWS::AutoScaling::LaunchConfiguration
-    Properties:
-      ImageId: ami-0e5d65fb7cb2158eb
-      InstanceType: t3.medium
-      IamInstanceProfile: !Ref ECSInstanceProfile
-      KeyName: grainger_recs
-      SecurityGroups:
-        - sg-0857f1e3a154956da
-      UserData:
-        Fn::Base64: !Sub |
-          #!/bin/bash
-          echo ECS_CLUSTER=${ECSCluster} >> /etc/ecs/ecs.config
+    DependsOn: ECSLaunchConfiguration
 
   ECSTaskDefinition:
     Type: AWS::ECS::TaskDefinition
@@ -97,6 +98,7 @@ Resources:
             - subnet-0918f902632532b95
           SecurityGroups:
             - sg-0857f1e3a154956da
+    DependsOn: ECSCluster
 
   ECSALB:
     Type: AWS::ElasticLoadBalancingV2::LoadBalancer

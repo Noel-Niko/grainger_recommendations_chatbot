@@ -54,7 +54,7 @@ Resources:
     Type: AWS::AutoScaling::LaunchConfiguration
     Properties:
       ImageId: ami-0e5d65fb7cb2158eb
-      InstanceType: m5.large  # Ensure this has sufficient resources
+      InstanceType: r5.xlarge # Adjust as needed
       IamInstanceProfile: !Ref ECSInstanceProfile
       KeyName: grainger_recs
       SecurityGroups:
@@ -73,9 +73,9 @@ Resources:
         - subnet-0918f902632532b95
         - subnet-0487499961164e5cd
       LaunchConfigurationName: !Ref ECSLaunchConfiguration
-      MinSize: 2
+      MinSize: 1
       MaxSize: 4
-      DesiredCapacity: 2
+      DesiredCapacity: 1
       Tags:
         - Key: Name
           Value: grainger-recommendations-ecs-instance
@@ -122,7 +122,7 @@ Resources:
       Scheme: internet-facing
       LoadBalancerAttributes:
         - Key: idle_timeout.timeout_seconds
-          Value: '60'
+          Value: '600'
       Subnets:
         - subnet-0918f902632532b95
         - subnet-0487499961164e5cd

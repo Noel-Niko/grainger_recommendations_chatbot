@@ -53,8 +53,8 @@ def process_chat_question_with_customer_attribute_identifier(question, document,
 
         llm_retrieval_augmented_response = search_index_get_answer_from_llm.run(**context)
         message, product_list_as_json = split_process_and_message_from_response(llm_retrieval_augmented_response)
-        logging.info(f"{tag}/ chat_procesing: message: {message}")
-        logging.info(f"{tag}/ chat_procesing: product_list_as_json: {product_list_as_json}")
+        # logging.info(f"{tag}/ chat_procesing: message: {message}")
+        # logging.info(f"{tag}/ chat_procesing: product_list_as_json: {product_list_as_json}")
 
         # Ensure product_list_as_json is valid JSON
         logging.info(f"{tag}/ product_list_as_json: {product_list_as_json}")
@@ -64,6 +64,7 @@ def process_chat_question_with_customer_attribute_identifier(question, document,
                 product_list_as_json = json.dumps(product_list_as_json)
             # Attempt to load JSON directly
             product_list_as_json = json.loads(product_list_as_json)
+            logging.info(f"{tag}/ product_list_as_json processed")
         except json.JSONDecodeError:
             logging.warning(f"{tag}/ Invalid JSON format detected. Attempting to fix.")
             try:

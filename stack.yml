@@ -54,7 +54,7 @@ Resources:
     Type: AWS::AutoScaling::LaunchConfiguration
     Properties:
       ImageId: ami-0e5d65fb7cb2158eb
-      InstanceType: r5.xlarge # Adjust as needed
+      InstanceType: t3.medium
       IamInstanceProfile: !Ref ECSInstanceProfile
       KeyName: grainger_recs
       SecurityGroups:
@@ -64,6 +64,7 @@ Resources:
           #!/bin/bash
           echo ECS_CLUSTER=${ECSCluster} >> /etc/ecs/ecs.config
           service ecs start
+          echo "ECS agent started and instance registered to ECS cluster"
 
   # Auto Scaling Group
   ECSAutoScalingGroup:
@@ -95,7 +96,7 @@ Resources:
         - Name: grainger-recommendations-container
           Image: public.ecr.aws/e2o8h8p3/grainger_recommendations_chatbot:latest
           PortMappings:
-            - ContainerPort: 8501
+            - ContainerPort: 8505
           MemoryReservation: 4096
 
   # ECS Service
@@ -148,7 +149,7 @@ Resources:
     Type: AWS::ElasticLoadBalancingV2::TargetGroup
     Properties:
       Name: grainger-recommendations-tg
-      Port: 8501
+      Port: 8505
       Protocol: HTTP
       TargetType: ip
       VpcId: vpc-0aa4186490602cedd

@@ -1,28 +1,25 @@
+# Use an official Python runtime as a parent image
 FROM python:3.11
 
 # Set environment variables for non-interactive installation
 ENV DEBIAN_FRONTEND=noninteractive
 
-# Install system dependencies and Chrome
+# Install system dependencies and Firefox
 RUN apt-get update && apt-get install -y \
     wget \
     unzip \
     curl \
     gnupg \
     swig \
+    firefox \
+    jq \
     && rm -rf /var/lib/apt/lists/*
 
-# Install Chrome
-RUN wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | apt-key add - \
-    && echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google-chrome.list \
-    && apt-get update \
-    && apt-get install -y google-chrome-stable
-
-# Install ChromeDriver
-RUN CHROMEDRIVER_VERSION=$(curl -sS chromedriver.storage.googleapis.com/LATEST_RELEASE) \
-    && wget -O /tmp/chromedriver.zip https://chromedriver.storage.googleapis.com/$CHROMEDRIVER_VERSION/chromedriver_linux64.zip \
-    && unzip /tmp/chromedriver.zip chromedriver -d /usr/local/bin/ \
-    && rm /tmp/chromedriver.zip
+# Install GeckoDriver
+RUN GECKODRIVER_VERSION=$(curl -sS "https://api.github.com/repos/mozilla/geckodriver/releases/latest" | jq -r ".tag_name") \
+    && wget -O /tmp/geckodriver.tar.gz "https://github.com/mozilla/geckodriver/releases/download/$GECKODRIVER_VERSION/geckodriver-$GECKODRIVER_VERSION-linux64.tar.gz" \
+    && tar -xzf /tmp/geckodriver.tar.gz -C /usr/local/bin/ \
+    && rm /tmp/geckodriver.tar.gz
 
 # Set display port to avoid crash
 ENV DISPLAY=:99
@@ -46,6 +43,10 @@ RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 # Expose necessary ports
 EXPOSE 8000
 EXPOSE 8505
+
+# Health checks for FastAPI and Streamlit
+HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 CMD curl -f http://localhost:8000/health || exit 1
+HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 CMD curl -f http://localhost:8505/health || exit 1
 
 # Make the start script executable
 RUN chmod +x /app/start.sh

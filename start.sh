@@ -24,7 +24,7 @@ uvicorn modules.fast_api_main:app --host 0.0.0.0 --port $FASTAPI_PORT &
 sleep 5
 
 STREAMLIT_PORT=8505
-# Start Streamlit UI on port 8505
+
 echo "Starting Streamlit UI on port $STREAMLIT_PORT..."
 streamlit run streamlit_ui.py --server.port $STREAMLIT_PORT &
 

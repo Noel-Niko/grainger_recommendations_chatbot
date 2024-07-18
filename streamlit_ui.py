@@ -166,6 +166,10 @@ class StreamlitInterface:
             logging.error(f"{tag} / Error displaying review: {e}")
             st.error(f"{tag} / An error occurred while displaying review: {e}")
 
+# Health check endpoint
+if st.experimental_get_query_params().get("health"):
+    st.write("ok")
+
 def main():
     if 'chat_history' not in st.session_state:
         st.session_state.chat_history = False

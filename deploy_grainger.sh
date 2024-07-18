@@ -11,9 +11,11 @@ STACK_NAME="grainger-recommendations-stack"
 SECURITY_GROUP_ID="sg-0857f1e3a154956da"
 MY_PUBLIC_IP=$(curl -s http://checkip.amazonaws.com)
 
-# Step 0: Authorize SSH access
-echo "Authorizing SSH access to the EC2 instance..."
+# Step 0: Authorize SSH, HTTP, and HTTPS access
+echo "Authorizing SSH, HTTP, and HTTPS access to the EC2 instance..."
 aws ec2 authorize-security-group-ingress --group-id $SECURITY_GROUP_ID --protocol tcp --port 22 --cidr $MY_PUBLIC_IP/32
+aws ec2 authorize-security-group-ingress --group-id $SECURITY_GROUP_ID --protocol tcp --port 80 --cidr 0.0.0.0/0
+aws ec2 authorize-security-group-ingress --group-id $SECURITY_GROUP_ID --protocol tcp --port 443 --cidr 0.0.0.0/0
 
 # Step 1: Build the Docker Image
 echo "Building Docker image..."

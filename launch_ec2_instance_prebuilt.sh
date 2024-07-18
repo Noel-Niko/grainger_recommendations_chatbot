@@ -9,7 +9,7 @@ SECURITY_GROUP_NAME="grainger_recommendations_sg"
 INSTANCE_TYPE="t2.medium"
 AMI_ID="ami-0e5d65fb7cb2158eb"
 USER_DATA_FILE="user_data.sh"
-MY_PUBLIC_IP=$(curl -s http://checkip.amazonaws.com)
+APP_PUBLIC_IP=$(curl -s http://checkip.amazonaws.com)
 
 # Get the default VPC ID
 echo "Retrieving the default VPC ID..."
@@ -32,11 +32,22 @@ else
     echo "Security group '$SECURITY_GROUP_NAME' already exists with ID: $SECURITY_GROUP_ID"
 fi
 
+# Function to authorize security group ingress and handle duplicate rule errors
+authorize_ingress() {
+    aws ec2 authorize-security-group-ingress --group-id $1 --protocol tcp --port $2 --cidr $3 2>/tmp/aws_error.log
+    if grep -q "InvalidPermission.Duplicate" /tmp/aws_error.log; then
+        echo "Rule for port $2 already exists, skipping..."
+    else
+        cat /tmp/aws_error.log
+    fi
+    rm /tmp/aws_error.log
+}
+
 # Authorize SSH, HTTP, and HTTPS access
 echo "Authorizing SSH, HTTP, and HTTPS access..."
-aws ec2 authorize-security-group-ingress --group-id $SECURITY_GROUP_ID --protocol tcp --port 22 --cidr $MY_PUBLIC_IP/32
-aws ec2 authorize-security-group-ingress --group-id $SECURITY_GROUP_ID --protocol tcp --port 80 --cidr 0.0.0.0/0
-aws ec2 authorize-security-group-ingress --group-id $SECURITY_GROUP_ID --protocol tcp --port 443 --cidr 0.0.0.0/0
+authorize_ingress $SECURITY_GROUP_ID 22 $APP_PUBLIC_IP/32
+authorize_ingress $SECURITY_GROUP_ID 80 0.0.0.0/0
+authorize_ingress $SECURITY_GROUP_ID 443 0.0.0.0/0
 
 # Step 1: Create User Data Script
 cat << EOF > $USER_DATA_FILE
@@ -65,4 +76,4 @@ EC2_PUBLIC_IP=$(aws ec2 describe-instances --instance-ids $INSTANCE_ID --query "
 echo "EC2 instance launched. Public IP: $EC2_PUBLIC_IP"
 
 # Step 3: Output the public URL
-echo "Your application is available at: http://$EC2_PUBLIC_IP"
+echo "The application is available at: http://$EC2_PUBLIC_IP"

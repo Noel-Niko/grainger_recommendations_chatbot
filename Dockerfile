@@ -4,14 +4,14 @@ FROM python:3.11
 # Set environment variables for non-interactive installation
 ENV DEBIAN_FRONTEND=noninteractive
 
-# Install system dependencies and Firefox
+# Install system dependencies and Firefox-ESR
 RUN apt-get update && apt-get install -y \
     wget \
     unzip \
     curl \
     gnupg \
     swig \
-    firefox \
+    firefox-esr \
     jq \
     && rm -rf /var/lib/apt/lists/*
 

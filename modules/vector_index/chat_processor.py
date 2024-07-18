@@ -45,7 +45,7 @@ def process_chat_question_with_customer_attribute_identifier(question, document,
         customer_attributes_retrieved = extract_customer_attributes(question, llm)
         time_to_get_attributes = time.time() - start_time
         customer_input_with_attributes = "{} {}".format(question, str(customer_attributes_retrieved))
-        logging.info(f"{tag}/ Chat History passed to processor: {chat_history}")
+        # logging.info(f"{tag}/ Chat History passed to processor: {chat_history}")
         context = {
             'query': customer_input_with_attributes,
             'chat_history': chat_history.copy()

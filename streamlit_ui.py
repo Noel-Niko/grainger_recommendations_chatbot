@@ -93,17 +93,17 @@ class StreamlitInterface:
         try:
             with st.spinner("Fetching images..."):
                 start_time = time.time()
-                url = f"{tag} / {backendUrl}/fetch_images"
+                url = f"{backendUrl}/fetch_images"
                 headers = {"Content-Type": "application/json", "session-id": self.session_id}
                 async with httpx.AsyncClient() as client:
                     response = await client.post(url, headers=headers, json=products, timeout=120)
                     if response.status_code == 200:
                         self.display_images(col3, response.json(), start_time)
                     else:
-                        logging.error(f"{tag} / Failed to fetch images: {response.text}")
+                        logging.error(f"Failed to fetch images: {response.text}")
         except Exception as e:
-            logging.error(f"{tag} / Error fetching images: {e}")
-            st.error(f"{tag} / An error occurred while fetching images: {e}")
+            logging.error(f"Error fetching images: {e}")
+            st.error(f"An error occurred while fetching images: {e}")
 
     async def websocket_reviews(self, center_col, products):
         try:

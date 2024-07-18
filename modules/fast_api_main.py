@@ -130,7 +130,7 @@ async def process_chat_question(question, clear_history, session_id, resource_ma
             session_store[session_id] = []
 
         chat_history = session_store.get(session_id, [])
-        logging.info(f"{tag}/ Current chat history for session_id {session_id}: {chat_history}")
+        # logging.info(f"{tag}/ Current chat history for session_id {session_id}: {chat_history}")
 
         logging.info(f"{tag}/ Processing question: {question}")
         message, response_json, customer_attributes_retrieved, time_to_get_attributes = process_chat_question_with_customer_attribute_identifier(
@@ -139,17 +139,17 @@ async def process_chat_question(question, clear_history, session_id, resource_ma
             resource_manager.llm,
             chat_history
         )
-        logging.info(f"{tag}/ Message: {message}")
-        logging.info(f"{tag}/ Response json: {response_json}")
-        logging.info(f"{tag}/ Customer attributes retrieved: {customer_attributes_retrieved}")
-        logging.info(f"{tag}/ Time to get attributes: {time_to_get_attributes}")
+        # logging.info(f"{tag}/ Message: {message}")
+        # logging.info(f"{tag}/ Response json: {response_json}")
+        # logging.info(f"{tag}/ Customer attributes retrieved: {customer_attributes_retrieved}")
+        # logging.info(f"{tag}/ Time to get attributes: {time_to_get_attributes}")
 
         chat_history.append(
             f"QUESTION: {question}. MESSAGE: {message}. CUSTOMER ATTRIBUTES: {customer_attributes_retrieved}")
         session_store[session_id] = chat_history
 
-        logging.info(f"{tag}/ Updated chat history for session_id {session_id}: {session_store[session_id]}")
-        logging.info(f"{tag}/ Processed question: {question} with message: {message}")
+        # logging.info(f"{tag}/ Updated chat history for session_id {session_id}: {session_store[session_id]}")
+        # logging.info(f"{tag}/ Processed question: {question} with message: {message}")
 
         return message, response_json, customer_attributes_retrieved, time_to_get_attributes
     except Exception as e:
@@ -164,7 +164,7 @@ async def fetch_images(request: Request, resource_manager: ResourceManager = Dep
         recommendations_list = [f"{product['product']}, {product['code']}" for product in products]
         logging.info(f"{tag}/ Fetching images for products: {recommendations_list}")
         image_data, total_image_time = await get_images(recommendations_list, resource_manager.df)
-        logging.info(f"{tag}/ Total time to fetch images: {total_image_time} seconds")
+        logging.info(f"{tag}/ Total time to fetch images: {total_image_time} seconds." '\n'"Image data: {image_data}")
 
         image_responses = []
         for image_info in image_data:

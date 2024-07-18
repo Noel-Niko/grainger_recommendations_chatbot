@@ -10,7 +10,7 @@ from langchain.embeddings import BedrockEmbeddings
 from langchain.vectorstores import FAISS
 from langchain_aws import Bedrock
 
-from .bedrock_initializer import bedrock
+from modules.vector_index.utils.bedrock import get_bedrock_client
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s',  handlers=[logging.StreamHandler()])
 
@@ -24,37 +24,9 @@ class Document:
         self.page_content = page_content
         self.metadata = metadata
 
-
-def get_boto3_session():
-    role_arn = os.environ.get("BEDROCK_ASSUME_ROLE")
-    if not role_arn:
-        logging.error("Environment variable 'BEDROCK_ASSUME_ROLE' is not set")
-        raise ValueError("Environment variable 'BEDROCK_ASSUME_ROLE' is not set")
-
-    try:
-        session = boto3.Session()
-        sts_client = session.client('sts')
-
-        assume_role_object = sts_client.assume_role(
-            RoleArn=role_arn,
-            RoleSessionName="AssumeRoleSession1"
-        )
-        credentials = assume_role_object['Credentials']
-        return boto3.Session(
-            aws_access_key_id=credentials['AccessKeyId'],
-            aws_secret_access_key=credentials['SecretAccessKey'],
-            aws_session_token=credentials['SessionToken']
-        )
-    except Exception as e:
-        logging.error(f"Error assuming role: {str(e)}")
-        raise
-
-
 def initialize_embeddings_and_faiss():
-    boto3_session = get_boto3_session()
-
     logging.info("Initializing Bedrock clients...")
-    bedrock_runtime_client = boto3_session.client('bedrock-runtime')
+    bedrock_runtime_client = get_bedrock_client()
 
     # Load or create LLM instance
     model_parameter = {

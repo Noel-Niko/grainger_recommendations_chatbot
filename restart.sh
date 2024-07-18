@@ -25,7 +25,7 @@ kill_processes_on_ports() {
     if [ -z "$PIDS" ]; then
       echo "No process found on port $PORT"
     else
-      echo "Killing processes on port $PORT: $PIDS"
+      echo "Kill ing processes on port $PORT: $PIDS"
       # Kill the processes
       kill -9 $PIDS
     fi

@@ -17,6 +17,18 @@ export AWS_REGION
 # Set the backend URL based on the environment
 export BACKEND_URL="http://$(curl -s http://169.254.169.254/latest/meta-data/public-ipv4):8000"
 
+# Set the Firefox binary path
+if [ -z "$FIREFOX_BINARY_PATH" ]; then
+    if [ -x "$(command -v firefox)" ]; then
+        export FIREFOX_BINARY_PATH=$(command -v firefox)
+    elif [ -x "/usr/bin/firefox" ]; then
+        export FIREFOX_BINARY_PATH="/usr/bin/firefox"
+    else
+        echo "Firefox binary not found. Please install Firefox or set the FIREFOX_BINARY_PATH environment variable."
+        exit 1
+    fi
+fi
+
 FASTAPI_PORT=8000
 
 # Start FastAPI

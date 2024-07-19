@@ -6,6 +6,7 @@ import time
 import traceback
 import uuid
 
+import selenium
 from botocore.exceptions import ClientError
 from fastapi import FastAPI, HTTPException, Request, Depends, WebSocket
 from fastapi.responses import JSONResponse
@@ -26,6 +27,8 @@ import httpx
 from selenium.webdriver.firefox.service import Service as Service
 from selenium.webdriver.firefox.options import Options as Options
 from webdriver_manager.firefox import GeckoDriverManager
+from httpx import AsyncClient
+from asyncio import Semaphore
 
 tag = "fast_api_main"
 app = FastAPI()
@@ -35,12 +38,15 @@ current_tasks: Dict[str, asyncio.Task] = {}
 
 logging.basicConfig(level=logging.INFO)
 
+import httpx
+
+
 
 class ResourceManager:
     def __init__(self):
         self.bedrock_embeddings, self.vectorstore_faiss_doc, self.df, self.llm = initialize_embeddings_and_faiss()
         self.driver = None
-        self.http_client = httpx.AsyncClient(limits=httpx.Limits(max_connections=100, max_keepalive_connections=50))
+        self.http_client = httpx.AsyncClient(limits=httpx.Limits(max_connections=200, max_keepalive_connections=50))
         self.initialize_webdriver()
 
     def initialize_webdriver(self):
@@ -66,9 +72,7 @@ class ResourceManager:
     async def refresh_bedrock_embeddings(self):
         self.bedrock_embeddings, self.vectorstore_faiss_doc, self.df, self.llm = initialize_embeddings_and_faiss()
 
-
 resource_manager = ResourceManager()
-
 
 @app.on_event("shutdown")
 async def shutdown_event():
@@ -76,10 +80,6 @@ async def shutdown_event():
         resource_manager.driver.quit()
     await resource_manager.http_client.aclose()
     logging.info("Shutdown complete.")
-
-
-resource_manager = ResourceManager()
-
 
 @app.on_event("startup")
 async def startup_event():
@@ -87,14 +87,6 @@ async def startup_event():
     global session_store, current_tasks
     session_store = {}
     current_tasks = {}
-
-
-@app.on_event("shutdown")
-async def shutdown_event():
-    if resource_manager.driver:
-        resource_manager.driver.quit()
-    await resource_manager.http_client.aclose()
-    logging.info("Shutdown complete.")
 
 
 class ChatRequest(BaseModel):
@@ -255,35 +247,43 @@ async def fetch_reviews(request: Request, resource_manager: ResourceManager = De
 
 
 async def fetch_review_for_product(product, resource_manager):
-    product_info = f"{product['product']}, {product['code']}"
-    logging.info(f"{tag}/ Fetching reviews for product: {product_info}")
+    semaphore = Semaphore(10)
+    async with semaphore:
+        product_info = f"{product['product']}, {product['code']}"
+        logging.info(f"{tag}/ Fetching reviews for product: {product_info}")
 
-    if not resource_manager.driver:
-        logging.error(f"{tag}/ WebDriver is not initialized for product {product['code']}")
-        resource_manager.initialize_webdriver()
         if not resource_manager.driver:
-            logging.error(f"{tag}/ Failed to reinitialize WebDriver for product {product['code']}")
+            logging.error(f"{tag}/ WebDriver is not initialized for product {product['code']}")
+            resource_manager.initialize_webdriver()
+            if not resource_manager.driver:
+                logging.error(f"{tag}/ Failed to reinitialize WebDriver for product {product['code']}")
+                return None
+
+        try:
+            reviews_data = await async_navigate_to_reviews_selenium(product_info, resource_manager.driver)
+        except selenium.common.exceptions.TimeoutException as e:
+            logging.error(f"{tag}/ TimeoutException navigating to reviews for {product_info}: {str(e)}")
+            return None
+        except selenium.common.exceptions.NoSuchElementError as e:
+            logging.error(f"{tag}/ NoSuchElementError navigating to reviews for {product_info}: {str(e)}")
+            return None
+        except Exception as e:
+            logging.error(f"{tag}/ Error navigating to reviews for {product_info}: {str(e)}")
+            logging.error(f"Stacktrace: {traceback.format_exc()}")
             return None
 
-    try:
-        reviews_data = await async_navigate_to_reviews_selenium(product_info, resource_manager.driver)
-    except Exception as e:
-        logging.error(f"{tag}/ Error navigating to reviews for {product_info}: {str(e)}")
-        logging.error(f"Stacktrace: {traceback.format_exc()}")
-        return None
-
-    if reviews_data:
-        review = {
-            "code": product['code'],
-            "average_star_rating": reviews_data['Average Star Rating'],
-            "average_recommendation_percent": reviews_data['Average Recommendation Percent'],
-            "review_texts": reviews_data['Review Texts']
-        }
-        logging.info(f"{tag}/ Reviews for product {product['code']}: {reviews_data}")
-        return review
-    else:
-        logging.info(f"{tag}/ No reviews found for product {product['code']}")
-        return None
+        if reviews_data:
+            review = {
+                "code": product['code'],
+                "average_star_rating": reviews_data['Average Star Rating'],
+                "average_recommendation_percent": reviews_data['Average Recommendation Percent'],
+                "review_texts": reviews_data['Review Texts']
+            }
+            logging.info(f"{tag}/ Reviews for product {product['code']}: {reviews_data}")
+            return review
+        else:
+            logging.info(f"{tag}/ No reviews found for product {product['code']}")
+            return None
 
 
 
@@ -315,6 +315,7 @@ async def websocket_endpoint(websocket: WebSocket):
             await websocket.close()
         except RuntimeError:
             logging.warning("WebSocket already closed")
+
 
 
 # Health check endpoint

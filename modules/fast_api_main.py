@@ -14,16 +14,17 @@ from selenium.common import WebDriverException
 from modules.image_utils.grainger_image_util import get_images
 from modules.vector_index.chat_processor import process_chat_question_with_customer_attribute_identifier
 from modules.vector_index.document import initialize_embeddings_and_faiss
-from modules.web_extraction_tools.product_reviews.call_selenium_for_review_async import async_navigate_to_reviews_selenium
+from modules.web_extraction_tools.product_reviews.call_selenium_for_review_async import \
+    async_navigate_to_reviews_selenium
 import base64
 import io
 from PIL import Image
 from selenium import webdriver
-from selenium.webdriver.chrome.service import Service
-from selenium.webdriver.chrome.options import Options
-from webdriver_manager.chrome import ChromeDriverManager
 from starlette.websockets import WebSocketDisconnect
 import httpx
+from selenium.webdriver.firefox.service import Service as FirefoxService
+from selenium.webdriver.firefox.options import Options as FirefoxOptions
+from webdriver_manager.firefox import GeckoDriverManager
 
 tag = "fast_api_main"
 app = FastAPI()
@@ -32,17 +33,21 @@ session_store = {}
 
 logging.basicConfig(level=logging.INFO)
 
+
 class ResourceManager:
     def __init__(self):
         self.bedrock_embeddings, self.vectorstore_faiss_doc, self.df, self.llm = initialize_embeddings_and_faiss()
-        options = Options()
+        options = FirefoxOptions()
         options.add_argument("--headless")
         options.add_argument("--disable-gpu")
+        options.add_argument("--no-sandbox")
+        options.add_argument("--disable-dev-shm-usage")
+        options.binary_location = "/usr/bin/firefox"
         try:
-            logging.info("Initializing ChromeDriver...")
-            service = Service(ChromeDriverManager().install())
-            self.driver = webdriver.Chrome(service=service, options=options)
-            logging.info("ChromeDriver initialized successfully.")
+            logging.info("Initializing GeckoDriver...")
+            service = FirefoxService(GeckoDriverManager().install())
+            self.driver = webdriver.Firefox(service=service, options=options)
+            logging.info("GeckoDriver initialized successfully.")
         except WebDriverException as e:
             logging.error(f"WebDriver failed to start: {e}")
             self.driver = None
@@ -52,11 +57,14 @@ class ResourceManager:
     async def refresh_bedrock_embeddings(self):
         self.bedrock_embeddings, self.vectorstore_faiss_doc, self.df, self.llm = initialize_embeddings_and_faiss()
 
+
 resource_manager = ResourceManager()
+
 
 @app.on_event("startup")
 async def startup_event():
     logging.info("Startup complete.")
+
 
 @app.on_event("shutdown")
 async def shutdown_event():
@@ -65,12 +73,15 @@ async def shutdown_event():
     await resource_manager.http_client.aclose()
     logging.info("Shutdown complete.")
 
+
 class ChatRequest(BaseModel):
     question: str
     clear_history: bool = False
 
+
 async def get_resource_manager():
     return resource_manager
+
 
 @app.post("/ask_question")
 async def ask_question(
@@ -123,6 +134,7 @@ async def ask_question(
         logging.error(traceback.format_exc())
         raise HTTPException(status_code=500, detail="Internal Server Error")
 
+
 async def process_chat_question(question, clear_history, session_id, resource_manager):
     try:
         if clear_history:
@@ -157,6 +169,7 @@ async def process_chat_question(question, clear_history, session_id, resource_ma
         logging.error(traceback.format_exc())
         raise
 
+
 @app.post("/fetch_images")
 async def fetch_images(request: Request, resource_manager: ResourceManager = Depends(get_resource_manager)):
     try:
@@ -186,6 +199,7 @@ async def fetch_images(request: Request, resource_manager: ResourceManager = Dep
         logging.error(traceback.format_exc())
         raise HTTPException(status_code=500, detail="Error fetching images")
 
+
 @app.post("/fetch_reviews")
 async def fetch_reviews(request: Request, resource_manager: ResourceManager = Depends(get_resource_manager)):
     logging.info(f"{tag}/ Received request to fetch reviews.")
@@ -203,6 +217,7 @@ async def fetch_reviews(request: Request, resource_manager: ResourceManager = De
         logging.error(f"{tag}/ Error fetching reviews: {e}")
         logging.error(traceback.format_exc())
         raise HTTPException(status_code=500, detail="Error fetching reviews")
+
 
 async def fetch_review_for_product(product, resource_manager):
     product_info = f"{product['product']}, {product['code']}"
@@ -267,13 +282,16 @@ async def websocket_endpoint(websocket: WebSocket):
 async def health_check():
     return JSONResponse(content={"status": "healthy"})
 
+
 @app.get("/")
 async def read_root():
     return {"message": "Welcome to the Grainger Recommendations API"}
 
+
 @app.get("/favicon.ico")
 async def favicon():
     return JSONResponse(content={"message": "No favicon available"}, status_code=204)
+
 
 if __name__ == "__main__":
     import uvicorn

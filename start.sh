@@ -14,6 +14,9 @@ export BEDROCK_ASSUME_ROLE=$bedrock_assume_role
 AWS_REGION="${AWS_REGION:-${AWS_DEFAULT_REGION:-us-east-1}}"
 export AWS_REGION
 
+# Set the backend URL based on the environment
+export BACKEND_URL="http://$(curl -s http://169.254.169.254/latest/meta-data/public-ipv4):8000"
+
 FASTAPI_PORT=8000
 
 # Start FastAPI
@@ -26,7 +29,7 @@ sleep 5
 STREAMLIT_PORT=8505
 
 echo "Starting Streamlit UI on port $STREAMLIT_PORT..."
-streamlit run streamlit_ui.py --server.port $STREAMLIT_PORT &
+streamlit run streamlit_ui.py --server.port $STREAMLIT_PORT --server.address 0.0.0.0 &
 
 echo "Both FastAPI and Streamlit are running."
 

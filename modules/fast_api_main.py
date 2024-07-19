@@ -39,6 +39,11 @@ logging.basicConfig(level=logging.INFO)
 class ResourceManager:
     def __init__(self):
         self.bedrock_embeddings, self.vectorstore_faiss_doc, self.df, self.llm = initialize_embeddings_and_faiss()
+        self.driver = None
+        self.http_client = httpx.AsyncClient(limits=httpx.Limits(max_connections=100, max_keepalive_connections=50))
+        self.initialize_webdriver()
+
+    def initialize_webdriver(self):
         options = Options()
         options.add_argument("--headless")
         options.add_argument("--disable-gpu")
@@ -58,10 +63,19 @@ class ResourceManager:
             logging.error(f"WebDriver failed to start: {e}")
             self.driver = None
 
-        self.http_client = httpx.AsyncClient(limits=httpx.Limits(max_connections=100, max_keepalive_connections=50))
-
     async def refresh_bedrock_embeddings(self):
         self.bedrock_embeddings, self.vectorstore_faiss_doc, self.df, self.llm = initialize_embeddings_and_faiss()
+
+
+resource_manager = ResourceManager()
+
+
+@app.on_event("shutdown")
+async def shutdown_event():
+    if resource_manager.driver:
+        resource_manager.driver.quit()
+    await resource_manager.http_client.aclose()
+    logging.info("Shutdown complete.")
 
 
 resource_manager = ResourceManager()
@@ -244,29 +258,33 @@ async def fetch_review_for_product(product, resource_manager):
     product_info = f"{product['product']}, {product['code']}"
     logging.info(f"{tag}/ Fetching reviews for product: {product_info}")
 
-    if resource_manager.driver:
-        try:
-            reviews_data = await async_navigate_to_reviews_selenium(product_info, resource_manager.driver)
-        except Exception as e:
-            logging.error(f"{tag}/ Error navigating to reviews for {product_info}: {str(e)}")
-            logging.error(f"Stacktrace: {traceback.format_exc()}")
+    if not resource_manager.driver:
+        logging.error(f"{tag}/ WebDriver is not initialized for product {product['code']}")
+        resource_manager.initialize_webdriver()
+        if not resource_manager.driver:
+            logging.error(f"{tag}/ Failed to reinitialize WebDriver for product {product['code']}")
             return None
 
-        if reviews_data:
-            review = {
-                "code": product['code'],
-                "average_star_rating": reviews_data['Average Star Rating'],
-                "average_recommendation_percent": reviews_data['Average Recommendation Percent'],
-                "review_texts": reviews_data['Review Texts']
-            }
-            logging.info(f"{tag}/ Reviews for product {product['code']}: {reviews_data}")
-            return review
-        else:
-            logging.info(f"{tag}/ No reviews found for product {product['code']}")
-            return None
-    else:
-        logging.error(f"{tag}/ WebDriver is not initialized for product {product['code']}")
+    try:
+        reviews_data = await async_navigate_to_reviews_selenium(product_info, resource_manager.driver)
+    except Exception as e:
+        logging.error(f"{tag}/ Error navigating to reviews for {product_info}: {str(e)}")
+        logging.error(f"Stacktrace: {traceback.format_exc()}")
         return None
+
+    if reviews_data:
+        review = {
+            "code": product['code'],
+            "average_star_rating": reviews_data['Average Star Rating'],
+            "average_recommendation_percent": reviews_data['Average Recommendation Percent'],
+            "review_texts": reviews_data['Review Texts']
+        }
+        logging.info(f"{tag}/ Reviews for product {product['code']}: {reviews_data}")
+        return review
+    else:
+        logging.info(f"{tag}/ No reviews found for product {product['code']}")
+        return None
+
 
 
 @app.websocket("/ws/reviews")

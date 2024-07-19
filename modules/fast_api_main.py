@@ -1,6 +1,7 @@
 import asyncio
 import logging
 import json
+import os
 import time
 import traceback
 import uuid
@@ -9,7 +10,7 @@ from botocore.exceptions import ClientError
 from fastapi import FastAPI, HTTPException, Request, Depends, WebSocket
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
-from typing import List
+from typing import List, Dict
 from selenium.common import WebDriverException
 from modules.image_utils.grainger_image_util import get_images
 from modules.vector_index.chat_processor import process_chat_question_with_customer_attribute_identifier
@@ -22,14 +23,15 @@ from PIL import Image
 from selenium import webdriver
 from starlette.websockets import WebSocketDisconnect
 import httpx
-from selenium.webdriver.firefox.service import Service as FirefoxService
-from selenium.webdriver.firefox.options import Options as FirefoxOptions
+from selenium.webdriver.firefox.service import Service as Service
+from selenium.webdriver.firefox.options import Options as Options
 from webdriver_manager.firefox import GeckoDriverManager
 
 tag = "fast_api_main"
 app = FastAPI()
 
-session_store = {}
+session_store: Dict[str, List[Dict[str, str]]] = {}
+current_tasks: Dict[str, asyncio.Task] = {}
 
 logging.basicConfig(level=logging.INFO)
 
@@ -37,22 +39,26 @@ logging.basicConfig(level=logging.INFO)
 class ResourceManager:
     def __init__(self):
         self.bedrock_embeddings, self.vectorstore_faiss_doc, self.df, self.llm = initialize_embeddings_and_faiss()
-        options = FirefoxOptions()
+        options = Options()
         options.add_argument("--headless")
         options.add_argument("--disable-gpu")
         options.add_argument("--no-sandbox")
         options.add_argument("--disable-dev-shm-usage")
-        options.binary_location = "/usr/bin/firefox"
+
+        firefox_binary_path = os.getenv('FIREFOX_BINARY_PATH', '/usr/local/bin/firefox')
+        options.binary_location = firefox_binary_path
+        logging.info(f"Using Firefox binary at: {firefox_binary_path}")
+
         try:
             logging.info("Initializing GeckoDriver...")
-            service = FirefoxService(GeckoDriverManager().install())
+            service = Service(GeckoDriverManager().install())
             self.driver = webdriver.Firefox(service=service, options=options)
             logging.info("GeckoDriver initialized successfully.")
-        except WebDriverException as e:
+        except Exception as e:
             logging.error(f"WebDriver failed to start: {e}")
             self.driver = None
 
-        self.http_client = httpx.AsyncClient(limits=httpx.Limits(max_connections=20, max_keepalive_connections=15))
+        self.http_client = httpx.AsyncClient(limits=httpx.Limits(max_connections=100, max_keepalive_connections=50))
 
     async def refresh_bedrock_embeddings(self):
         self.bedrock_embeddings, self.vectorstore_faiss_doc, self.df, self.llm = initialize_embeddings_and_faiss()
@@ -96,24 +102,32 @@ async def ask_question(
 
         if session_id not in session_store:
             session_store[session_id] = []  # Initialize as an empty list
-            logging.info(f" {tag}/ Adding new session ID {session_id} to session_store")
+            logging.info(f"{tag}/ Adding new session ID {session_id} to session_store")
 
         logging.info(f"{tag}/ Received question: {chat_request.question} with session_id: {session_id}")
 
-        try:
-            message, response_json, customer_attributes_retrieved, time_to_get_attributes = await process_chat_question(
-                chat_request.question, chat_request.clear_history, session_id, resource_manager
-            )
-        except ClientError as e:
-            if e.response['Error']['Code'] == 'ExpiredTokenException':
-                logging.info(f" {tag}/ Bedrock session expired, renewing...")
-                await resource_manager.refresh_bedrock_embeddings()
-                message, response_json, customer_attributes_retrieved, time_to_get_attributes = await process_chat_question(
-                    chat_request.question, chat_request.clear_history, session_id, resource_manager
-                )
-            else:
-                logging.error(f" {tag}/ Error: {str(e)}")
-                raise e
+        # Cancel ongoing tasks if present for the same session ID
+        if session_id in current_tasks and not current_tasks[session_id].done():
+            current_tasks[session_id].cancel()
+
+        task = asyncio.create_task(process_question_task(chat_request, session_id, resource_manager))
+        current_tasks[session_id] = task
+
+        response = await task
+
+        return response
+
+    except Exception as e:
+        logging.error(f"Error in {tag}/ask_question: {str(e)}")
+        logging.error(traceback.format_exc())
+        raise HTTPException(status_code=500, detail="Internal Server Error")
+
+
+async def process_question_task(chat_request, session_id, resource_manager):
+    try:
+        message, response_json, customer_attributes_retrieved, time_to_get_attributes = await process_chat_question(
+            chat_request.question, chat_request.clear_history, session_id, resource_manager
+        )
 
         if response_json is None:
             logging.error(f"{tag}/ Response json is None")
@@ -122,15 +136,26 @@ async def ask_question(
         products = response_json.get('products', [])
         logging.info(f"{tag}/ Products retrieved: {products}")
 
+        # Update the session history with the latest question and response
+        session_store[session_id].append({
+            "question": chat_request.question,
+            "response": response_json
+        })
+
         return {
             "message": message,
             "customer_attributes_retrieved": customer_attributes_retrieved,
             "time_to_get_attributes": time_to_get_attributes,
             "products": products
         }
-
+    except asyncio.CancelledError:
+        logging.info(f"{tag}/ Task for session_id: {session_id} was cancelled")
+        return {
+            "message": "Task cancelled due to new question",
+            "products": []
+        }
     except Exception as e:
-        logging.error(f"Error in {tag}/ask_question: {str(e)}")
+        logging.error(f"Error in {tag}/process_question_task: {str(e)}")
         logging.error(traceback.format_exc())
         raise HTTPException(status_code=500, detail="Internal Server Error")
 
@@ -142,7 +167,7 @@ async def process_chat_question(question, clear_history, session_id, resource_ma
             session_store[session_id] = []
 
         chat_history = session_store.get(session_id, [])
-        # logging.info(f"{tag}/ Current chat history for session_id {session_id}: {chat_history}")
+        logging.info(f"{tag}/ Current chat history for session_id {session_id}: {chat_history}")
 
         logging.info(f"{tag}/ Processing question: {question}")
         message, response_json, customer_attributes_retrieved, time_to_get_attributes = process_chat_question_with_customer_attribute_identifier(
@@ -151,17 +176,10 @@ async def process_chat_question(question, clear_history, session_id, resource_ma
             resource_manager.llm,
             chat_history
         )
-        # logging.info(f"{tag}/ Message: {message}")
-        # logging.info(f"{tag}/ Response json: {response_json}")
-        # logging.info(f"{tag}/ Customer attributes retrieved: {customer_attributes_retrieved}")
-        # logging.info(f"{tag}/ Time to get attributes: {time_to_get_attributes}")
 
         chat_history.append(
             f"QUESTION: {question}. MESSAGE: {message}. CUSTOMER ATTRIBUTES: {customer_attributes_retrieved}")
         session_store[session_id] = chat_history
-
-        # logging.info(f"{tag}/ Updated chat history for session_id {session_id}: {session_store[session_id]}")
-        # logging.info(f"{tag}/ Processed question: {question} with message: {message}")
 
         return message, response_json, customer_attributes_retrieved, time_to_get_attributes
     except Exception as e:
@@ -228,6 +246,7 @@ async def fetch_review_for_product(product, resource_manager):
             reviews_data = await async_navigate_to_reviews_selenium(product_info, resource_manager.driver)
         except Exception as e:
             logging.error(f"{tag}/ Error navigating to reviews for {product_info}: {str(e)}")
+            logging.error(f"Stacktrace: {traceback.format_exc()}")
             return None
 
         if reviews_data:

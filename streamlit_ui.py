@@ -1,3 +1,5 @@
+import os
+
 import streamlit as st
 import logging
 import uuid
@@ -11,9 +13,12 @@ import json
 import websockets
 from modules.vector_index.utils.custom_spinner import message_spinner
 
+st.set_page_config(layout="wide")
+
 tag = "StreamlitInterface"
-backendUrl = "http://127.0.0.1:8000"
-websocketUrl = "ws://127.0.0.1:8000/ws/reviews"
+backend_url = os.getenv('BACKEND_URL', 'http://127.0.0.1:8000')
+websocket_url = os.getenv('BACKEND_WS_URL', 'ws://127.0.0.1:8000/ws/reviews')
+
 
 class StreamlitInterface:
     def __init__(self):
@@ -23,7 +28,6 @@ class StreamlitInterface:
         self.session_id = st.session_state.session_id
 
     def run(self):
-        st.set_page_config(layout="wide")
         st.button("Clear History", on_click=self.clear_chat_history)
         st.title("Grainger Recommendations Chatbot")
 
@@ -48,8 +52,9 @@ class StreamlitInterface:
 
                     # Call FastAPI to process the chat question
                     headers = {"session-id": self.session_id}
-                    payload = {"session_id": self.session_id, "question": question, "clear_history": st.session_state.chat_history}
-                    url = f"{backendUrl}/ask_question"
+                    payload = {"session_id": self.session_id, "question": question,
+                               "clear_history": st.session_state.chat_history}
+                    url = f"{backend_url}/ask_question"
                     # Reset chat history after processing the question prn
                     if st.session_state.chat_history is True:
                         st.session_state.chat_history = False
@@ -71,8 +76,7 @@ class StreamlitInterface:
                 logging.error(f"Error in ask_question: {e}")
                 st.error(f"An error occurred while processing the question: {e}")
 
-
-    def retry_http_post(self, url, headers, payload, timeout, retries=300, delay=1, center_col=None):
+    def retry_http_post(self, url, headers, payload, timeout, retries=5, delay=1, center_col=None):
         """Retry HTTP POST request if it fails."""
         for attempt in range(retries):
             try:
@@ -93,7 +97,7 @@ class StreamlitInterface:
         try:
             with st.spinner("Fetching images..."):
                 start_time = time.time()
-                url = f"{backendUrl}/fetch_images"
+                url = f"{backend_url}/fetch_images"
                 headers = {"Content-Type": "application/json", "session-id": self.session_id}
                 async with httpx.AsyncClient() as client:
                     response = await client.post(url, headers=headers, json=products, timeout=120)
@@ -107,9 +111,10 @@ class StreamlitInterface:
 
     async def websocket_reviews(self, center_col, products):
         try:
-            messages = ["Fetching reviews...", "Looking up the product codes...", "Searching on the web...", "Reading reviews...", "Averaging the ratings...", "Collecting review comments..."]
+            messages = ["Fetching reviews...", "Looking up the product codes...", "Searching on the web...",
+                        "Reading reviews...", "Averaging the ratings...", "Collecting review comments..."]
             with message_spinner(messages):
-                async with websockets.connect(websocketUrl) as websocket:
+                async with websockets.connect(websocket_url) as websocket:
                     await websocket.send(json.dumps(products))
                     async for message in websocket:
                         review = json.loads(message)
@@ -139,7 +144,8 @@ class StreamlitInterface:
                 for image_info in data:
                     try:
                         img = Image.open(io.BytesIO(base64.b64decode(image_info["image_data"])))
-                        col3.image(img, caption=f"{tag} / Grainger Product Image ({image_info['code']})", use_column_width=True)
+                        col3.image(img, caption=f"{tag} / Grainger Product Image ({image_info['code']})",
+                                   use_column_width=True)
                     except Exception as e:
                         logging.error(f"{tag} / Error displaying image: {e}")
                 time_to_generate_images = time.time() - start_time
@@ -166,9 +172,10 @@ class StreamlitInterface:
             logging.error(f"{tag} / Error displaying review: {e}")
             st.error(f"{tag} / An error occurred while displaying review: {e}")
 
-# Health check endpoint
-if st.experimental_get_query_params().get("health"):
-    st.write("ok")
+    # Health check endpoint
+    if st.query_params.get("health"):
+        st.write("ok")
+
 
 def main():
     if 'chat_history' not in st.session_state:
@@ -176,6 +183,7 @@ def main():
 
     interface = StreamlitInterface()
     interface.run()
+
 
 if __name__ == "__main__":
     main()

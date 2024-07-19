@@ -70,6 +70,9 @@ resource_manager = ResourceManager()
 @app.on_event("startup")
 async def startup_event():
     logging.info("Startup complete.")
+    global session_store, current_tasks
+    session_store = {}
+    current_tasks = {}
 
 
 @app.on_event("shutdown")

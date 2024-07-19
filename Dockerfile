@@ -21,6 +21,9 @@ RUN GECKODRIVER_VERSION=$(curl -sS "https://api.github.com/repos/mozilla/geckodr
     && tar -xzf /tmp/geckodriver.tar.gz -C /usr/local/bin/ \
     && rm /tmp/geckodriver.tar.gz
 
+# Create symbolic link for Firefox
+RUN ln -s /usr/bin/firefox-esr /usr/local/bin/firefox
+
 # Set display port to avoid crash
 ENV DISPLAY=:99
 

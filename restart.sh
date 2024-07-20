@@ -1,11 +1,14 @@
 #!/bin/bash
 
-# Load AWS credentials and Bedrock assume role
-export AWS_ACCESS_KEY_ID=$(cat aws_access_key_id)
-export AWS_SECRET_ACCESS_KEY=$(cat aws_secret_access_key)
-export BEDROCK_ASSUME_ROLE=$(cat bedrock_assume_role)
+aws_access_key_id=$(cat aws_access_key_id)
+export AWS_ACCESS_KEY_ID=$aws_access_key_id
 
-# Set AWS region
+aws_secret_access_key=$(cat aws_secret_access_key)
+export AWS_SECRET_ACCESS_KEY=$aws_secret_access_key
+
+bedrock_assume_role=$(cat bedrock_assume_role)
+export BEDROCK_ASSUME_ROLE=$bedrock_assume_role
+
 AWS_REGION="${AWS_REGION:-${AWS_DEFAULT_REGION:-us-east-1}}"
 export AWS_REGION
 
@@ -28,11 +31,12 @@ kill_processes_on_ports() {
   done
 }
 
-# Execute the function to free the ports
+# Execute the function
 kill_processes_on_ports
+
 echo "Ports are now free."
 
-# Set backend URLs
+# Running locally
 export BACKEND_URL="http://localhost:8000"
 export BACKEND_WS_URL="ws://localhost:8000/ws/reviews"
 
@@ -40,8 +44,11 @@ echo "BACKEND_URL set to $BACKEND_URL"
 echo "BACKEND_WS_URL set to $BACKEND_WS_URL"
 
 # Ensure the CHROME_BINARY_PATH is set correctly
-export CHROME_BINARY_PATH="/Applications/chrome-mac-x64/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing"
-echo "CHROME_BINARY_PATH set to $CHROME_BINARY_PATH"
+#export CHROME_BINARY_PATH=/usr/local/bin/chromedriver
+#echo "CHROME_BINARY_PATH set to $CHROME_BINARY_PATH"
+export CHROME_BINARY_PATH=/usr/local/bin/chromedriver-mac-arm64/chromedriver
+#echo "CHROME_BINARY_PATH set to $CHROME_BINARY_PATH"
+
 
 FASTAPI_PORT=8000
 STREAMLIT_PORT=8505

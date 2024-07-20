@@ -59,9 +59,9 @@ class ResourceManager:
         options.add_argument("--no-sandbox")
         options.add_argument("--disable-dev-shm-usage")
 
-        chrome_binary_path = os.getenv('CHROME_BINARY_PATH')
-        options.binary_location = chrome_binary_path
-        logging.info(f"Using Chrome binary at: {chrome_binary_path}")
+        # chrome_binary_path =  '/usr/local/bin/chromedriver-mac-arm64/chromedriver'  #os.getenv('CHROME_BINARY_PATH')
+        options.binary_location = "/usr/local/Caskroom/google-chrome/126.0.6478.183/Google Chrome.app/Contents/MacOS/Google Chrome"
+        logging.info(f"Using Chrome binary at: {options.binary_location}")
 
         try:
             logging.info("Initializing ChromeDriver...")

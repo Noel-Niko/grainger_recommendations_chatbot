@@ -42,6 +42,7 @@ COPY . /app
 
 # Set PYTHONPATH
 ENV PYTHONPATH="/app:${PYTHONPATH}"
+ENV CHROME_BINARY_PATH=/usr/local/bin/chromedriver
 
 # Install Python dependencies
 RUN pip install --upgrade pip setuptools wheel \

@@ -4,25 +4,32 @@ FROM python:3.11
 # Set environment variables for non-interactive installation
 ENV DEBIAN_FRONTEND=noninteractive
 
-# Install system dependencies and Firefox-ESR
+# Install system dependencies
 RUN apt-get update && apt-get install -y \
     wget \
     unzip \
     curl \
     gnupg \
-    swig \
-    firefox-esr \
     jq \
+    swig \
     && rm -rf /var/lib/apt/lists/*
 
-# Install GeckoDriver
-RUN GECKODRIVER_VERSION=$(curl -sS "https://api.github.com/repos/mozilla/geckodriver/releases/latest" | jq -r ".tag_name") \
-    && wget -O /tmp/geckodriver.tar.gz "https://github.com/mozilla/geckodriver/releases/download/$GECKODRIVER_VERSION/geckodriver-$GECKODRIVER_VERSION-linux64.tar.gz" \
-    && tar -xzf /tmp/geckodriver.tar.gz -C /usr/local/bin/ \
-    && rm /tmp/geckodriver.tar.gz
+# Install Chrome and ChromeDriver
+RUN echo "Downloading and installing Google Chrome..." \
+    && CHROME_URL=$(curl -s https://googlechromelabs.github.io/chrome-for-testing/last-known-good-versions-with-downloads.json | jq -r '.channels.Stable.downloads.chrome[] | select(.platform=="linux64") | .url') \
+    && curl -o /tmp/chrome-linux.zip -L $CHROME_URL \
+    && unzip -o /tmp/chrome-linux.zip -d /opt \
+    && rm /tmp/chrome-linux.zip \
+    && ln -s /opt/chrome-linux64/chrome-linux/chrome /usr/local/bin/google-chrome \
+    && echo "Google Chrome installed successfully."
 
-# Create symbolic link for Firefox
-RUN ln -s /usr/bin/firefox-esr /usr/local/bin/firefox
+RUN echo "Downloading and installing ChromeDriver..." \
+    && CHROMEDRIVER_URL=$(curl -s https://googlechromelabs.github.io/chrome-for-testing/last-known-good-versions-with-downloads.json | jq -r '.channels.Stable.downloads.chromedriver[] | select(.platform=="linux64") | .url') \
+    && curl -o /tmp/chromedriver-linux.zip -L $CHROMEDRIVER_URL \
+    && unzip -o /tmp/chromedriver-linux.zip -d /usr/local/bin/ \
+    && rm -rf /tmp/chromedriver-linux.zip \
+    && chmod +x /usr/local/bin/chromedriver \
+    && echo "ChromeDriver installed successfully."
 
 # Set display port to avoid crash
 ENV DISPLAY=:99

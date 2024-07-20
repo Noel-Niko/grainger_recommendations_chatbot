@@ -16,17 +16,16 @@ from selenium.common import WebDriverException
 from modules.image_utils.grainger_image_util import get_images
 from modules.vector_index.chat_processor import process_chat_question_with_customer_attribute_identifier
 from modules.vector_index.document import initialize_embeddings_and_faiss
-from modules.web_extraction_tools.product_reviews.call_selenium_for_review_async import \
-    async_navigate_to_reviews_selenium
+from modules.web_extraction_tools.product_reviews.call_selenium_for_review_async import async_navigate_to_reviews_selenium
 import base64
 import io
 from PIL import Image
 from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.chrome.options import Options
+from webdriver_manager.chrome import ChromeDriverManager
 from starlette.websockets import WebSocketDisconnect
 import httpx
-from selenium.webdriver.firefox.service import Service as Service
-from selenium.webdriver.firefox.options import Options as Options
-from webdriver_manager.firefox import GeckoDriverManager
 from httpx import AsyncClient
 from asyncio import Semaphore
 
@@ -38,16 +37,20 @@ current_tasks: Dict[str, asyncio.Task] = {}
 
 logging.basicConfig(level=logging.INFO)
 
-import httpx
-
-
-
 class ResourceManager:
     def __init__(self):
         self.bedrock_embeddings, self.vectorstore_faiss_doc, self.df, self.llm = initialize_embeddings_and_faiss()
         self.driver = None
-        self.http_client = httpx.AsyncClient(limits=httpx.Limits(max_connections=200, max_keepalive_connections=50))
+        self.http_client = None
+        self.initialize_http_client()
         self.initialize_webdriver()
+
+    def initialize_http_client(self):
+        try:
+            self.http_client = httpx.AsyncClient(limits=httpx.Limits(max_connections=200, max_keepalive_connections=50))
+            logging.info("HTTP client initialized successfully.")
+        except Exception as e:
+            logging.error(f"Failed to initialize HTTP client: {e}")
 
     def initialize_webdriver(self):
         options = Options()
@@ -56,16 +59,17 @@ class ResourceManager:
         options.add_argument("--no-sandbox")
         options.add_argument("--disable-dev-shm-usage")
 
-        firefox_binary_path = os.getenv('FIREFOX_BINARY_PATH', '/usr/local/bin/firefox')
-        options.binary_location = firefox_binary_path
-        logging.info(f"Using Firefox binary at: {firefox_binary_path}")
+        chrome_binary_path = os.getenv('CHROME_BINARY_PATH')
+        options.binary_location = chrome_binary_path
+        logging.info(f"Using Chrome binary at: {chrome_binary_path}")
 
         try:
-            logging.info("Initializing GeckoDriver...")
-            service = Service(GeckoDriverManager().install())
-            self.driver = webdriver.Firefox(service=service, options=options)
-            logging.info("GeckoDriver initialized successfully.")
-        except Exception as e:
+            logging.info("Initializing ChromeDriver...")
+            # Use webdriver_manager to handle ChromeDriver
+            service = Service(ChromeDriverManager().install())
+            self.driver = webdriver.Chrome(service=service, options=options)
+            logging.info("ChromeDriver initialized successfully.")
+        except WebDriverException as e:
             logging.error(f"WebDriver failed to start: {e}")
             self.driver = None
 

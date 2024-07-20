@@ -16,7 +16,8 @@ from selenium.common import WebDriverException
 from modules.image_utils.grainger_image_util import get_images
 from modules.vector_index.chat_processor import process_chat_question_with_customer_attribute_identifier
 from modules.vector_index.document import initialize_embeddings_and_faiss
-from modules.web_extraction_tools.product_reviews.call_selenium_for_review_async import async_navigate_to_reviews_selenium
+from modules.web_extraction_tools.product_reviews.call_selenium_for_review_async import \
+    async_navigate_to_reviews_selenium
 import base64
 import io
 from PIL import Image
@@ -37,13 +38,13 @@ current_tasks: Dict[str, asyncio.Task] = {}
 
 logging.basicConfig(level=logging.INFO)
 
+
 class ResourceManager:
     def __init__(self):
         self.bedrock_embeddings, self.vectorstore_faiss_doc, self.df, self.llm = initialize_embeddings_and_faiss()
         self.driver = None
         self.http_client = None
         self.initialize_http_client()
-        self.initialize_webdriver()
 
     def initialize_http_client(self):
         try:
@@ -52,31 +53,12 @@ class ResourceManager:
         except Exception as e:
             logging.error(f"Failed to initialize HTTP client: {e}")
 
-    def initialize_webdriver(self):
-        options = Options()
-        options.add_argument("--headless")
-        options.add_argument("--disable-gpu")
-        options.add_argument("--no-sandbox")
-        options.add_argument("--disable-dev-shm-usage")
-
-        # chrome_binary_path =  '/usr/local/bin/chromedriver-mac-arm64/chromedriver'  #os.getenv('CHROME_BINARY_PATH')
-        options.binary_location = "/usr/local/Caskroom/google-chrome/126.0.6478.183/Google Chrome.app/Contents/MacOS/Google Chrome"
-        logging.info(f"Using Chrome binary at: {options.binary_location}")
-
-        try:
-            logging.info("Initializing ChromeDriver...")
-            # Use webdriver_manager to handle ChromeDriver
-            service = Service(ChromeDriverManager().install())
-            self.driver = webdriver.Chrome(service=service, options=options)
-            logging.info("ChromeDriver initialized successfully.")
-        except WebDriverException as e:
-            logging.error(f"WebDriver failed to start: {e}")
-            self.driver = None
-
     async def refresh_bedrock_embeddings(self):
         self.bedrock_embeddings, self.vectorstore_faiss_doc, self.df, self.llm = initialize_embeddings_and_faiss()
 
+
 resource_manager = ResourceManager()
+
 
 @app.on_event("shutdown")
 async def shutdown_event():
@@ -84,6 +66,7 @@ async def shutdown_event():
         resource_manager.driver.quit()
     await resource_manager.http_client.aclose()
     logging.info("Shutdown complete.")
+
 
 @app.on_event("startup")
 async def startup_event():
@@ -106,7 +89,7 @@ async def get_resource_manager():
 async def ask_question(
         chat_request: ChatRequest,
         request: Request,
-        resource_manager: ResourceManager = Depends(get_resource_manager)
+        resource_manager_param: ResourceManager = Depends(get_resource_manager)
 ):
     try:
         session_id = request.headers.get("session-id")
@@ -114,16 +97,18 @@ async def ask_question(
             raise HTTPException(status_code=400, detail="Session ID is required")
 
         if session_id not in session_store:
-            session_store[session_id] = []  # Initialize as an empty list
+            session_store[session_id] = []
             logging.info(f"{tag}/ Adding new session ID {session_id} to session_store")
 
         logging.info(f"{tag}/ Received question: {chat_request.question} with session_id: {session_id}")
 
         # Cancel ongoing tasks if present for the same session ID
         if session_id in current_tasks and not current_tasks[session_id].done():
+            logging.info(f"Cancelling task for session ID: {session_id} due to new question.")
             current_tasks[session_id].cancel()
+            await current_tasks[session_id]
 
-        task = asyncio.create_task(process_question_task(chat_request, session_id, resource_manager))
+        task = asyncio.create_task(process_question_task(chat_request, session_id, resource_manager_param))
         current_tasks[session_id] = task
 
         response = await task
@@ -136,10 +121,10 @@ async def ask_question(
         raise HTTPException(status_code=500, detail="Internal Server Error")
 
 
-async def process_question_task(chat_request, session_id, resource_manager):
+async def process_question_task(chat_request, session_id, resource_manager_param):
     try:
         message, response_json, customer_attributes_retrieved, time_to_get_attributes = await process_chat_question(
-            chat_request.question, chat_request.clear_history, session_id, resource_manager
+            chat_request.question, chat_request.clear_history, session_id, resource_manager_param
         )
 
         if response_json is None:
@@ -162,7 +147,7 @@ async def process_question_task(chat_request, session_id, resource_manager):
             "products": products
         }
     except asyncio.CancelledError:
-        logging.info(f"{tag}/ Task for session_id: {session_id} was cancelled")
+        logging.info(f"{tag}/ Task for session_id {session_id} was cancelled due to new question.")
         return {
             "message": "Task cancelled due to new question",
             "products": []
@@ -173,7 +158,7 @@ async def process_question_task(chat_request, session_id, resource_manager):
         raise HTTPException(status_code=500, detail="Internal Server Error")
 
 
-async def process_chat_question(question, clear_history, session_id, resource_manager):
+async def process_chat_question(question, clear_history, session_id, resource_manager_param):
     try:
         if clear_history:
             logging.info(f"{tag}/ Clearing chat history for session_id: {session_id}")
@@ -185,8 +170,8 @@ async def process_chat_question(question, clear_history, session_id, resource_ma
         logging.info(f"{tag}/ Processing question: {question}")
         message, response_json, customer_attributes_retrieved, time_to_get_attributes = process_chat_question_with_customer_attribute_identifier(
             question,
-            resource_manager.vectorstore_faiss_doc,
-            resource_manager.llm,
+            resource_manager_param.vectorstore_faiss_doc,
+            resource_manager_param.llm,
             chat_history
         )
 
@@ -202,12 +187,12 @@ async def process_chat_question(question, clear_history, session_id, resource_ma
 
 
 @app.post("/fetch_images")
-async def fetch_images(request: Request, resource_manager: ResourceManager = Depends(get_resource_manager)):
+async def fetch_images(request: Request, resource_manager_param: ResourceManager = Depends(get_resource_manager)):
     try:
         products = await request.json()
         recommendations_list = [f"{product['product']}, {product['code']}" for product in products]
         logging.info(f"{tag}/ Fetching images for products: {recommendations_list}")
-        image_data, total_image_time = await get_images(recommendations_list, resource_manager.df)
+        image_data, total_image_time = await get_images(recommendations_list, resource_manager_param.df)
         logging.info(f"{tag}/ Total time to fetch images: {total_image_time} seconds." '\n'"Image data: {image_data}")
 
         image_responses = []

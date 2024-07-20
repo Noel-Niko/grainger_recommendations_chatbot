@@ -1,5 +1,5 @@
 # Use an official Python runtime as a parent image
-FROM python:3.11
+FROM python:3.11-slim
 
 # Set environment variables for non-interactive installation
 ENV DEBIAN_FRONTEND=noninteractive
@@ -12,6 +12,22 @@ RUN apt-get update && apt-get install -y \
     gnupg \
     jq \
     swig \
+    xdg-utils \
+    libglib2.0-0 \
+    libnss3 \
+    libgconf-2-4 \
+    libfontconfig1 \
+    libx11-xcb1 \
+    libxcomposite1 \
+    libxdamage1 \
+    libxi6 \
+    libxtst6 \
+    libxrandr2 \
+    libasound2 \
+    libpangocairo-1.0-0 \
+    libatk1.0-0 \
+    libgtk-3-0 \
+    libgbm-dev \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Chrome and ChromeDriver
@@ -21,9 +37,8 @@ RUN echo "Downloading and installing Google Chrome..." \
     && unzip -o /tmp/chrome-linux.zip -d /opt \
     && rm /tmp/chrome-linux.zip \
     && ln -s /opt/chrome-linux64/chrome-linux/chrome /usr/local/bin/google-chrome \
-    && echo "Google Chrome installed successfully."
-
-RUN echo "Downloading and installing ChromeDriver..." \
+    && echo "Google Chrome installed successfully." \
+    && echo "Downloading and installing ChromeDriver..." \
     && CHROMEDRIVER_URL=$(curl -s https://googlechromelabs.github.io/chrome-for-testing/last-known-good-versions-with-downloads.json | jq -r '.channels.Stable.downloads.chromedriver[] | select(.platform=="linux64") | .url') \
     && curl -o /tmp/chromedriver-linux.zip -L $CHROMEDRIVER_URL \
     && unzip -o /tmp/chromedriver-linux.zip -d /usr/local/bin/ \
@@ -34,15 +49,21 @@ RUN echo "Downloading and installing ChromeDriver..." \
 # Set display port to avoid crash
 ENV DISPLAY=:99
 
-# Set working directory
-WORKDIR /app
-
-# Copy application code to the container
 COPY . /app
+
+# Set environment variables for Chrome and ChromeDriver
+ENV RUNNING_IN_DOCKER=true
+ENV CHROME_BIN=/usr/local/bin/google-chrome
+ENV CHROME_DRIVER=/usr/local/bin/chromedriver
+
+# Add Chrome and ChromeDriver to PATH
+ENV PATH=$PATH:/usr/local/bin
 
 # Set PYTHONPATH
 ENV PYTHONPATH="/app:${PYTHONPATH}"
-ENV CHROME_BINARY_PATH=/usr/local/bin/chromedriver
+
+# Set working directory
+WORKDIR /app
 
 # Install Python dependencies
 RUN pip install --upgrade pip setuptools wheel \

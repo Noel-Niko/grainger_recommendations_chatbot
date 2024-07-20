@@ -16,7 +16,8 @@ from selenium.common import WebDriverException
 from modules.image_utils.grainger_image_util import get_images
 from modules.vector_index.chat_processor import process_chat_question_with_customer_attribute_identifier
 from modules.vector_index.document import initialize_embeddings_and_faiss
-from modules.web_extraction_tools.product_reviews.call_selenium_for_review_async import async_navigate_to_reviews_selenium
+from modules.web_extraction_tools.product_reviews.call_selenium_for_review_async import \
+    async_navigate_to_reviews_selenium
 import base64
 import io
 from PIL import Image
@@ -37,13 +38,14 @@ current_tasks: Dict[str, asyncio.Task] = {}
 
 logging.basicConfig(level=logging.INFO)
 
+
 class ResourceManager:
     def __init__(self):
         self.bedrock_embeddings, self.vectorstore_faiss_doc, self.df, self.llm = initialize_embeddings_and_faiss()
-        self.driver = None
+        # self.driver = None
         self.http_client = None
         self.initialize_http_client()
-        self.initialize_webdriver()
+        # self.initialize_webdriver()
 
     def initialize_http_client(self):
         try:
@@ -52,45 +54,47 @@ class ResourceManager:
         except Exception as e:
             logging.error(f"Failed to initialize HTTP client: {e}")
 
-    def initialize_webdriver(self):
-        options = Options()
-        options.add_argument("--headless")
-        options.add_argument("--disable-gpu")
-        options.add_argument("--no-sandbox")
-        options.add_argument("--disable-dev-shm-usage")
-
-        # chrome_binary_path =  '/usr/local/bin/chromedriver-mac-arm64/chromedriver'  #os.getenv('CHROME_BINARY_PATH')
-        options.binary_location = "/usr/local/Caskroom/google-chrome/126.0.6478.183/Google Chrome.app/Contents/MacOS/Google Chrome"
-        logging.info(f"Using Chrome binary at: {options.binary_location}")
-
-        try:
-            logging.info("Initializing ChromeDriver...")
-            # Use webdriver_manager to handle ChromeDriver
-            service = Service(ChromeDriverManager().install())
-            self.driver = webdriver.Chrome(service=service, options=options)
-            logging.info("ChromeDriver initialized successfully.")
-        except WebDriverException as e:
-            logging.error(f"WebDriver failed to start: {e}")
-            self.driver = None
+    # def initialize_webdriver(self):
+    #     options = Options()
+    #     options.add_argument("--headless")
+    #     options.add_argument("--disable-gpu")
+    #     options.add_argument("--no-sandbox")
+    #     options.add_argument("--disable-dev-shm-usage")
+    #
+    #     # chrome_binary_path =  '/usr/local/bin/chromedriver-mac-arm64/chromedriver'  #os.getenv('CHROME_BINARY_PATH')
+    #     options.binary_location = "/usr/local/Caskroom/google-chrome/126.0.6478.183/Google Chrome.app/Contents/MacOS/Google Chrome"
+    #     logging.info(f"Using Chrome binary at: {options.binary_location}")
+    #
+    #     try:
+    #         logging.info("Initializing ChromeDriver...")
+    #         # Use webdriver_manager to handle ChromeDriver
+    #         service = Service(ChromeDriverManager().install())
+    #         self.driver = webdriver.Chrome(service=service, options=options)
+    #         logging.info("ChromeDriver initialized successfully.")
+    #     except WebDriverException as e:
+    #         logging.error(f"WebDriver failed to start: {e}")
+    #         self.driver = None
 
     async def refresh_bedrock_embeddings(self):
         self.bedrock_embeddings, self.vectorstore_faiss_doc, self.df, self.llm = initialize_embeddings_and_faiss()
 
+
 resource_manager = ResourceManager()
 
-@app.on_event("shutdown")
-async def shutdown_event():
-    if resource_manager.driver:
-        resource_manager.driver.quit()
-    await resource_manager.http_client.aclose()
-    logging.info("Shutdown complete.")
 
-@app.on_event("startup")
-async def startup_event():
-    logging.info("Startup complete.")
-    global session_store, current_tasks
-    session_store = {}
-    current_tasks = {}
+# @app.on_event("shutdown")
+# async def shutdown_event():
+#     if resource_manager.driver:
+#         resource_manager.driver.quit()
+#     await resource_manager.http_client.aclose()
+#     logging.info("Shutdown complete.")
+#
+# @app.on_event("startup")
+# async def startup_event():
+#     logging.info("Startup complete.")
+#     global session_store, current_tasks
+#     session_store = {}
+#     current_tasks = {}
 
 
 class ChatRequest(BaseModel):
@@ -290,36 +294,49 @@ async def fetch_review_for_product(product, resource_manager):
             return None
 
 
+async def fetch_review_for_product(product, resource_manager, semaphore):
+    async with semaphore:
+        product_info = f"{product['product']}, {product['code']}"
+        logging.info(f"{tag}/ Fetching reviews for product: {product_info}")
 
-@app.websocket("/ws/reviews")
-async def websocket_endpoint(websocket: WebSocket):
-    logging.info(f"{tag}/ Starting reviews at {time.time()}")
-    await websocket.accept()
-    try:
-        while True:
-            data = await websocket.receive_text()
-            products = json.loads(data)
+        if not resource_manager.driver:
+            logging.error(f"{tag}/ WebDriver is not initialized for product {product['code']}")
+            resource_manager.initialize_webdriver()
+            if not resource_manager.driver:
+                logging.error(f"{tag}/ Failed to reinitialize WebDriver for product {product['code']}")
+                return None
 
-            review_tasks = [fetch_review_for_product(product, resource_manager) for product in products]
-
-            # Iterate over completed tasks and send each review to the client immediately
-            for review_task in asyncio.as_completed(review_tasks):
-                logging.info(f"{tag}/ Sending review at {time.time()}")
-                review = await review_task
-                if review:
-                    await websocket.send_text(json.dumps(review))
-            await websocket.send_text(json.dumps({"end_of_reviews": True}))
-    except WebSocketDisconnect:
-        logging.info("WebSocket disconnected")
-    except Exception as e:
-        logging.error(f"Error in websocket endpoint: {e}")
-        logging.error(traceback.format_exc())
-    finally:
         try:
-            await websocket.close()
-        except RuntimeError:
-            logging.warning("WebSocket already closed")
+            reviews_data = await async_navigate_to_reviews_selenium(product_info, resource_manager.driver)
+        except selenium.common.exceptions.TimeoutException as e:
+            logging.error(f"{tag}/ TimeoutException navigating to reviews for {product_info}: {str(e)}")
+            return None
+        except selenium.common.exceptions.NoSuchElementError as e:
+            logging.error(f"{tag}/ NoSuchElementError navigating to reviews for {product_info}: {str(e)}")
+            return None
+        except Exception as e:
+            logging.error(f"{tag}/ Error navigating to reviews for {product_info}: {str(e)}")
+            logging.error(f"Stacktrace: {traceback.format_exc()}")
+            return None
 
+        if reviews_data:
+            review = {
+                "code": product['code'],
+                "average_star_rating": reviews_data['Average Star Rating'],
+                "average_recommendation_percent": reviews_data['Average Recommendation Percent'],
+                "review_texts": reviews_data['Review Texts']
+            }
+            logging.info(f"{tag}/ Reviews for product {product['code']}: {reviews_data}")
+            return review
+        else:
+            logging.info(f"{tag}/ No reviews found for product {product['code']}")
+            return None
+
+
+async def fetch_reviews_concurrently(products, resource_manager):
+    semaphore = Semaphore(10)
+    tasks = [fetch_review_for_product(product, resource_manager, semaphore) for product in products]
+    return await asyncio.gather(*tasks)
 
 
 # Health check endpoint

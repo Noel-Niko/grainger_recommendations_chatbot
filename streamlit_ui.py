@@ -1,5 +1,4 @@
 import os
-
 import streamlit as st
 import logging
 import uuid
@@ -10,15 +9,12 @@ import asyncio
 import httpx
 from PIL import Image
 import json
-import websockets
 from modules.vector_index.utils.custom_spinner import message_spinner
 
 st.set_page_config(layout="wide")
 
 tag = "StreamlitInterface"
 backend_url = os.getenv('BACKEND_URL', 'http://127.0.0.1:8000')
-websocket_url = os.getenv('BACKEND_WS_URL', 'ws://127.0.0.1:8000/ws/reviews')
-
 
 class StreamlitInterface:
     def __init__(self):
@@ -55,7 +51,7 @@ class StreamlitInterface:
                     payload = {"session_id": self.session_id, "question": question,
                                "clear_history": st.session_state.chat_history}
                     url = f"{backend_url}/ask_question"
-                    # Reset chat history after processing the question prn
+                    # Reset chat history after processing the question
                     if st.session_state.chat_history is True:
                         st.session_state.chat_history = False
 
@@ -71,7 +67,7 @@ class StreamlitInterface:
                     total_time = time.time() - start_time
                     center_col.write(f"Total time to answer question: {total_time}")
                 asyncio.run(self.fetch_and_display_images(col3, products))
-                asyncio.run(self.websocket_reviews(center_col, products))
+                asyncio.run(self.fetch_reviews(center_col, products))
             except Exception as e:
                 logging.error(f"Error in ask_question: {e}")
                 st.error(f"An error occurred while processing the question: {e}")
@@ -109,21 +105,48 @@ class StreamlitInterface:
             logging.error(f"Error fetching images: {e}")
             st.error(f"An error occurred while fetching images: {e}")
 
-    async def websocket_reviews(self, center_col, products):
+    async def fetch_reviews(self, center_col, products):
         try:
             messages = ["Fetching reviews...", "Looking up the product codes...", "Searching on the web...",
                         "Reading reviews...", "Averaging the ratings...", "Collecting review comments..."]
             with message_spinner(messages):
-                async with websockets.connect(websocket_url) as websocket:
-                    await websocket.send(json.dumps(products))
-                    async for message in websocket:
-                        review = json.loads(message)
-                        self.display_review(center_col, review)
-                        if review.get("end_of_reviews"):
-                            break
+                semaphore = asyncio.Semaphore(10)
+                async with httpx.AsyncClient() as client:
+                    tasks = [self.fetch_review_for_product(product, client, semaphore) for product in products]
+                    reviews = await asyncio.gather(*tasks)
+                    for review in reviews:
+                        if review:
+                            self.display_review(center_col, review)
         except Exception as e:
-            logging.error(f"{tag} / Error in websocket_reviews: {e}")
+            logging.error(f"{tag} / Error in fetch_reviews: {e}")
             st.error(f"{tag} / An error occurred while fetching reviews: {e}")
+
+    async def fetch_review_for_product(self, product, client, semaphore):
+        async with semaphore:
+            product_info = f"{product['product']}, {product['code']}"
+            logging.info(f"{tag}/ Fetching reviews for product: {product_info}")
+
+            try:
+                url = f"{backend_url}/fetch_review"
+                payload = {"product_info": product_info}
+                headers = {"Content-Type": "application/json", "session-id": self.session_id}
+                response = await client.post(url, headers=headers, json=payload, timeout=60)
+                if response.status_code == 200:
+                    reviews_data = response.json()
+                    review = {
+                        "code": product['code'],
+                        "average_star_rating": reviews_data['Average Star Rating'],
+                        "average_recommendation_percent": reviews_data['Average Recommendation Percent'],
+                        "review_texts": reviews_data['Review Texts']
+                    }
+                    logging.info(f"{tag}/ Reviews for product {product['code']}: {reviews_data}")
+                    return review
+                else:
+                    logging.error(f"{tag}/ Failed to fetch reviews for product {product['code']}: {response.text}")
+                    return None
+            except Exception as e:
+                logging.error(f"{tag}/ Error fetching reviews for product {product['code']}: {str(e)}")
+                return None
 
     def display_message(self, center_col, data, start_time):
         try:

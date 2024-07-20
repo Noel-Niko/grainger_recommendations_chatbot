@@ -1,0 +1,165 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Resources:
+  # ECS Cluster
+  ECSCluster:
+    Type: AWS::ECS::Cluster
+    Properties:
+      ClusterName: grainger-recommendations-cluster
+
+  # IAM Role for ECS Instances
+  ECSClusterInstanceRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: ec2.amazonaws.com
+            Action: sts:AssumeRole
+      Path: "/"
+      Policies:
+        - PolicyName: ecsInstanceRole
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - ecs:CreateCluster
+                  - ecs:DeregisterContainerInstance
+                  - ecs:DiscoverPollEndpoint
+                  - ecs:Poll
+                  - ecs:RegisterContainerInstance
+                  - ecs:StartTelemetrySession
+                  - ecs:Submit*
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                  - ecr:GetAuthorizationToken
+                  - ecr:BatchCheckLayerAvailability
+                  - ecr:GetDownloadUrlForLayer
+                  - ecr:BatchGetImage
+                  - s3:GetObject
+                  - s3:PutObject
+                Resource: "*"
+
+  # Instance Profile for ECS Instances
+  ECSInstanceProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      Path: "/"
+      Roles:
+        - !Ref ECSClusterInstanceRole
+
+  # Launch Configuration for Auto Scaling Group
+  ECSLaunchConfiguration:
+    Type: AWS::AutoScaling::LaunchConfiguration
+    Properties:
+      ImageId: ami-0e5d65fb7cb2158eb
+      InstanceType: t3.medium
+      IamInstanceProfile: !Ref ECSInstanceProfile
+      KeyName: grainger_recs
+      SecurityGroups:
+        - sg-0857f1e3a154956da
+      UserData:
+        Fn::Base64: !Sub |
+          #!/bin/bash
+          echo ECS_CLUSTER=${ECSCluster} >> /etc/ecs/ecs.config
+          service ecs start
+          echo "ECS agent started and instance registered to ECS cluster"
+
+  # Auto Scaling Group
+  ECSAutoScalingGroup:
+    Type: AWS::AutoScaling::AutoScalingGroup
+    Properties:
+      VPCZoneIdentifier:
+        - subnet-0918f902632532b95
+        - subnet-0487499961164e5cd
+      LaunchConfigurationName: !Ref ECSLaunchConfiguration
+      MinSize: 1
+      MaxSize: 4
+      DesiredCapacity: 1
+      Tags:
+        - Key: Name
+          Value: grainger-recommendations-ecs-instance
+          PropagateAtLaunch: true
+    DependsOn: ECSLaunchConfiguration
+
+  # ECS Task Definition
+  ECSTaskDefinition:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Family: grainger-recommendations-task
+      Cpu: "1024"
+      Memory: "2048"
+      NetworkMode: awsvpc
+      ExecutionRoleArn: !Ref ECSClusterInstanceRole
+      ContainerDefinitions:
+        - Name: grainger-recommendations-container
+          Image: public.ecr.aws/e2o8h8p3/grainger_recommendations_chatbot:latest
+          PortMappings:
+            - ContainerPort: 8505
+          MemoryReservation: 2048
+
+  # ECS Service
+  ECSService:
+    Type: AWS::ECS::Service
+    Properties:
+      Cluster: !Ref ECSCluster
+      DesiredCount: 1
+      TaskDefinition: !Ref ECSTaskDefinition
+      LaunchType: EC2
+      NetworkConfiguration:
+        AwsvpcConfiguration:
+          Subnets:
+            - subnet-0918f902632532b95
+            - subnet-0487499961164e5cd
+          SecurityGroups:
+            - sg-0857f1e3a154956da
+    DependsOn: ECSCluster
+
+  # Application Load Balancer
+  ECSALB:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties:
+      Name: grainger-recommendations-alb
+      Scheme: internet-facing
+      LoadBalancerAttributes:
+        - Key: idle_timeout.timeout_seconds
+          Value: '600'
+      Subnets:
+        - subnet-0918f902632532b95
+        - subnet-0487499961164e5cd
+      SecurityGroups:
+        - sg-0857f1e3a154956da
+      Tags:
+        - Key: Name
+          Value: grainger-recommendations-alb
+
+  # ALB Listener
+  ECSALBListener:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties:
+      LoadBalancerArn: !Ref ECSALB
+      Protocol: HTTP
+      Port: 80
+      DefaultActions:
+        - Type: forward
+          TargetGroupArn: !Ref ECSTG
+
+  # ALB Target Group
+  ECSTG:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      Name: grainger-recommendations-tg
+      Port: 80
+      Protocol: HTTP
+      TargetType: ip
+      VpcId: vpc-0aa4186490602cedd
+      HealthCheckPath: /
+
+Outputs:
+  LoadBalancerDNSName:
+    Description: DNS name for the load balancer
+    Value: !GetAtt ECSALB.DNSName
+    Export:
+      Name: grainger-recommendations-alb-dns

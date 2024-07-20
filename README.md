@@ -52,3 +52,11 @@ Note: incorporates ideas from https://github.com/aws-samples/amazon-bedrock-aist
 ## AI Image Generation:
 - Though removed from the final product as superfluous, images can be generated of the products being used in the environment and by the type of user obtained from the gleaned customer attributes.
 ![img_3.png](img_3.png)
+
+
+## Running Locally:
+- brew install --cask firefox
+- sudo ln -s /Applications/Firefox.app/Contents/MacOS/firefox /usr/local/bin/firefox
+- brew install geckodriver
+- set up your conda environment
+- pip install -r requirements.txt

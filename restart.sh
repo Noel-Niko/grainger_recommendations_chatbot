@@ -1,6 +1,5 @@
 #!/bin/bash
 
-
 aws_access_key_id=$(cat aws_access_key_id)
 export AWS_ACCESS_KEY_ID=$aws_access_key_id
 
@@ -25,7 +24,7 @@ kill_processes_on_ports() {
     if [ -z "$PIDS" ]; then
       echo "No process found on port $PORT"
     else
-      echo "Kill ing processes on port $PORT: $PIDS"
+      echo "Killing processes on port $PORT: $PIDS"
       # Kill the processes
       kill -9 $PIDS
     fi
@@ -37,13 +36,35 @@ kill_processes_on_ports
 
 echo "Ports are now free."
 
+# Running locally
+export BACKEND_URL="http://localhost:8000"
+export BACKEND_WS_URL="ws://localhost:8000/ws/reviews"
+
+echo "BACKEND_URL set to $BACKEND_URL"
+echo "BACKEND_WS_URL set to $BACKEND_WS_URL"
+
+# Ensure the CHROME_BINARY_PATH is set correctly
+#export CHROME_BINARY_PATH=/usr/local/bin/chromedriver
+#echo "CHROME_BINARY_PATH set to $CHROME_BINARY_PATH"
+export CHROME_BINARY_PATH=/usr/local/bin/chromedriver-mac-arm64/chromedriver
+#echo "CHROME_BINARY_PATH set to $CHROME_BINARY_PATH"
+
+
+FASTAPI_PORT=8000
+STREAMLIT_PORT=8505
+
 # Start FastAPI on port 8000
- nohup uvicorn modules.fast_api_main:app --host 0.0.0.0 --port 8000 > >(tee -a nohup.out) 2>&1 &
+echo "Starting FastAPI Application on port $FASTAPI_PORT..."
+uvicorn modules.fast_api_main:app --host 0.0.0.0 --port $FASTAPI_PORT &
 
 # Wait a few seconds for FastAPI to start
 sleep 5
 
 # Start Streamlit on port 8505
- nohup streamlit run streamlit_ui.py --server.port 8505 > >(tee -a nohup.out) 2>&1 &
+echo "Starting Streamlit UI on port $STREAMLIT_PORT..."
+streamlit run streamlit_ui.py --server.port $STREAMLIT_PORT --server.address 0.0.0.0 &
 
- echo "FastAPI and Streamlit services have been restarted."
+echo "FastAPI and Streamlit services have been restarted."
+
+# Keep the script running
+wait

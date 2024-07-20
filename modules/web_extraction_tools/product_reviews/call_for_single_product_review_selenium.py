@@ -1,10 +1,21 @@
 import time
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.chrome.options import Options
+from webdriver_manager.chrome import ChromeDriverManager
+from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from bs4 import BeautifulSoup
 
-def navigate_to_reviews_selenium(product_id, driver):
+
+def navigate_to_reviews_selenium(product_id):
+    options = Options()
+    options.add_argument("--headless")
+    options.add_argument("--disable-gpu")
+    service = Service(ChromeDriverManager().install())
+    driver = webdriver.Chrome(service=service, options=options)
+
     # Function to navigate to the reviews section of a product
     def get_page_soup(url):
         driver.get(url)
@@ -42,6 +53,7 @@ def navigate_to_reviews_selenium(product_id, driver):
         for idx, review in enumerate(reviews, start=1):
             review_text = review.find('p', class_='pr-rd-description-text')
             reviews_data.append({
+                'Recommendation Percentage': recommendation_percent,
                 'Star Rating': star_rating_label,
                 'Rating Text': star_rating_text,
                 'Review Text': review_text.text.strip() if review_text else None
@@ -63,9 +75,9 @@ def navigate_to_reviews_selenium(product_id, driver):
     product_url = product_link.get_attribute('href')
     driver.get(product_url)
     try:
-        WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR, 'a[href*="reviews"]')))
+        WebDriverWait(driver, 3).until(EC.presence_of_element_located((By.CSS_SELECTOR, 'a[href*="reviews"]')))
     except TimeoutError:
-        print("Reviews link not found within 10 seconds.")
+        print("Reviews link not found within 3 seconds.")
         return []
 
     # Find the reviews link using CSS selector

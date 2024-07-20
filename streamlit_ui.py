@@ -59,7 +59,7 @@ class StreamlitInterface:
                     if st.session_state.chat_history is True:
                         st.session_state.chat_history = False
 
-                    response = self.retry_http_post(url, headers, payload, timeout=20, center_col=center_col)
+                    response = self.retry_http_post(url, headers, payload, timeout=30, center_col=center_col)
 
                     if response and response.status_code == 200:
                         data = response.json()
@@ -71,12 +71,12 @@ class StreamlitInterface:
                     total_time = time.time() - start_time
                     center_col.write(f"Total time to answer question: {total_time}")
                 asyncio.run(self.fetch_and_display_images(col3, products))
-                asyncio.run(self.websocket_reviews(center_col, products))
+                asyncio.run(self.fetch_reviews(center_col, products))
             except Exception as e:
                 logging.error(f"Error in ask_question: {e}")
                 st.error(f"An error occurred while processing the question: {e}")
 
-    def retry_http_post(self, url, headers, payload, timeout, retries=5, delay=1, center_col=None):
+    def retry_http_post(self, url, headers, payload, timeout, retries=20, delay=1, center_col=None):
         """Retry HTTP POST request if it fails."""
         for attempt in range(retries):
             try:
@@ -84,8 +84,8 @@ class StreamlitInterface:
                 if response.status_code == 200:
                     logging.info(f"{tag} / Attempt {attempt + 1} successful returning response")
                     return response
-                # else:
-                #     logging.error(f"{tag} / Attempt {attempt + 1} failed: {response.status_code} - {response.text}")
+                else:
+                    logging.error(f"{tag} / Attempt {attempt + 1} failed: {response.status_code} - {response.text}")
             except Exception as e:
                 logging.error(f"{tag} / Attempt {attempt + 1} failed: {str(e)}")
             time.sleep(delay)
@@ -109,21 +109,25 @@ class StreamlitInterface:
             logging.error(f"Error fetching images: {e}")
             st.error(f"An error occurred while fetching images: {e}")
 
-    async def websocket_reviews(self, center_col, products):
+    async def fetch_reviews(self, center_col, products):
         try:
             messages = ["Fetching reviews...", "Looking up the product codes...", "Searching on the web...",
                         "Reading reviews...", "Averaging the ratings...", "Collecting review comments..."]
             with message_spinner(messages):
-                async with websockets.connect(websocket_url) as websocket:
-                    await websocket.send(json.dumps(products))
-                    async for message in websocket:
-                        review = json.loads(message)
-                        self.display_review(center_col, review)
-                        if review.get("end_of_reviews"):
-                            break
+                start_time = time.time()
+                url = f"{backend_url}/fetch_reviews"
+                headers = {"Content-Type": "application/json", "session-id": self.session_id}
+                async with httpx.AsyncClient() as client:
+                    review = await client.post(url, headers=headers, json=products, timeout=120)
+                    if review.status_code == 200:
+                        review_data = review.json()
+                        self.display_review(center_col, review_data, start_time)
+                    else:
+                        logging.error(f"Failed to fetch images: {review.text}")
         except Exception as e:
-            logging.error(f"{tag} / Error in websocket_reviews: {e}")
-            st.error(f"{tag} / An error occurred while fetching reviews: {e}")
+            logging.error(f"Error fetching reviews: {e}")
+            st.error(f"An error occurred while fetching images: {e}")
+
 
     def display_message(self, center_col, data, start_time):
         try:
@@ -136,7 +140,7 @@ class StreamlitInterface:
                 center_col.write(f"Time taken to generate customer attributes: {data['time_to_get_attributes']}")
         except Exception as e:
             logging.error(f"{tag} / Error displaying message: {e}")
-            st.error(f"{tag} / An error occurred while displaying message: {e}")
+
 
     def display_images(self, col3, data, start_time):
         try:
@@ -152,9 +156,8 @@ class StreamlitInterface:
                 col3.write(f"Total time taken to generate images: {time_to_generate_images}")
         except Exception as e:
             logging.error(f"{tag} / Error displaying images: {e}")
-            st.error(f"{tag} / An error occurred while displaying images: {e}")
 
-    def display_review(self, center_col, review):
+    def display_review(self, center_col, review, start_time):
         try:
             with st.spinner("Displaying review..."):
                 logging.info(f"{tag} / Displaying review: {review}")
@@ -166,11 +169,12 @@ class StreamlitInterface:
                     center_col.write("Review Texts:")
                     for idx, review_text in enumerate(review['review_texts'], start=1):
                         center_col.write(f"\nReview {idx}: {review_text}")
+                        review_search_time = time.time() - start_time
+                        center_col.write(f"\nRetrieved in: {review_search_time}")
                 else:
                     logging.error(f"{tag} / Missing 'code' in review: {review}")
         except Exception as e:
             logging.error(f"{tag} / Error displaying review: {e}")
-            st.error(f"{tag} / An error occurred while displaying review: {e}")
 
     # Health check endpoint
     if st.query_params.get("health"):

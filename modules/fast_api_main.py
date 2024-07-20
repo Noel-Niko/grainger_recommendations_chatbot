@@ -232,13 +232,13 @@ async def fetch_images(request: Request, resource_manager: ResourceManager = Dep
 
 
 @app.post("/fetch_reviews")
-async def fetch_reviews(request: Request, resource_manager: ResourceManager = Depends(get_resource_manager)):
+async def fetch_reviews(request: Request):
     logging.info(f"{tag}/ Received request to fetch reviews.")
     try:
         products = await request.json()
         logging.info(f"{tag}/ Received products for review fetching: {products}")
 
-        review_tasks = [fetch_review_for_product(product, resource_manager) for product in products]
+        review_tasks = [fetch_review_for_product(product) for product in products]
         reviews = await asyncio.gather(*review_tasks)
         reviews = [review for review in reviews if review is not None]
 
@@ -250,25 +250,18 @@ async def fetch_reviews(request: Request, resource_manager: ResourceManager = De
         raise HTTPException(status_code=500, detail="Error fetching reviews")
 
 
-async def fetch_review_for_product(product, resource_manager):
+async def fetch_review_for_product(product):
     semaphore = Semaphore(10)
     async with semaphore:
         product_info = f"{product['product']}, {product['code']}"
         logging.info(f"{tag}/ Fetching reviews for product: {product_info}")
 
-        if not resource_manager.driver:
-            logging.error(f"{tag}/ WebDriver is not initialized for product {product['code']}")
-            resource_manager.initialize_webdriver()
-            if not resource_manager.driver:
-                logging.error(f"{tag}/ Failed to reinitialize WebDriver for product {product['code']}")
-                return None
-
         try:
-            reviews_data = await async_navigate_to_reviews_selenium(product_info, resource_manager.driver)
+            reviews_data = await async_navigate_to_reviews_selenium(product_info)
         except selenium.common.exceptions.TimeoutException as e:
             logging.error(f"{tag}/ TimeoutException navigating to reviews for {product_info}: {str(e)}")
             return None
-        except selenium.common.exceptions.NoSuchElementError as e:
+        except selenium.common.exceptions.NoSuchElementException as e:
             logging.error(f"{tag}/ NoSuchElementError navigating to reviews for {product_info}: {str(e)}")
             return None
         except Exception as e:
@@ -288,38 +281,6 @@ async def fetch_review_for_product(product, resource_manager):
         else:
             logging.info(f"{tag}/ No reviews found for product {product['code']}")
             return None
-
-
-
-@app.websocket("/ws/reviews")
-async def websocket_endpoint(websocket: WebSocket):
-    logging.info(f"{tag}/ Starting reviews at {time.time()}")
-    await websocket.accept()
-    try:
-        while True:
-            data = await websocket.receive_text()
-            products = json.loads(data)
-
-            review_tasks = [fetch_review_for_product(product, resource_manager) for product in products]
-
-            # Iterate over completed tasks and send each review to the client immediately
-            for review_task in asyncio.as_completed(review_tasks):
-                logging.info(f"{tag}/ Sending review at {time.time()}")
-                review = await review_task
-                if review:
-                    await websocket.send_text(json.dumps(review))
-            await websocket.send_text(json.dumps({"end_of_reviews": True}))
-    except WebSocketDisconnect:
-        logging.info("WebSocket disconnected")
-    except Exception as e:
-        logging.error(f"Error in websocket endpoint: {e}")
-        logging.error(traceback.format_exc())
-    finally:
-        try:
-            await websocket.close()
-        except RuntimeError:
-            logging.warning("WebSocket already closed")
-
 
 
 # Health check endpoint

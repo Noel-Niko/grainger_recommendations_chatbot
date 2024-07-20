@@ -1,21 +1,34 @@
 import logging
-import selenium
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.common.exceptions import NoSuchElementException, TimeoutException
-from bs4 import BeautifulSoup
+# import selenium
+# from selenium.webdriver.common.by import By
+# from selenium.webdriver.support.ui import WebDriverWait
+# from selenium.webdriver.support import expected_conditions as EC
+# from selenium.common.exceptions import NoSuchElementException, TimeoutException
+# from bs4 import BeautifulSoup
 import asyncio
-from selenium.webdriver.firefox.options import Options as FirefoxOptions
+import time
+
+from selenium.common import NoSuchElementException, TimeoutException
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.wait import WebDriverWait
+from webdriver_manager.chrome import ChromeDriverManager
+from selenium.webdriver.support import expected_conditions as EC
+from urllib.parse import urljoin
+from selenium import webdriver
+from bs4 import BeautifulSoup
 
 logging.basicConfig(level=logging.INFO)
 tag = "call_selenium_for_review_async.py"
+
 
 async def navigate_and_get_soup(driver, url):
     """Navigate to a URL and return the page's BeautifulSoup object."""
     await asyncio.to_thread(driver.get, url)
     # No need to sleep here; WebDriverWait will dynamically wait for elements
     return BeautifulSoup(driver.page_source, 'html.parser')
+
 
 def extract_reviews(soup):
     """Extract review information from a BeautifulSoup object."""
@@ -37,7 +50,8 @@ def extract_reviews(soup):
 
     recommendation_section = soup.find('section', class_='pr-review-snapshot-block-recommend')
     if recommendation_section:
-        recommendation_percent_text = recommendation_section.find('span', class_='pr-reco-value').text.strip().replace('%', '')
+        recommendation_percent_text = recommendation_section.find('span', class_='pr-reco-value').text.strip().replace(
+            '%', '')
         try:
             recommendation_percentages.append(float(recommendation_percent_text))
         except ValueError:
@@ -50,7 +64,8 @@ def extract_reviews(soup):
             review_texts.append(review_text.text.strip())
 
     avg_star_rating = sum(star_rating_values) / len(star_rating_values) if star_rating_values else None
-    avg_recommendation_percent = sum(recommendation_percentages) / len(recommendation_percentages) if recommendation_percentages else None
+    avg_recommendation_percent = sum(recommendation_percentages) / len(
+        recommendation_percentages) if recommendation_percentages else None
 
     return {
         'Average Star Rating': avg_star_rating,
@@ -58,13 +73,19 @@ def extract_reviews(soup):
         'Review Texts': review_texts
     }
 
-async def async_navigate_to_reviews_selenium(product_id, driver):
+
+async def async_navigate_to_reviews_selenium(product_id):
+    options = Options()
+    options.add_argument("--headless")
+    options.add_argument("--disable-gpu")
+    service = Service(ChromeDriverManager().install())
+    driver = webdriver.Chrome(service=service, options=options)
     search_url = f'https://www.zoro.com/search?q={product_id}'
 
     try:
         # Navigate to the search results page and wait for the product link to appear
         soup = await navigate_and_get_soup(driver, search_url)
-        WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.CSS_SELECTOR, 'a.product-card-image__link')))
+        WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.CSS_SELECTOR, 'a.product-card-image__link')))
         product_link = driver.find_element(By.CSS_SELECTOR, 'a.product-card-image__link')
         product_url = product_link.get_attribute('href')
     except (NoSuchElementException, TimeoutException) as e:
@@ -77,7 +98,7 @@ async def async_navigate_to_reviews_selenium(product_id, driver):
     try:
         # Navigate directly to the product page and wait for the reviews link to appear
         soup = await navigate_and_get_soup(driver, product_url)
-        WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR, 'a[href*="reviews"]')))
+        WebDriverWait(driver, 3).until(EC.presence_of_element_located((By.CSS_SELECTOR, 'a[href*="reviews"]')))
         reviews_link = driver.find_element(By.CSS_SELECTOR, 'a[href*="reviews"]')
         reviews_url = reviews_link.get_attribute('href')
     except (NoSuchElementException, TimeoutException) as e:

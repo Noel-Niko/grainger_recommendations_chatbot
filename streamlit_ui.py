@@ -23,7 +23,8 @@ class StreamlitInterface:
             st.session_state.session_id = str(uuid.uuid4())
         self.session_id = st.session_state.session_id
         self.reviews = []
-        self.polling_interval = 5  # polling interval in seconds
+        self.polling_interval = 5
+        self.polling_active = True
 
     def run(self):
         st.button("Clear History", on_click=self.clear_chat_history)
@@ -126,14 +127,19 @@ class StreamlitInterface:
                         if new_reviews:
                             self.reviews.extend(new_reviews)
                             self.display_reviews(center_col, new_reviews, start_time)
+                        if review_data.get('status') == 'completed':
+                            self.polling_active = False
                     else:
                         logging.error(f"Failed to fetch reviews: {response.text if response else 'No response'}")
 
                     # Schedule the next polling
-                    st.experimental_rerun()
+                    if self.polling_active:
+                        time.sleep(self.polling_interval)
+                        st.rerun()
             except Exception as e:
                 logging.error(f"Error in poll_reviews: {e}")
                 st.error(f"An error occurred while polling for reviews: {e}")
+
 
     def display_message(self, center_col, data, start_time):
         try:

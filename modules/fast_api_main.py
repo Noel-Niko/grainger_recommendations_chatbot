@@ -243,7 +243,7 @@ async def fetch_reviews(request: Request):
         reviews = [review for review in reviews if review is not None]
 
         logging.info(f"{tag}/ Completed review fetching for all products.")
-        return {"status": "Reviews processing started", "reviews": reviews}
+        return {"status": "completed", "reviews": reviews}
     except Exception as e:
         logging.error(f"{tag}/ Error fetching reviews: {e}")
         logging.error(traceback.format_exc())

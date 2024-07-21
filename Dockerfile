@@ -37,6 +37,7 @@ RUN set -x \
         g++ \
         zlib1g-dev \
         libjpeg-dev \
+        pkg-config \
     && rm -rf /var/lib/apt/lists/*
 
 # Fetch and install the latest stable versions of Chrome and ChromeDriver
@@ -87,12 +88,14 @@ ENV PATH=$PATH:/usr/local/bin
 # Set PYTHONPATH
 ENV PYTHONPATH="/app"
 
-# Install h5py separately
-RUN pip install --upgrade pip setuptools wheel \
-    && pip install --no-cache-dir h5py==3.6.0 --verbose
+# Set HDF5_DIR for h5py
+ENV HDF5_DIR=/usr/lib/x86_64-linux-gnu/hdf5/serial/
 
-# Install remaining Python dependencies
-RUN pip install --no-cache-dir -r requirements.txt --verbose
+# Install Python dependencies
+COPY requirements.txt .
+
+RUN pip install --upgrade pip setuptools wheel \
+    && pip install --no-cache-dir -r requirements.txt --verbose
 
 # Clean up to reduce image size
 RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*

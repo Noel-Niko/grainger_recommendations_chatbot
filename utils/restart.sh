@@ -46,7 +46,7 @@ echo "BACKEND_WS_URL set to $BACKEND_WS_URL"
 # Ensure the CHROME_BINARY_PATH is set correctly
 #export CHROME_BINARY_PATH=/usr/local/bin/chromedriver
 #echo "CHROME_BINARY_PATH set to $CHROME_BINARY_PATH"
-export CHROME_BINARY_PATH=/usr/local/bin/chromedriver-mac-arm64/chromedriver
+#export CHROME_BINARY_PATH=/usr/local/bin/chromedriver-mac-arm64/chromedriver
 #echo "CHROME_BINARY_PATH set to $CHROME_BINARY_PATH"
 
 

@@ -1,0 +1,42 @@
+# Use an official Python runtime as a parent image
+FROM python:3.11-slim
+
+# Set environment variables for non-interactive installation
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    wget \
+    unzip \
+    curl \
+    gnupg \
+    jq \
+    xdg-utils \
+    libglib2.0-0 \
+    libnss3 \
+    libgconf-2-4 \
+    libfontconfig1 \
+    libx11-xcb1 \
+    libxcomposite1 \
+    libxdamage1 \
+    libxi6 \
+    libxtst6 \
+    libxrandr2 \
+    libasound2 \
+    libpangocairo-1.0-0 \
+    libatk1.0-0 \
+    libgtk-3-0 \
+    libgbm-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+# Test if Chrome dependencies are installed correctly
+RUN echo "All dependencies installed successfully."
+
+# Set working directory
+WORKDIR /app
+
+# Set display port to avoid crash
+ENV DISPLAY=:99
+
+# Default command to keep the container running
+CMD ["tail", "-f", "/dev/null"]

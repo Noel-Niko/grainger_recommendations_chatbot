@@ -76,12 +76,13 @@ class ChatRequest(BaseModel):
 async def get_resource_manager():
     return resource_manager
 
+resource_manager_dependency = Depends(get_resource_manager)
 
 @app.post("/ask_question")
 async def ask_question(
         chat_request: ChatRequest,
         request: Request,
-        resource_manager_param: ResourceManager = Depends(get_resource_manager)
+        resource_manager_param: ResourceManager = resource_manager_dependency
 ):
     try:
         session_id = request.headers.get("session-id")

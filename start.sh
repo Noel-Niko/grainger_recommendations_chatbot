@@ -1,17 +1,25 @@
 #!/bin/bash
 
-# Ensure the script is executed from the correct directory
-cd /app
+cd /app || exit
+
+FASTAPI_PORT=8000
+STREAMLIT_PORT=8505
 
 # Start the application
 echo "Starting the application..."
-# Replace this with the actual command(s) to start your application
-# For example, if you're using FastAPI with uvicorn and Streamlit:
-# Start FastAPI server
-uvicorn app.main:app --host 0.0.0.0 --port 8000 &
 
-# Start Streamlit server (if applicable)
-streamlit run app/streamlit_app.py --server.port 8505
+# Start FastAPI on port 8000
+echo "Starting FastAPI Application on port $FASTAPI_PORT..."
+uvicorn modules.fast_api_main:app --host 0.0.0.0 --port $FASTAPI_PORT &
 
-# Wait for background processes to finish
+# Wait a few seconds for FastAPI to start
+sleep 5
+
+# Start Streamlit on port 8505
+echo "Starting Streamlit UI on port $STREAMLIT_PORT..."
+streamlit run streamlit_ui.py --server.port $STREAMLIT_PORT --server.address 0.0.0.0 &
+
+echo "FastAPI and Streamlit services have been restarted."
+
+# Keep the script running
 wait

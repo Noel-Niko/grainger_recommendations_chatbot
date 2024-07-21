@@ -131,6 +131,8 @@ class StreamlitInterface:
                             self.display_reviews(center_col, new_reviews, start_time)
                         if review_data.get('status') == 'completed':
                             self.polling_active = False
+                            reviews_total_time = time.time() - start_time
+                            center_col.write(f"Reviews processed in: {reviews_total_time}")
                     else:
                         logging.error(f"Failed to fetch reviews: {response.text if response else 'No response'}")
 
@@ -161,7 +163,7 @@ class StreamlitInterface:
                 for image_info in data:
                     try:
                         img = Image.open(io.BytesIO(base64.b64decode(image_info["image_data"])))
-                        col3.image(img, caption=f"{tag} / Grainger Product Image ({image_info['code']})",
+                        col3.image(img, caption=f"Grainger Product Image ({image_info['code']})",
                                    use_column_width=True)
                     except Exception as e:
                         logging.error(f"{tag} / Error displaying image: {e}")

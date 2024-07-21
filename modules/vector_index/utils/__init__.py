@@ -2,9 +2,9 @@
 # SPDX-License-Identifier: MIT-0
 """General helper utilities the workshop notebooks"""
 # Python Built-Ins:
-from io import StringIO
 import sys
 import textwrap
+from io import StringIO
 
 
 def print_ww(*args, width: int = 100, **kwargs):

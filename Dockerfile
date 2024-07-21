@@ -1,4 +1,4 @@
-# Use an official Python runtime as a parent image
+ # Use an official Python runtime as a parent image
 FROM python:3.11-slim
 
 # Set environment variables for non-interactive installation
@@ -34,6 +34,7 @@ RUN set -x \
         libhdf5-dev \
         python3-dev \
         g++ \
+        git \
     && rm -rf /var/lib/apt/lists/*
 
 # Fetch and install the latest stable versions of Chrome and ChromeDriver
@@ -86,7 +87,7 @@ ENV PYTHONPATH="/app:${PYTHONPATH}"
 
 # Install Python dependencies
 RUN pip install --upgrade pip setuptools wheel \
-    && pip install -r requirements.txt --verbose
+    && pip install --no-cache-dir -r requirements.txt --verbose
 
 # Clean up to reduce image size
 RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*

@@ -9,6 +9,7 @@ from typing import Optional
 import boto3
 from botocore.config import Config
 
+
 def get_bedrock_client(
     assumed_role: Optional[str] = None,
     region: Optional[str] = None,

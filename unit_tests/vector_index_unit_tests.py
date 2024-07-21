@@ -1,4 +1,5 @@
 import logging
+
 from modules.vector_index import Document
 
 

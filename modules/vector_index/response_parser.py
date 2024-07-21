@@ -1,6 +1,6 @@
-import time
-import re
 import json
+import re
+import time
 
 
 def split_process_and_message_from_response(recs_response):

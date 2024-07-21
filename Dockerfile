@@ -1,8 +1,9 @@
- # Use an official Python runtime as a parent image
+# Use an official Python runtime as a parent image
 FROM python:3.11-slim
 
 # Set environment variables for non-interactive installation
 ENV DEBIAN_FRONTEND=noninteractive
+ENV PYTHONUNBUFFERED=1
 
 # Enable shell debugging mode
 RUN set -x \
@@ -34,7 +35,8 @@ RUN set -x \
         libhdf5-dev \
         python3-dev \
         g++ \
-        git \
+        zlib1g-dev \
+        libjpeg-dev \
     && rm -rf /var/lib/apt/lists/*
 
 # Fetch and install the latest stable versions of Chrome and ChromeDriver
@@ -83,11 +85,14 @@ ENV CHROME_DRIVER=/usr/local/bin/chromedriver
 ENV PATH=$PATH:/usr/local/bin
 
 # Set PYTHONPATH
-ENV PYTHONPATH="/app:${PYTHONPATH}"
+ENV PYTHONPATH="/app"
 
-# Install Python dependencies
+# Install h5py separately
 RUN pip install --upgrade pip setuptools wheel \
-    && pip install --no-cache-dir -r requirements.txt --verbose
+    && pip install --no-cache-dir h5py==3.6.0 --verbose
+
+# Install remaining Python dependencies
+RUN pip install --no-cache-dir -r requirements.txt --verbose
 
 # Clean up to reduce image size
 RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
@@ -96,9 +101,8 @@ RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 EXPOSE 8000
 EXPOSE 8505
 
-# Health checks for FastAPI and Streamlit
+# Health checks for FastAPI
 HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 CMD curl -f http://localhost:8000/health || exit 1
-HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 CMD curl -f http://localhost:8505/health || exit 1
 
 # Make the start script executable
 RUN chmod +x /app/start.sh

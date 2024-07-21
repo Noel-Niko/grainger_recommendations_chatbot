@@ -1,3 +1,8 @@
+[build-system]
+requires = ["setuptools", "wheel", "cython", "h5py"]
+build-backend = "setuptools.build_meta"
+
+
 [tool.ruff]
 exclude = [
     ".git",

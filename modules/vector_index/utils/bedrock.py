@@ -28,10 +28,16 @@ def get_bedrock_client(
     runtime :
         Optional choice of getting different client to perform operations with the Amazon Bedrock service.
     """
-    # Read secrets from Docker secrets path
-    aws_access_key_id = open('aws_access_key_id').read().strip()
-    aws_secret_access_key = open('aws_secret_access_key').read().strip()
-    bedrock_assume_role = open('bedrock_assume_role').read().strip()
+    current_working_directory = os.getcwd()
+    aws_access_key_file_path = os.path.join(current_working_directory, 'aws_access_key_id')
+    aws_secret_access_key_file_path = os.path.join(current_working_directory, 'aws_secret_access_key')
+    bedrock_assume_role_file_path = os.path.join(current_working_directory, 'bedrock_assume_role')
+    with open(aws_access_key_file_path, 'r') as f:
+        aws_access_key_id = f.read().strip()
+    with open(aws_secret_access_key_file_path, 'r') as f:
+        aws_secret_access_key = f.read().strip()
+    with open(bedrock_assume_role_file_path, 'r') as f:
+        bedrock_assume_role = f.read().strip()
 
     if region is None:
         target_region = os.environ.get("AWS_REGION", os.environ.get("AWS_DEFAULT_REGION"))

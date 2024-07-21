@@ -1,3 +1,4 @@
+# Base image
 FROM python:3.11-slim
 
 # Set environment variables for non-interactive installation
@@ -76,7 +77,8 @@ ENV CHROME_BIN=/usr/local/bin/google-chrome
 ENV CHROME_DRIVER=/usr/local/bin/chromedriver
 ENV PATH=$PATH:/usr/local/bin
 ENV PYTHONPATH="/app"
-ENV HDF5_DIR=/usr/lib/x86_64-linux-gnu/hdf5/serial/
+ENV AWS_REGION=us-east-1
+
 
 # Set working directory
 WORKDIR /app

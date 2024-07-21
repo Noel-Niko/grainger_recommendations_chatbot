@@ -6,6 +6,8 @@ exclude = [
     "dist"
 ]
 
+line-length = 150
+
 [tool.ruff.lint]
 select = [
     # pycodestyle

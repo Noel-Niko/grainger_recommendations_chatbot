@@ -30,6 +30,10 @@ RUN set -x \
         libgtk-3-0 \
         libgbm-dev \
         ca-certificates \
+        build-essential \
+        libhdf5-dev \
+        python3-dev \
+        g++ \
     && rm -rf /var/lib/apt/lists/*
 
 # Fetch and install the latest stable versions of Chrome and ChromeDriver

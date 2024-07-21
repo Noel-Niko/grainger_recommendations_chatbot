@@ -5,6 +5,16 @@ cd /app || exit
 FASTAPI_PORT=8000
 STREAMLIT_PORT=8505
 
+# Declare variables to hold the contents of the secret files
+key_id=$(cat /app/secrets/aws_access_key_id)
+secret_key=$(cat /app/secrets/aws_secret_access_key)
+assume_role=$(cat /app/secrets/bedrock_assume_role)
+
+# Export the variables as environment variables
+export AWS_ACCESS_KEY_ID="$key_id"
+export AWS_SECRET_ACCESS_KEY="$secret_key"
+export BEDROCK_ASSUME_ROLE="$assume_role"
+
 # Start the application
 echo "Starting the application..."
 
@@ -17,7 +27,7 @@ sleep 5
 
 # Start Streamlit on port 8505
 echo "Starting Streamlit UI on port $STREAMLIT_PORT..."
-streamlit run streamlit_ui.py --server.port $STREAMLIT_PORT --server.address 0.0.0.0 &
+streamlit run modules/streamlit_ui.py --server.port $STREAMLIT_PORT --server.address 0.0.0.0 &
 
 echo "FastAPI and Streamlit services have been restarted."
 

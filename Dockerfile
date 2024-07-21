@@ -86,10 +86,11 @@ WORKDIR /app
 # Copy application code to the container
 COPY . /app
 
+
 # Copy secret files to the container
-COPY aws_access_key_id /app/aws_access_key_id
-COPY aws_secret_access_key /app/aws_secret_access_key
-COPY bedrock_assume_role /app/bedrock_assume_role
+COPY secrets/aws_access_key_id /app/secrets/aws_access_key_id
+COPY secrets/aws_secret_access_key /app/secrets/aws_secret_access_key
+COPY secrets/bedrock_assume_role /app/secrets/bedrock_assume_role
 
 # Install Python dependencies
 COPY requirements.txt .

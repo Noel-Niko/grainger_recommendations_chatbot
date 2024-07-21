@@ -10,7 +10,7 @@ import httpx
 import streamlit as st
 from PIL import Image
 
-from modules.vector_index.utils.custom_spinner import message_spinner
+from ui_utils.custom_spinner import message_spinner
 
 st.set_page_config(layout="wide")
 

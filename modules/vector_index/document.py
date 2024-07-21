@@ -9,9 +9,10 @@ from langchain.embeddings import BedrockEmbeddings
 from langchain.vectorstores import FAISS
 from langchain_aws import Bedrock
 
-from modules.vector_index.utils.bedrock import get_bedrock_client
+from modules.vector_index.vector_utils.bedrock import get_bedrock_client
 
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s',  handlers=[logging.StreamHandler()])
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s',
+                    handlers=[logging.StreamHandler()])
 
 current_dir = os.path.dirname(__file__)
 project_root = os.path.abspath(os.path.join(current_dir, '..'))
@@ -22,6 +23,7 @@ class Document:
     def __init__(self, page_content, metadata):
         self.page_content = page_content
         self.metadata = metadata
+
 
 def initialize_embeddings_and_faiss():
     logging.info("Initializing Bedrock clients...")
@@ -55,7 +57,7 @@ def initialize_embeddings_and_faiss():
 
     # Create serialized source doc for FAISS
     documents = []
-    data_source_dir = os.path.join(current_dir, 'data_source')
+    data_source_dir = os.path.join(current_dir, 'data_sources')
     os.makedirs(data_source_dir, exist_ok=True)
     serialized_documents_file = os.path.join(data_source_dir, 'documents.pkl')
     logging.info(f"Attempting to load file from: {serialized_documents_file}")
@@ -86,7 +88,7 @@ def initialize_embeddings_and_faiss():
     pickle.dump(documents, open(serialized_documents_file, "wb"))
 
     # Check if serialized FAISS index exists
-    serialized_index_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'vector_index.pkl')
+    serialized_index_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data_sources/vector_index.pkl')
     logging.info(f"Serialized index file {serialized_index_file}")
     if os.path.exists(serialized_index_file):
         logging.info(f"Serialized file {serialized_index_file} already exists. Loading...")
@@ -108,6 +110,7 @@ def initialize_embeddings_and_faiss():
         logging.info("FAISS vector store serialized to pickle file.")
 
     return bedrock_embeddings, vectorstore_faiss_doc, df, llm
+
 
 # 'similarity' is standard 'mmr' for greater variety
 def parallel_search(queries, vectorstore_faiss_doc, k=5, search_type='similarity', num_threads=5):

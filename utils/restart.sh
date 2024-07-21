@@ -38,17 +38,14 @@ echo "Ports are now free."
 
 # Running locally
 export BACKEND_URL="http://localhost:8000"
-export BACKEND_WS_URL="ws://localhost:8000/ws/reviews"
-
 echo "BACKEND_URL set to $BACKEND_URL"
-echo "BACKEND_WS_URL set to $BACKEND_WS_URL"
 
-# Ensure the CHROME_BINARY_PATH is set correctly
-#export CHROME_BINARY_PATH=/usr/local/bin/chromedriver
-#echo "CHROME_BINARY_PATH set to $CHROME_BINARY_PATH"
-#export CHROME_BINARY_PATH=/usr/local/bin/chromedriver-mac-arm64/chromedriver
-#echo "CHROME_BINARY_PATH set to $CHROME_BINARY_PATH"
-
+key_id=$(cat secrets/aws_access_key_id)
+secret_key=$(cat secrets/aws_secret_access_key)
+assume_role=$(cat secrets/bedrock_assume_role)
+export AWS_ACCESS_KEY_ID="$key_id"
+export AWS_SECRET_ACCESS_KEY="$secret_key"
+export BEDROCK_ASSUME_ROLE="$assume_role"
 
 FASTAPI_PORT=8000
 STREAMLIT_PORT=8505
@@ -62,7 +59,7 @@ sleep 5
 
 # Start Streamlit on port 8505
 echo "Starting Streamlit UI on port $STREAMLIT_PORT..."
-streamlit run streamlit_ui.py --server.port $STREAMLIT_PORT --server.address 0.0.0.0 &
+streamlit run modules/streamlit_ui.py --server.port $STREAMLIT_PORT --server.address 0.0.0.0 &
 
 echo "FastAPI and Streamlit services have been restarted."
 

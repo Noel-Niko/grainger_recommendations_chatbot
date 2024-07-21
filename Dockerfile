@@ -1,4 +1,3 @@
-# Use an official Python runtime as a parent image
 FROM python:3.11-slim
 
 # Set environment variables for non-interactive installation
@@ -40,7 +39,7 @@ RUN set -x \
         pkg-config \
     && rm -rf /var/lib/apt/lists/*
 
-# Fetch and install the latest stable versions of Chrome and ChromeDriver
+# Install Chrome and ChromeDriver
 RUN echo "Checking network connectivity..." \
     && curl -I --insecure https://googlechromelabs.github.io/chrome-for-testing/last-known-good-versions-with-downloads.json \
     && echo "Fetching the latest stable Chrome and ChromeDriver versions..." \
@@ -72,33 +71,29 @@ RUN echo "Checking network connectivity..." \
 # Set display port to avoid crash
 ENV DISPLAY=:99
 
+# Set environment variables
+ENV CHROME_BIN=/usr/local/bin/google-chrome
+ENV CHROME_DRIVER=/usr/local/bin/chromedriver
+ENV PATH=$PATH:/usr/local/bin
+ENV PYTHONPATH="/app"
+ENV HDF5_DIR=/usr/lib/x86_64-linux-gnu/hdf5/serial/
+
 # Set working directory
 WORKDIR /app
 
 # Copy application code to the container
 COPY . /app
 
-# Set environment variables
-ENV CHROME_BIN=/usr/local/bin/google-chrome
-ENV CHROME_DRIVER=/usr/local/bin/chromedriver
-
-# Add Chrome and ChromeDriver to PATH
-ENV PATH=$PATH:/usr/local/bin
-
-# Set PYTHONPATH
-ENV PYTHONPATH="/app"
-
-# Set HDF5_DIR for h5py
-ENV HDF5_DIR=/usr/lib/x86_64-linux-gnu/hdf5/serial/
-
 # Install Python dependencies
 COPY requirements.txt .
-
 RUN pip install --upgrade pip setuptools wheel \
     && pip install --no-cache-dir -r requirements.txt --verbose
 
 # Clean up to reduce image size
-RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+RUN apt-get remove -y wget unzip curl gnupg jq xdg-utils build-essential \
+    && apt-get autoremove -y \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
 # Expose necessary ports
 EXPOSE 8000

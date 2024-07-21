@@ -1,34 +1,26 @@
 import asyncio
-import logging
-import json
-import os
-import time
-import traceback
-import uuid
-
-import selenium
-from botocore.exceptions import ClientError
-from fastapi import FastAPI, HTTPException, Request, Depends, WebSocket
-from fastapi.responses import JSONResponse
-from pydantic import BaseModel
-from typing import List, Dict
-from selenium.common import WebDriverException
-from modules.image_utils.grainger_image_util import get_images
-from modules.vector_index.chat_processor import process_chat_question_with_customer_attribute_identifier
-from modules.vector_index.document import initialize_embeddings_and_faiss
-from modules.web_extraction_tools.product_reviews.call_selenium_for_review_async import \
-    async_navigate_to_reviews_selenium
 import base64
 import io
-from PIL import Image
-from selenium import webdriver
-from selenium.webdriver.chrome.service import Service
-from selenium.webdriver.chrome.options import Options
-from webdriver_manager.chrome import ChromeDriverManager
-from starlette.websockets import WebSocketDisconnect
-import httpx
-from httpx import AsyncClient
+import logging
+import traceback
 from asyncio import Semaphore
+from typing import Dict, List
+
+import httpx
+import selenium
+from fastapi import Depends, FastAPI, HTTPException, Request
+from fastapi.responses import JSONResponse
+from PIL import Image
+from pydantic import BaseModel
+
+from modules.image_utils.grainger_image_util import get_images
+from modules.vector_index.chat_processor import (
+    process_chat_question_with_customer_attribute_identifier,
+)
+from modules.vector_index.document import initialize_embeddings_and_faiss
+from modules.web_extraction_tools.product_reviews.call_selenium_for_review_async import (
+    async_navigate_to_reviews_selenium,
+)
 
 tag = "fast_api_main"
 app = FastAPI()

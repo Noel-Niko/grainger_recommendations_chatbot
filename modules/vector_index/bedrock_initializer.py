@@ -1,9 +1,10 @@
 import logging
 import os
 import sys
-import boto3
+
 from kubernetes import client, config
 from langchain.llms.bedrock import Bedrock
+
 from .utils import bedrock  # Adjust the import path as needed
 
 

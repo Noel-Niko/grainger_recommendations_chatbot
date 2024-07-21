@@ -4,7 +4,6 @@ import pickle
 import sys
 from concurrent.futures import ThreadPoolExecutor
 
-import boto3
 import pandas as pd
 from langchain.embeddings import BedrockEmbeddings
 from langchain.vectorstores import FAISS

@@ -1,7 +1,8 @@
 import os
+
 from selenium import webdriver
-from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.chrome.service import Service
 
 # Get the Chrome binary path from environment variable
 chrome_binary_path = os.getenv('CHROME_BINARY_PATH')

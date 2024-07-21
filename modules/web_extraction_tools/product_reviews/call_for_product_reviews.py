@@ -1,6 +1,6 @@
+
 import requests
 from bs4 import BeautifulSoup
-import time
 
 
 def navigate_to_reviews(product_id):

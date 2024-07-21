@@ -3,12 +3,13 @@ from __future__ import annotations
 import contextlib
 import threading
 import time
-from typing import Iterator, List
+from typing import Iterator
 
 import streamlit as st
-from streamlit.runtime.scriptrunner import add_script_run_ctx
 from streamlit.proto.Spinner_pb2 import Spinner as SpinnerProto
+from streamlit.runtime.scriptrunner import add_script_run_ctx
 from streamlit.string_util import clean_text
+
 
 @contextlib.contextmanager
 def message_spinner(texts=None, *, _cache: bool = False) -> Iterator[None]:

@@ -1,11 +1,11 @@
-import time
-import re
 import json
+import re
+import time
 
 
 def extract_customer_attributes(customer_input, llm):
     start_time = time.time()
-    ner_prompt = """Human: Find industry, size, Sustainability Focus, Inventory Manager, and the location in the 
+    ner_prompt = f"""Human: Find industry, size, Sustainability Focus, Inventory Manager, and the location in the 
     customer input. 
     Instructions: 
     - The Industry can be one of the following: Manufacturing, Warehousing, Government 
@@ -28,7 +28,7 @@ def extract_customer_attributes(customer_input, llm):
     Begin!
 
     Customer input: {customer_input}
-    Assistant:""".format(customer_input=customer_input)
+    Assistant:"""
 
     entity_extraction_result = llm(ner_prompt).strip()
 

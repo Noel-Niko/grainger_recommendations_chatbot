@@ -1,13 +1,15 @@
 import asyncio
+import base64
 import io
 import logging
 import os
-import uuid
 import time
+import uuid
+
 import httpx
 import streamlit as st
 from PIL import Image
-import base64
+
 from modules.vector_index.utils.custom_spinner import message_spinner
 
 st.set_page_config(layout="wide")

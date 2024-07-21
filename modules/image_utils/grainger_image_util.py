@@ -1,11 +1,11 @@
+import asyncio
+import base64
+import io
 import logging
+import time
+
 import aiohttp
 from PIL import Image, ImageDraw, ImageFont
-import io
-import base64
-import pandas as pd
-import time
-import asyncio
 
 tag = 'grainger_image_util'
 

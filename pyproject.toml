@@ -1,0 +1,34 @@
+[build-system]
+requires = ["setuptools", "wheel", "cython", "h5py"]
+build-backend = "setuptools.build_meta"
+
+
+[tool.ruff]
+exclude = [
+    ".git",
+    "__pycache__",
+    "build",
+    "dist"
+]
+
+line-length = 150
+
+[tool.ruff.lint]
+select = [
+    # pycodestyle
+    "E",
+    # Pyflakes
+    "F",
+    # pyupgrade
+    "UP",
+    # flake8-bugbear
+    "B",
+    # flake8-simplify
+    "SIM",
+    # isort
+    "I",
+]
+
+extend-safe-fixes = [
+    "E501"
+]

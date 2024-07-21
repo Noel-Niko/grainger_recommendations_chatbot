@@ -4,55 +4,73 @@ FROM python:3.11-slim
 # Set environment variables for non-interactive installation
 ENV DEBIAN_FRONTEND=noninteractive
 
-# Install system dependencies
-RUN apt-get update && apt-get install -y \
-    wget \
-    unzip \
-    curl \
-    gnupg \
-    jq \
-    swig \
-    xdg-utils \
-    libglib2.0-0 \
-    libnss3 \
-    libgconf-2-4 \
-    libfontconfig1 \
-    libx11-xcb1 \
-    libxcomposite1 \
-    libxdamage1 \
-    libxi6 \
-    libxtst6 \
-    libxrandr2 \
-    libasound2 \
-    libpangocairo-1.0-0 \
-    libatk1.0-0 \
-    libgtk-3-0 \
-    libgbm-dev \
+# Enable shell debugging mode
+RUN set -x \
+    && apt-get update \
+    && apt-get install -y --no-install-recommends \
+        wget \
+        unzip \
+        curl \
+        gnupg \
+        jq \
+        xdg-utils \
+        libglib2.0-0 \
+        libnss3 \
+        libgconf-2-4 \
+        libfontconfig1 \
+        libx11-xcb1 \
+        libxcomposite1 \
+        libxdamage1 \
+        libxi6 \
+        libxtst6 \
+        libxrandr2 \
+        libasound2 \
+        libpangocairo-1.0-0 \
+        libatk1.0-0 \
+        libgtk-3-0 \
+        libgbm-dev \
+        ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 
-# Install Chrome and ChromeDriver
-RUN echo "Downloading and installing Google Chrome..." \
-    && CHROME_URL=$(curl -s https://googlechromelabs.github.io/chrome-for-testing/last-known-good-versions-with-downloads.json | jq -r '.channels.Stable.downloads.chrome[] | select(.platform=="linux64") | .url') \
+# Fetch and install the latest stable versions of Chrome and ChromeDriver
+RUN echo "Checking network connectivity..." \
+    && curl -I --insecure https://googlechromelabs.github.io/chrome-for-testing/last-known-good-versions-with-downloads.json \
+    && echo "Fetching the latest stable Chrome and ChromeDriver versions..." \
+    && curl -s --insecure https://googlechromelabs.github.io/chrome-for-testing/last-known-good-versions-with-downloads.json -o /tmp/chrome_versions.json \
+    && echo "Contents of /tmp/chrome_versions.json:" \
+    && cat /tmp/chrome_versions.json \
+    && VERSION=$(jq -r '.channels.Stable.version' /tmp/chrome_versions.json) \
+    && if [ -z "$VERSION" ]; then echo "Failed to fetch Chrome version"; exit 1; fi \
+    && echo "Latest stable version: $VERSION" \
+    && CHROME_URL=$(jq -r --arg VERSION "$VERSION" '.channels.Stable.downloads.chrome[] | select(.platform=="linux64") | .url' /tmp/chrome_versions.json) \
+    && echo "Chrome URL: ${CHROME_URL}" \
+    && CHROMEDRIVER_URL=$(jq -r --arg VERSION "$VERSION" '.channels.Stable.downloads.chromedriver[] | select(.platform=="linux64") | .url' /tmp/chrome_versions.json) \
+    && if [ -z "$CHROME_URL" ] || [ -z "$CHROMEDRIVER_URL" ]; then echo "Failed to fetch Chrome or ChromeDriver URL"; exit 1; fi \
+    && echo "Chrome URL: ${CHROME_URL}" \
+    && echo "Chrome Driver URL: ${CHROMEDRIVER_URL}" \
+    && echo "Downloading Chrome from $CHROME_URL" \
     && curl -o /tmp/chrome-linux.zip -L $CHROME_URL \
     && unzip -o /tmp/chrome-linux.zip -d /opt \
     && rm /tmp/chrome-linux.zip \
     && ln -s /opt/chrome-linux64/chrome-linux/chrome /usr/local/bin/google-chrome \
-    && echo "Google Chrome installed successfully." \
-    && echo "Downloading and installing ChromeDriver..." \
-    && CHROMEDRIVER_URL=$(curl -s https://googlechromelabs.github.io/chrome-for-testing/last-known-good-versions-with-downloads.json | jq -r '.channels.Stable.downloads.chromedriver[] | select(.platform=="linux64") | .url') \
+    && echo "Downloading ChromeDriver from $CHROMEDRIVER_URL" \
     && curl -o /tmp/chromedriver-linux.zip -L $CHROMEDRIVER_URL \
     && unzip -o /tmp/chromedriver-linux.zip -d /usr/local/bin/ \
+    && mv /usr/local/bin/chromedriver-linux64/chromedriver /usr/local/bin/chromedriver \
     && rm -rf /tmp/chromedriver-linux.zip \
     && chmod +x /usr/local/bin/chromedriver \
-    && echo "ChromeDriver installed successfully."
+    && echo "Chrome and ChromeDriver installed successfully."
 
 # Set display port to avoid crash
 ENV DISPLAY=:99
 
+# Set working directory
+WORKDIR /app
+
+# Copy application code to the container
 COPY . /app
 
-# Set environment variables for Chrome and ChromeDriver
-ENV RUNNING_IN_DOCKER=true
+# Set environment variables
 ENV CHROME_BIN=/usr/local/bin/google-chrome
 ENV CHROME_DRIVER=/usr/local/bin/chromedriver
 
@@ -61,9 +79,6 @@ ENV PATH=$PATH:/usr/local/bin
 
 # Set PYTHONPATH
 ENV PYTHONPATH="/app:${PYTHONPATH}"
-
-# Set working directory
-WORKDIR /app
 
 # Install Python dependencies
 RUN pip install --upgrade pip setuptools wheel \

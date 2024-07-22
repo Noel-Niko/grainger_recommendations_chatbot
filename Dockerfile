@@ -1,7 +1,6 @@
 # Base image
 FROM python:3.11-slim
 
-
 # Set environment variables for non-interactive installation
 ENV DEBIAN_FRONTEND=noninteractive
 ENV PYTHONUNBUFFERED=1
@@ -80,13 +79,11 @@ ENV PATH=$PATH:/usr/local/bin
 ENV PYTHONPATH="/app"
 ENV AWS_REGION=us-east-1
 
-
 # Set working directory
 WORKDIR /app
 
 # Copy application code to the container
 COPY . /app
-
 
 # Copy secret files to the container
 COPY secrets/aws_access_key_id /app/secrets/aws_access_key_id
@@ -103,6 +100,9 @@ RUN apt-get remove -y wget unzip gnupg jq xdg-utils build-essential \
     && apt-get autoremove -y \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
+
+# Create the config.toml file for Streamlit
+RUN mkdir -p ~/.streamlit && echo "[browser]\ngatherUsageStats = false" > ~/.streamlit/config.toml
 
 # Expose necessary ports
 EXPOSE 8000

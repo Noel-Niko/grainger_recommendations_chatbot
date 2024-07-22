@@ -27,7 +27,7 @@ sleep 5
 
 # Start Streamlit on port 8505
 echo "Starting Streamlit UI on port $STREAMLIT_PORT..."
-streamlit run modules/streamlit_ui.py --server.port $STREAMLIT_PORT --server.address 0.0.0.0 &
+streamlit run /app/modules/streamlit_ui.py --server.port $STREAMLIT_PORT --server.address 0.0.0.0 > /app/streamlit.log 2>&1 &
 
 echo "FastAPI and Streamlit services have been restarted."
 

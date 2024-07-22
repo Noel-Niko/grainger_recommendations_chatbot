@@ -1,25 +1,20 @@
-# # modules/fast_api_main.py
-#
 # import logging
-# from fastapi import FastAPI
-# from modules.rest_modules.rest_utils.resource_manager import resource_manager
-# from modules.rest_modules.endpoints import chat, image, review, health
+# from fastapi import FastAPI, Depends
+# from modules.rest_modules.rest_utils.resource_manager import ResourceManager
+# from globals import session_store, current_tasks
+# from modules.utils import get_resource_manager
 #
 # logging.basicConfig(level=logging.INFO)
 # app = FastAPI()
 #
-# # Define the global variables
-# session_store = {}
-# current_tasks = {}
-#
+# resource_manager = ResourceManager()
 #
 # @app.on_event("startup")
 # async def startup_event():
 #     logging.info("Startup complete.")
-#     global session_store, current_tasks
-#     session_store = {}
-#     current_tasks = {}
-#
+#     session_store.clear()
+#     current_tasks.clear()
+#     await resource_manager.initialize_http_client()  # Ensure HTTP client is initialized
 #
 # @app.on_event("shutdown")
 # async def shutdown_event():
@@ -28,8 +23,9 @@
 #     await resource_manager.http_client.aclose()
 #     logging.info("Shutdown complete.")
 #
-#
 # # Include routers
+# from modules.rest_modules.endpoints import chat, image, review, health
+#
 # app.include_router(chat.router)
 # app.include_router(image.router)
 # app.include_router(review.router)
@@ -37,9 +33,11 @@
 #
 # if __name__ == "__main__":
 #     import uvicorn
-#
 #     port = 8000
 #     uvicorn.run(app, host="0.0.0.0", port=port)
+
+
+
 
 import asyncio
 import base64

@@ -4,9 +4,10 @@ from typing import Any
 
 import asyncio
 from fastapi import HTTPException
-from modules.vector_index.vector_utils.chat_processor import process_chat_question_with_customer_attribute_identifier
+
+from modules.globals import session_store, current_tasks
 from modules.rest_modules.rest_utils.resource_manager import ResourceManager
-from modules.fast_api_main import session_store  # Import globals directly
+from modules.vector_index.vector_utils.chat_processor import process_chat_question_with_customer_attribute_identifier
 
 
 async def process_chat_question(chat_request, session_id, resource_manager_param: ResourceManager) -> dict[str, Any] | \

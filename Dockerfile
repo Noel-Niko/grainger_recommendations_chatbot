@@ -1,6 +1,7 @@
 # Base image
 FROM python:3.11-slim
 
+
 # Set environment variables for non-interactive installation
 ENV DEBIAN_FRONTEND=noninteractive
 ENV PYTHONUNBUFFERED=1
@@ -98,7 +99,7 @@ RUN pip install --upgrade pip setuptools wheel \
     && pip install --no-cache-dir -r requirements.txt --verbose
 
 # Clean up to reduce image size
-RUN apt-get remove -y wget unzip curl gnupg jq xdg-utils build-essential \
+RUN apt-get remove -y wget unzip gnupg jq xdg-utils build-essential \
     && apt-get autoremove -y \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*

@@ -25,7 +25,6 @@ pyarrow
 sagemaker
 aiohttp
 torch
-
 IPython
 faiss-cpu
 matplotlib

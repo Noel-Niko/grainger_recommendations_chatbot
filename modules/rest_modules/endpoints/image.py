@@ -4,28 +4,24 @@ import logging
 import traceback
 from fastapi import APIRouter, Depends, HTTPException, Request
 from PIL import Image
-from modules.rest_modules.rest_utils.resource_manager import resource_manager
+from modules.rest_modules.rest_utils.resource_manager import ResourceManager
 from modules.rest_modules.rest_utils.image_utils.grainger_image_util import get_images
+from modules.globals import session_store, current_tasks
+from modules.utils import get_resource_manager
 
 router = APIRouter()
 
-
-async def get_resource_manager():
-    from modules.fast_api_main import resource_manager_dependency
-    return resource_manager_dependency
-
-resource_manager_dependency = Depends(get_resource_manager)
-
-
 @router.post("/fetch_images")
-async def fetch_images(request: Request, resource_manager_param: resource_manager = resource_manager_dependency):
+async def fetch_images(
+    request: Request,
+    resource_manager_param: ResourceManager = Depends(get_resource_manager)
+):
     try:
         products = await request.json()
         recommendations_list = [f"{product['product']}, {product['code']}" for product in products]
-        logging.info(f"fast_api_main/ Fetching images for products: {recommendations_list}")
+        logging.info(f"Fetching images for products: {recommendations_list}")
         image_data, total_image_time = await get_images(recommendations_list, resource_manager_param.df)
-        logging.info(
-            f"fast_api_main/ Total time to fetch images: {total_image_time} seconds." '\n'"Image data: {image_data}")
+        logging.info(f"Total time to fetch images: {total_image_time} seconds.\nImage data: {image_data}")
 
         image_responses = []
         for image_info in image_data:

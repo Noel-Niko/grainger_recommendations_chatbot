@@ -15,6 +15,10 @@ export AWS_ACCESS_KEY_ID="$key_id"
 export AWS_SECRET_ACCESS_KEY="$secret_key"
 export BEDROCK_ASSUME_ROLE="$assume_role"
 
+# Set Streamlit to run in headless mode and skip the email prompt
+export STREAMLIT_BROWSER_GATHERUSAGESTATS=false
+export STREAMLIT_SERVER_HEADLESS=true
+
 # Start the application
 echo "Starting the application..."
 

@@ -109,7 +109,7 @@ EXPOSE 8000
 EXPOSE 8505
 
 # Health checks for FastAPI
-HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 CMD curl -f http://localhost:8000/health || exit 1
+HEALTHCHECK --interval=30s --timeout=15s --start-period=10s --retries=3 CMD curl -f http://localhost:8000/health || exit 1
 
 # Make the start script executable
 RUN chmod +x /app/start.sh

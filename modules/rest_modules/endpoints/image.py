@@ -9,7 +9,7 @@ from modules.rest_modules.rest_utils.image_utils.grainger_image_util import get_
 from modules.globals import session_store, current_tasks
 
 router = APIRouter()
-tag = "fast_api_main"
+tag = "image.py"
 
 async def get_resource_manager():
     from modules.fast_api_main import resource_manager
@@ -24,7 +24,6 @@ async def fetch_images(request: Request, resource_manager_param: ResourceManager
         recommendations_list = [f"{product['product']}, {product['code']}" for product in products]
         logging.info(f"{tag}/ Fetching images for products: {recommendations_list}")
         image_data, total_image_time = await get_images(recommendations_list, resource_manager_param.df)
-        logging.info(f"{tag}/ Total time to fetch images: {total_image_time} seconds.\nImage data: {image_data}")
 
         image_responses = []
         for image_info in image_data:

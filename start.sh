@@ -19,6 +19,10 @@ export BEDROCK_ASSUME_ROLE="$assume_role"
 export STREAMLIT_BROWSER_GATHERUSAGESTATS=false
 export STREAMLIT_SERVER_HEADLESS=true
 
+# Update CA certificates
+update-ca-certificates
+export ALLOW_INSECURE_CONNECTIONS=true
+
 # Start the application
 echo "Starting the application..."
 

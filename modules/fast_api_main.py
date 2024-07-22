@@ -1,7 +1,6 @@
 import logging
 import asyncio
 from typing import Dict, List
-
 import httpx
 from fastapi import FastAPI
 from modules.vector_index.document import initialize_embeddings_and_faiss
@@ -9,12 +8,10 @@ from modules.vector_index.document import initialize_embeddings_and_faiss
 logging.basicConfig(level=logging.INFO)
 app = FastAPI()
 
-# Define the global variables
 session_store: Dict[str, List[Dict[str, str]]] = {}
 current_tasks: Dict[str, asyncio.Task] = {}
 
 
-# Initialize ResourceManager
 class ResourceManager:
     def __init__(self):
         self.bedrock_embeddings, self.vectorstore_faiss_doc, self.df, self.llm = initialize_embeddings_and_faiss()

@@ -93,16 +93,14 @@ COPY secrets/bedrock_assume_role /app/secrets/bedrock_assume_role
 # Install Python dependencies
 COPY requirements.txt .
 RUN pip install --upgrade pip setuptools wheel \
-    && pip install --no-cache-dir -r requirements.txt --verbose
+    && pip install --no-cache-dir -r requirements.txt --verbose \
+    && pip install --upgrade boto3
 
 # Clean up to reduce image size
 RUN apt-get remove -y wget unzip gnupg jq xdg-utils build-essential \
     && apt-get autoremove -y \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
-
-# Create the config.toml file for Streamlit
-RUN mkdir -p ~/.streamlit && echo "[browser]\ngatherUsageStats = false" > ~/.streamlit/config.toml
 
 # Expose necessary ports
 EXPOSE 8000

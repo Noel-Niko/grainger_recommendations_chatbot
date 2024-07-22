@@ -1,21 +1,15 @@
-# Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
-# SPDX-License-Identifier: MIT-0
-"""Helper utilities for working with Amazon Bedrock from Python notebooks"""
 import logging
-# Python Built-Ins:
 import os
 from typing import Optional
-
-# External Dependencies:
 import boto3
 from botocore.config import Config
-tag = "get_bedrock_client"
 
+tag = "get_bedrock_client"
 
 def get_bedrock_client(
     assumed_role: Optional[str] = None,
     region: Optional[str] = None,
-    runtime: Optional[bool] = True,
+    runtime: Optional[bool] = True
 ):
     """Create a boto3 client for Amazon Bedrock, with optional configuration overrides
 
@@ -34,8 +28,9 @@ def get_bedrock_client(
     aws_access_key_id = os.getenv('AWS_ACCESS_KEY_ID')
     aws_secret_access_key = os.getenv('AWS_SECRET_ACCESS_KEY')
     bedrock_assume_role = os.getenv('BEDROCK_ASSUME_ROLE')
+    allow_insecure = os.getenv('ALLOW_INSECURE_CONNECTIONS', 'false').lower() == 'true'
 
-    logging.info(f"{tag} /  AWS_REGION: {os.getenv('AWS_REGION')}")    
+    logging.info(f"{tag} /  AWS_REGION: {os.getenv('AWS_REGION')}")
     if region is None:
         target_region = os.environ.get("AWS_REGION", "us-east-1")
     else:
@@ -76,13 +71,14 @@ def get_bedrock_client(
         client_kwargs["aws_secret_access_key"] = aws_secret_access_key
 
     if runtime:
-        service_name='bedrock-runtime'
+        service_name = 'bedrock-runtime'
     else:
-        service_name='bedrock'
+        service_name = 'bedrock'
 
     bedrock_client = session.client(
         service_name=service_name,
         config=retry_config,
+        verify=not allow_insecure,
         **client_kwargs
     )
 

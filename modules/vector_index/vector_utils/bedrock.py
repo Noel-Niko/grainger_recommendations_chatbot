@@ -1,6 +1,7 @@
 # Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 # SPDX-License-Identifier: MIT-0
 """Helper utilities for working with Amazon Bedrock from Python notebooks"""
+import logging
 # Python Built-Ins:
 import os
 from typing import Optional
@@ -8,6 +9,7 @@ from typing import Optional
 # External Dependencies:
 import boto3
 from botocore.config import Config
+tag = "get_bedrock_client"
 
 
 def get_bedrock_client(
@@ -28,23 +30,24 @@ def get_bedrock_client(
     runtime :
         Optional choice of getting different client to perform operations with the Amazon Bedrock service.
     """
-    # Read secrets from Docker secrets path
-    aws_access_key_id = open('aws_access_key_id').read().strip()
-    aws_secret_access_key = open('aws_secret_access_key').read().strip()
-    bedrock_assume_role = open('bedrock_assume_role').read().strip()
+    # Access the environment variables
+    aws_access_key_id = os.getenv('AWS_ACCESS_KEY_ID')
+    aws_secret_access_key = os.getenv('AWS_SECRET_ACCESS_KEY')
+    bedrock_assume_role = os.getenv('BEDROCK_ASSUME_ROLE')
 
+    logging.info(f"{tag} /  AWS_REGION: {os.getenv('AWS_REGION')}")    
     if region is None:
-        target_region = os.environ.get("AWS_REGION", os.environ.get("AWS_DEFAULT_REGION"))
+        target_region = os.environ.get("AWS_REGION", "us-east-1")
     else:
         target_region = region
 
-    print(f"Create new client\n  Using region: {target_region}")
+    logging.info(f"{tag} / Create new client\n  Using region: {target_region}")
     session_kwargs = {"region_name": target_region}
     client_kwargs = {**session_kwargs}
 
     profile_name = os.environ.get("AWS_PROFILE")
     if profile_name:
-        print(f"  Using profile: {profile_name}")
+        logging.info(f"{tag} / Using profile: {profile_name}")
         session_kwargs["profile_name"] = profile_name
 
     retry_config = Config(
@@ -58,13 +61,13 @@ def get_bedrock_client(
 
     if assumed_role or bedrock_assume_role:
         role_to_assume = assumed_role if assumed_role else bedrock_assume_role
-        print(f"  Using role: {role_to_assume}", end='')
+        logging.info(f"{tag} / Using role: {role_to_assume}")
         sts = session.client("sts")
         response = sts.assume_role(
             RoleArn=str(role_to_assume),
             RoleSessionName="langchain-llm-1"
         )
-        print(" ... successful!")
+        logging.info(" ... successful!")
         client_kwargs["aws_access_key_id"] = response["Credentials"]["AccessKeyId"]
         client_kwargs["aws_secret_access_key"] = response["Credentials"]["SecretAccessKey"]
         client_kwargs["aws_session_token"] = response["Credentials"]["SessionToken"]
@@ -83,6 +86,6 @@ def get_bedrock_client(
         **client_kwargs
     )
 
-    print("boto3 Bedrock client successfully created!")
-    print(bedrock_client._endpoint)
+    logging.info("boto3 Bedrock client successfully created!")
+    logging.info(bedrock_client._endpoint)
     return bedrock_client

@@ -1,3 +1,4 @@
+# Base image
 FROM python:3.11-slim
 
 # Set environment variables for non-interactive installation
@@ -76,7 +77,7 @@ ENV CHROME_BIN=/usr/local/bin/google-chrome
 ENV CHROME_DRIVER=/usr/local/bin/chromedriver
 ENV PATH=$PATH:/usr/local/bin
 ENV PYTHONPATH="/app"
-ENV HDF5_DIR=/usr/lib/x86_64-linux-gnu/hdf5/serial/
+ENV AWS_REGION=us-east-1
 
 # Set working directory
 WORKDIR /app
@@ -84,16 +85,24 @@ WORKDIR /app
 # Copy application code to the container
 COPY . /app
 
+# Copy secret files to the container
+COPY secrets/aws_access_key_id /app/secrets/aws_access_key_id
+COPY secrets/aws_secret_access_key /app/secrets/aws_secret_access_key
+COPY secrets/bedrock_assume_role /app/secrets/bedrock_assume_role
+
 # Install Python dependencies
 COPY requirements.txt .
 RUN pip install --upgrade pip setuptools wheel \
     && pip install --no-cache-dir -r requirements.txt --verbose
 
 # Clean up to reduce image size
-RUN apt-get remove -y wget unzip curl gnupg jq xdg-utils build-essential \
+RUN apt-get remove -y wget unzip gnupg jq xdg-utils build-essential \
     && apt-get autoremove -y \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
+
+# Create the config.toml file for Streamlit
+RUN mkdir -p ~/.streamlit && echo "[browser]\ngatherUsageStats = false" > ~/.streamlit/config.toml
 
 # Expose necessary ports
 EXPOSE 8000

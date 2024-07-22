@@ -1,17 +1,35 @@
 #!/bin/bash
 
-# Ensure the script is executed from the correct directory
-cd /app
+cd /app || exit
+
+FASTAPI_PORT=8000
+STREAMLIT_PORT=8505
+
+# Declare variables to hold the contents of the secret files
+key_id=$(cat /app/secrets/aws_access_key_id)
+secret_key=$(cat /app/secrets/aws_secret_access_key)
+assume_role=$(cat /app/secrets/bedrock_assume_role)
+
+# Export the variables as environment variables
+export AWS_ACCESS_KEY_ID="$key_id"
+export AWS_SECRET_ACCESS_KEY="$secret_key"
+export BEDROCK_ASSUME_ROLE="$assume_role"
 
 # Start the application
 echo "Starting the application..."
-# Replace this with the actual command(s) to start your application
-# For example, if you're using FastAPI with uvicorn and Streamlit:
-# Start FastAPI server
-uvicorn app.main:app --host 0.0.0.0 --port 8000 &
 
-# Start Streamlit server (if applicable)
-streamlit run app/streamlit_app.py --server.port 8505
+# Start FastAPI on port 8000
+echo "Starting FastAPI Application on port $FASTAPI_PORT..."
+uvicorn modules.fast_api_main:app --host 0.0.0.0 --port $FASTAPI_PORT &
 
-# Wait for background processes to finish
+# Wait a few seconds for FastAPI to start
+sleep 5
+
+# Start Streamlit on port 8505
+echo "Starting Streamlit UI on port $STREAMLIT_PORT..."
+streamlit run /app/modules/streamlit_ui.py --server.port $STREAMLIT_PORT --server.address 0.0.0.0 > /app/streamlit.log 2>&1 &
+
+echo "FastAPI and Streamlit services have been restarted."
+
+# Keep the script running
 wait

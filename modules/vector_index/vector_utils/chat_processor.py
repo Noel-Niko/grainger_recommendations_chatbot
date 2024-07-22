@@ -6,12 +6,13 @@ import time
 from langchain.chains import RetrievalQA
 from langchain.prompts import PromptTemplate
 
-from .customer_attributes import extract_customer_attributes
-from .response_parser import split_process_and_message_from_response
+from modules.vector_index.vector_utils.customer_attributes import extract_customer_attributes
+from modules.vector_index.vector_utils.response_parser import split_process_and_message_from_response
 
 tag = 'chat_processor'
 
 logging.basicConfig(level=logging.INFO, stream=sys.stdout)
+
 
 def process_chat_question_with_customer_attribute_identifier(question, document, llm, chat_history):
     start_time = time.time()

@@ -37,10 +37,10 @@
 
 # AWS Bedrock
 - LLM used: Anthropic
-    ![img.png](img.png)
+    ![img.png](readMe_images/img.png)
   
 - AI Image Generator 
-    ![img_1.png](img_1.png)
+    ![img_1.png](readMe_images/img_1.png)
 
 - For comparison: 
   - https://aws.amazon.com/bedrock/pricing/
@@ -51,7 +51,7 @@ Note: incorporates ideas from https://github.com/aws-samples/amazon-bedrock-aist
 
 ## AI Image Generation:
 - Though removed from the final product as superfluous, images can be generated of the products being used in the environment and by the type of user obtained from the gleaned customer attributes.
-![img_3.png](img_3.png)
+![img_3.png](readMe_images/img_3.png)
 
 
 ## Running Locally:

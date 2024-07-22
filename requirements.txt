@@ -25,7 +25,6 @@ pyarrow
 sagemaker
 aiohttp
 torch
-tensorflow
 IPython
 faiss-cpu
 matplotlib
@@ -41,5 +40,4 @@ httpx
 
 pydantic
 websockets
-h5py==3.11.0
 langdetect

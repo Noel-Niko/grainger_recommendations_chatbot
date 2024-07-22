@@ -1,26 +1,31 @@
 import asyncio
 import logging
 import traceback
+
 from fastapi import APIRouter, Depends, HTTPException, Request
+
+from modules.globals import current_tasks, session_store
 from modules.rest_modules.models import ChatRequest
 from modules.rest_modules.rest_utils.resource_manager import ResourceManager
 from modules.vector_index.vector_utils.chat_processor import process_chat_question_with_customer_attribute_identifier
-from modules.globals import session_store, current_tasks
 
 router = APIRouter()
 tag = "fast_api_main"
+
 
 async def get_resource_manager():
     from modules.fast_api_main import resource_manager
     return resource_manager
 
+
 resource_manager_dependency = Depends(get_resource_manager)
+
 
 @router.post("/ask_question")
 async def ask_question(
-    chat_request: ChatRequest,
-    request: Request,
-    resource_manager_param: ResourceManager = resource_manager_dependency
+        chat_request: ChatRequest,
+        request: Request,
+        resource_manager_param: ResourceManager = resource_manager_dependency
 ):
     try:
         session_id = request.headers.get("session-id")
@@ -48,7 +53,8 @@ async def ask_question(
     except Exception as e:
         logging.error(f"Error in {tag}/ask_question: {str(e)}")
         logging.error(traceback.format_exc())
-        raise HTTPException(status_code=500, detail="Internal Server Error")
+        raise HTTPException(status_code=500, detail="Internal Server Error") from e
+
 
 async def process_question_task(chat_request, session_id, resource_manager_param):
     try:
@@ -83,7 +89,8 @@ async def process_question_task(chat_request, session_id, resource_manager_param
     except Exception as e:
         logging.error(f"Error in {tag}/process_question_task: {str(e)}")
         logging.error(traceback.format_exc())
-        raise HTTPException(status_code=500, detail="Internal Server Error")
+        raise HTTPException(status_code=500, detail="Internal Server Error") from e
+
 
 async def process_chat_question(question, clear_history, session_id, resource_manager_param):
     try:

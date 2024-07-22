@@ -1,10 +1,5 @@
-# import selenium
-# from selenium.webdriver.common.by import By
-# from selenium.webdriver.support.ui import WebDriverWait
-# from selenium.webdriver.support import expected_conditions as EC
-# from selenium.common.exceptions import NoSuchElementException, TimeoutException
-# from bs4 import BeautifulSoup
 import asyncio
+import contextlib
 import logging
 import os
 
@@ -42,19 +37,14 @@ def extract_reviews(soup):
     star_rating_container = soup.find('section', class_='pr-review-snapshot-block-snippet')
     if star_rating_container:
         star_rating_text = star_rating_container.find('div', class_='pr-snippet-rating-decimal').text.strip()
-        try:
+        with contextlib.suppress(ValueError):
             star_rating_values.append(float(star_rating_text))
-        except ValueError:
-            pass
 
     recommendation_section = soup.find('section', class_='pr-review-snapshot-block-recommend')
     if recommendation_section:
-        recommendation_percent_text = recommendation_section.find('span', class_='pr-reco-value').text.strip().replace(
-            '%', '')
-        try:
+        recommendation_percent_text = recommendation_section.find('span', class_='pr-reco-value').text.strip().replace('%', '')
+        with contextlib.suppress(ValueError):
             recommendation_percentages.append(float(recommendation_percent_text))
-        except ValueError:
-            pass
 
     reviews = soup.find_all('section', class_='pr-rd-content-block')
     for review in reviews:
@@ -63,8 +53,10 @@ def extract_reviews(soup):
             review_texts.append(review_text.text.strip())
 
     avg_star_rating = sum(star_rating_values) / len(star_rating_values) if star_rating_values else None
-    avg_recommendation_percent = sum(recommendation_percentages) / len(
-        recommendation_percentages) if recommendation_percentages else None
+    avg_recommendation_percent = (
+        sum(recommendation_percentages) /
+        len(recommendation_percentages) if recommendation_percentages else None
+    )
 
     return {
         'Average Star Rating': avg_star_rating,

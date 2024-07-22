@@ -10,6 +10,7 @@ import httpx
 import streamlit as st
 from PIL import Image
 
+from ui_utils.constants import messages_for_getting_reviews, messages_for_answering_questions
 from ui_utils.custom_spinner import message_spinner
 
 st.set_page_config(layout="wide")
@@ -47,34 +48,34 @@ class StreamlitInterface:
         question = st.text_input("Enter your question:", value="", placeholder="", key="unique_key_for_question")
         if question:
             try:
-                messages = ["Processing...", "Loading data...", "Running analysis...",
-                            "Comparing results to your question...", "Almost there..."]
-                with message_spinner(messages):
-                    start_time = time.time()
-                    logging.info(f"Question entered: {question}")
+                spinner_placeholder = center_col.empty()  # Reserve a spot for the spinner
+                with spinner_placeholder:
+                    with message_spinner(messages_for_answering_questions):
+                        start_time = time.time()
+                        logging.info(f"Question entered: {question}")
 
-                    # Call FastAPI to process the chat question
-                    headers = {"session-id": self.session_id}
-                    payload = {"session_id": self.session_id, "question": question,
-                               "clear_history": st.session_state.chat_history}
-                    url = f"{backend_url}/ask_question"
-                    # Reset chat history after processing the question prn
-                    if st.session_state.chat_history is True:
-                        st.session_state.chat_history = False
+                        # Call FastAPI to process the chat question
+                        headers = {"session-id": self.session_id}
+                        payload = {"session_id": self.session_id, "question": question,
+                                   "clear_history": st.session_state.chat_history}
+                        url = f"{backend_url}/ask_question"
+                        # Reset chat history after processing the question prn
+                        if st.session_state.chat_history is True:
+                            st.session_state.chat_history = False
 
-                    response = self.retry_http_post(url, headers, payload, timeout=30, center_col=center_col)
+                        response = self.retry_http_post(url, headers, payload, timeout=30, center_col=center_col)
 
-                    if response and response.status_code == 200:
-                        data = response.json()
-                        self.display_message(center_col, data, start_time)
-                        products = data['products']
-                        st.session_state['products'] = products
-                    else:
-                        logging.error(f"Failed to process question: {response.text if response else 'No response'}")
+                        if response and response.status_code == 200:
+                            data = response.json()
+                            self.display_message(center_col, data, start_time)
+                            products = data['products']
+                            st.session_state['products'] = products
+                        else:
+                            logging.error(f"Failed to process question: {response.text if response else 'No response'}")
 
-                    total_time = time.time() - start_time
-                    center_col.write(f"Total time to answer question: {total_time}")
-                asyncio.run(self.fetch_and_display_images(col3, products))
+                        total_time = time.time() - start_time
+                        center_col.write(f"Total time to answer question: {total_time}")
+                    asyncio.run(self.fetch_and_display_images(col3, products))
             except Exception as e:
                 logging.error(f"Error in ask_question: {e}")
                 st.error(f"An error occurred while processing the question: {e}")
@@ -116,34 +117,33 @@ class StreamlitInterface:
         start_time = time.time()
         if 'products' in st.session_state:
             try:
-                messages = ["Fetching reviews...", "Looking up the product codes...", "Searching on the web...",
-                            "Reading reviews...", "Averaging the ratings...", "Collecting review comments..."]
-                with message_spinner(messages):
-                    products = st.session_state['products']
-                    headers = {"Content-Type": "application/json", "session-id": self.session_id}
-                    url = f"{backend_url}/fetch_reviews"
-                    response = self.retry_http_post(url, headers, products, timeout=120)
-                    if response and response.status_code == 200:
-                        review_data = response.json()
-                        new_reviews = review_data.get('reviews', [])
-                        if new_reviews:
-                            self.reviews.extend(new_reviews)
-                            self.display_reviews(center_col, new_reviews, start_time)
-                        if review_data.get('status') == 'completed':
-                            self.polling_active = False
-                            reviews_total_time = time.time() - start_time
-                            center_col.write(f"Reviews processed in: {reviews_total_time}")
-                    else:
-                        logging.error(f"Failed to fetch reviews: {response.text if response else 'No response'}")
+                spinner_placeholder = center_col.empty()  # Reserve a spot for the spinner
+                with spinner_placeholder:
+                    with message_spinner(messages_for_getting_reviews):
+                        products = st.session_state['products']
+                        headers = {"Content-Type": "application/json", "session-id": self.session_id}
+                        url = f"{backend_url}/fetch_reviews"
+                        response = self.retry_http_post(url, headers, products, timeout=120)
+                        if response and response.status_code == 200:
+                            review_data = response.json()
+                            new_reviews = review_data.get('reviews', [])
+                            if new_reviews:
+                                self.reviews.extend(new_reviews)
+                                self.display_reviews(center_col, new_reviews, start_time)
+                            if review_data.get('status') == 'completed':
+                                self.polling_active = False
+                                reviews_total_time = time.time() - start_time
+                                center_col.write(f"Reviews processed in: {reviews_total_time}")
+                        else:
+                            logging.error(f"Failed to fetch reviews: {response.text if response else 'No response'}")
 
-                    # Schedule the next polling
-                    if self.polling_active:
-                        time.sleep(self.polling_interval)
-                        st.rerun()
+                        # Schedule the next polling
+                        if self.polling_active:
+                            time.sleep(self.polling_interval)
+                            st.rerun()
             except Exception as e:
                 logging.error(f"Error in poll_reviews: {e}")
                 st.error(f"An error occurred while polling for reviews: {e}")
-
 
     def display_message(self, center_col, data, start_time):
         try:
@@ -156,6 +156,7 @@ class StreamlitInterface:
                 center_col.write(f"Time taken to generate customer attributes: {data['time_to_get_attributes']}")
         except Exception as e:
             logging.error(f"{tag} / Error displaying message: {e}")
+
 
     def display_images(self, col3, data, start_time):
         try:

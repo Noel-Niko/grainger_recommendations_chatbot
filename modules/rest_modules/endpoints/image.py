@@ -2,11 +2,12 @@ import base64
 import io
 import logging
 import traceback
+
 from fastapi import APIRouter, Depends, HTTPException, Request
 from PIL import Image
-from modules.rest_modules.rest_utils.resource_manager import ResourceManager
+
 from modules.rest_modules.rest_utils.image_utils.grainger_image_util import get_images
-from modules.globals import session_store, current_tasks
+from modules.rest_modules.rest_utils.resource_manager import ResourceManager
 
 router = APIRouter()
 tag = "image.py"
@@ -43,4 +44,4 @@ async def fetch_images(request: Request, resource_manager_param: ResourceManager
     except Exception as e:
         logging.error(f"Error fetching images: {e}")
         logging.error(traceback.format_exc())
-        raise HTTPException(status_code=500, detail="Error fetching images")
+        raise HTTPException(status_code=500, detail="Error fetching images") from e

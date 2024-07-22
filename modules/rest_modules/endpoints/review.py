@@ -2,9 +2,11 @@ import asyncio
 import logging
 import traceback
 from asyncio import Semaphore
-from fastapi import APIRouter, HTTPException, Request
+
 import selenium
 import selenium.common
+from fastapi import APIRouter, HTTPException, Request
+
 from modules.web_extraction_tools.product_reviews.call_selenium_for_review_async import async_navigate_to_reviews_selenium
 
 router = APIRouter()
@@ -26,7 +28,8 @@ async def fetch_reviews(request: Request):
     except Exception as e:
         logging.error(f"{tag}/ Error fetching reviews: {e}")
         logging.error(traceback.format_exc())
-        raise HTTPException(status_code=500, detail="Error fetching reviews")
+        raise HTTPException(status_code=500, detail="Error fetching reviews") from e
+
 
 async def fetch_review_for_product(product):
     semaphore = Semaphore(10)

@@ -42,16 +42,13 @@ def navigate_to_reviews_selenium(product_id):
 
         # Extracting recommendation percentage
         recommendation_section = soup.find('section', class_='pr-review-snapshot-block-recommend')
-        if recommendation_section:
-            recommendation_percent = recommendation_section.find('span', class_='pr-reco-value').text.strip()
-        else:
-            recommendation_percent = None
+        recommendation_percent = recommendation_section.find("span", class_="pr-reco-value").text.strip() if recommendation_section else None
 
         # Extracting reviews
         reviews = soup.find_all('section', class_='pr-rd-content-block')
         reviews_data = []
 
-        for idx, review in enumerate(reviews, start=1):
+        for _idx, review in enumerate(reviews, start=1):
             review_text = review.find('p', class_='pr-rd-description-text')
             reviews_data.append({
                 'Recommendation Percentage': recommendation_percent,

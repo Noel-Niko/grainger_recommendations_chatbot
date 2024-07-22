@@ -69,7 +69,7 @@ def initialize_embeddings_and_faiss():
     else:
         logging.error("Error loading serialized_documents_file at " + serialized_documents_file)
         logging.info("Generating new df")
-        for index, row in df.iterrows():
+        for _index, row in df.iterrows():
             description = row['Description'] if pd.notna(row['Description']) else ''
             price = row['Price'] if pd.notna(row['Price']) else ''
             page_content = f"{row['Code']} {row['Name']} {price} {description}"
@@ -85,7 +85,8 @@ def initialize_embeddings_and_faiss():
     for idx, doc in enumerate(documents[:5], 1):
         logging.info(f"Document {idx} of {len(documents)}:")
         logging.info(doc.page_content[:200])
-    pickle.dump(documents, open(serialized_documents_file, "wb"))
+    with open(serialized_documents_file, "wb") as file:
+        pickle.dump(documents, file)
 
     # Check if serialized FAISS index exists
     serialized_index_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data_sources/vector_index.pkl')

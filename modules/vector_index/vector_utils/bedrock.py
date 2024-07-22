@@ -1,6 +1,7 @@
 import logging
 import os
 from typing import Optional
+
 import boto3
 from botocore.config import Config
 
@@ -31,10 +32,7 @@ def get_bedrock_client(
     allow_insecure = os.getenv('ALLOW_INSECURE_CONNECTIONS', 'false').lower() == 'true'
 
     logging.info(f"{tag} /  AWS_REGION: {os.getenv('AWS_REGION')}")
-    if region is None:
-        target_region = os.environ.get("AWS_REGION", "us-east-1")
-    else:
-        target_region = region
+    target_region = os.environ.get("AWS_REGION", "us-east-1") if region is None else region
 
     logging.info(f"{tag} / Create new client\n  Using region: {target_region}")
     session_kwargs = {"region_name": target_region}
@@ -70,10 +68,7 @@ def get_bedrock_client(
         client_kwargs["aws_access_key_id"] = aws_access_key_id
         client_kwargs["aws_secret_access_key"] = aws_secret_access_key
 
-    if runtime:
-        service_name = 'bedrock-runtime'
-    else:
-        service_name = 'bedrock'
+    service_name = "bedrock-runtime" if runtime else "bedrock"
 
     bedrock_client = session.client(
         service_name=service_name,

@@ -33,15 +33,14 @@ def navigate_to_reviews(product_id):
             star_rating_label = star_rating['aria-label'] if star_rating else None
 
         # Extracting recommendation percentage
-        recommendation_percent = None
         recommendation_section = soup.find('section', class_='pr-review-snapshot-block-recommend')
         if recommendation_section:
-            recommendation_percent = recommendation_section.find('span', class_='pr-reco-value').text.strip()
+            recommendation_section.find('span', class_='pr-reco-value').text.strip()
 
         # Extracting reviews
         reviews = soup.find_all('section', class_='pr-rd-content-block')
         reviews_data = []
-        for idx, review in enumerate(reviews, start=1):
+        for _idx, review in enumerate(reviews, start=1):
             review_text = review.find('p', class_='pr-rd-description-text')
             reviews_data.append({
                 'Star Rating': star_rating_label,

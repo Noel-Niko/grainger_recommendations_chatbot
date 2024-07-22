@@ -24,8 +24,10 @@ def process_chat_question_with_customer_attribute_identifier(question, document,
                 </catalog>
                 Question: {question}
 
-                The output should be a json of the form <products>[{{"product": <description of the product from the catalog>, "code":<code of the product from the catalog>}}, ...]</products> for me to process.
-                Also, provide a user-readable message responding in full to the question speaking as a friendly salesperson chatbot with all the of the information to display to the user in the form <response>{{message}}</response>.
+                The output should be a json of the form <products>[{{"product": <description of the product from the 
+                catalog>, "code":<code of the product from the catalog>}}, ...]</products> for me to process.
+                Also, provide a user-readable message responding in full to the question speaking as a friendly 
+                salesperson chatbot with all the of the information to display to the user in the form <response>{{message}}</response>.
                 Skip the preamble and always return valid json including empty json if not products are found.
                 Assistant: """
 
@@ -87,7 +89,7 @@ def process_chat_question_with_customer_attribute_identifier(question, document,
 
             end_time = time.time()
             print("Time for process_chat_question:", end_time - start_time)
-            raise StopExecution
+            raise StopExecution from error
         else:
             end_time = time.time()
             print("Time for process_chat_question:", end_time - start_time)

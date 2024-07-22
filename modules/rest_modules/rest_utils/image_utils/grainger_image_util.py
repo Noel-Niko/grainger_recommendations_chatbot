@@ -11,7 +11,6 @@ tag = 'grainger_image_util'
 
 async def get_images(recommendations_list, df):
     image_tasks = []
-    image_data = []
     total_image_time = 0.0
 
     async with aiohttp.ClientSession() as session:
@@ -76,7 +75,6 @@ async def generate_single_grainger_thumbnail(image_data):
     bbox = draw.textbbox((0, 0), wrapped_text, font=font)
     text_width, text_height = bbox[2] - bbox[0], bbox[3] - bbox[1]
 
-    box_width = img.width
     box_height = text_height + 10
 
     draw.rectangle([(0, img.height - box_height), (img.width, img.height)], fill='black')

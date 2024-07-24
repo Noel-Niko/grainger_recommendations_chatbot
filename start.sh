@@ -28,7 +28,7 @@ echo "Starting the application..."
 
 # Start FastAPI on port 8000
 echo "Starting FastAPI Application on port $FASTAPI_PORT..."
-uvicorn modules.fast_api_main:app --host 0.0.0.0 --port $FASTAPI_PORT &
+gunicorn modules.fast_api_main:app --workers 2 --worker-class uvicorn.workers.UvicornWorker --bind 0.0.0.0:$FASTAPI_PORT --access-logfile - --timeout 60 &
 
 # Wait a few seconds for FastAPI to start
 sleep 5
@@ -37,7 +37,7 @@ sleep 5
 echo "Starting Streamlit UI on port $STREAMLIT_PORT..."
 streamlit run /app/modules/streamlit_ui.py --server.port $STREAMLIT_PORT --server.address 0.0.0.0 > /app/streamlit.log 2>&1 &
 
-echo "FastAPI and Streamlit services have been restarted."
+echo "FastAPI and Streamlit services have been started."
 
 # Keep the script running
 wait

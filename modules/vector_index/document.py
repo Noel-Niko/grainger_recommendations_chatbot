@@ -9,7 +9,7 @@ from langchain.embeddings import BedrockEmbeddings
 from langchain.vectorstores import FAISS
 from langchain_aws import Bedrock
 
-from modules.vector_index.vector_utils.bedrock import get_bedrock_client
+from modules.vector_index.vector_utils.bedrock import BedrockClientManager
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s',
                     handlers=[logging.StreamHandler()])
@@ -27,7 +27,8 @@ class Document:
 
 def initialize_embeddings_and_faiss():
     logging.info("Initializing Bedrock clients...")
-    bedrock_runtime_client = get_bedrock_client()
+    bedrock_manager = BedrockClientManager(refresh_interval=3600)
+    bedrock_runtime_client = bedrock_manager.get_bedrock_client()
 
     # Load or create LLM instance
     model_parameter = {

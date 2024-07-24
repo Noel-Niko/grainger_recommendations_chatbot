@@ -32,10 +32,14 @@ class BedrockClientManager:
     def refresh_credentials(self, session, role_to_assume, client_kwargs):
         """Periodically refresh the assumed role credentials."""
         while True:
-            logging.info(f"{tag} / Refreshing credentials for role: {role_to_assume}")
-            credentials = self.assume_role_and_get_credentials(session, role_to_assume)
-            self.update_client_kwargs_with_credentials(credentials, client_kwargs)
+            self._refresh_once(session, role_to_assume, client_kwargs)
             time.sleep(self.refresh_interval)
+
+    def _refresh_once(self, session, role_to_assume, client_kwargs):
+        """Refresh the assumed role credentials once."""
+        logging.info(f"{tag} / Refreshing credentials for role: {role_to_assume}")
+        credentials = self.assume_role_and_get_credentials(session, role_to_assume)
+        self.update_client_kwargs_with_credentials(credentials, client_kwargs)
 
     def get_bedrock_client(
         self,

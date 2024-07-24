@@ -27,6 +27,10 @@ jobs:
         pip install ruff pytest
         pip install -r requirements.txt
 
+    - name: Activate virtual environment
+      run: |
+        source .venv/bin/activate
+
     - name: Run Ruff linting
       run: |
         ruff check .

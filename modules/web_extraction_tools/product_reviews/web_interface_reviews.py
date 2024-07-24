@@ -24,18 +24,19 @@ class ReviewExtractor:
         reviews_data = navigate_to_reviews_selenium(product_id)
         return reviews_data
 
+
 def main():
-    st.title('Product Reviews Extractor')
+    st.title("Product Reviews Extractor")
 
     extractor = ReviewExtractor()
 
-    product_id = st.text_input('Enter Product ID (e.g., 1VCE8):')
+    product_id = st.text_input("Enter Product ID (e.g., 1VCE8):")
 
-    if st.button('Extract Reviews') and product_id:
+    if st.button("Extract Reviews") and product_id:
         st.write(f"Extracting reviews for Product ID: {product_id}...")
         reviews_data = extractor.extract_reviews_for_product(product_id)
         if reviews_data:
-            st.subheader('Extracted Reviews:')
+            st.subheader("Extracted Reviews:")
             for idx, review in enumerate(reviews_data, start=1):
                 st.write(f"\nReview {idx}:")
                 st.write(f"Star Rating: {review['Star Rating']}")
@@ -44,5 +45,6 @@ def main():
         else:
             st.write("No reviews found for the given Product ID.")
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     main()

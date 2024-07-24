@@ -5,13 +5,13 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
 
 # Get the Chrome binary path from environment variable
-chrome_binary_path = os.getenv('CHROME_BINARY_PATH')
+chrome_binary_path = os.getenv("CHROME_BINARY_PATH")
 options = Options()
 options.binary_location = chrome_binary_path
 
 try:
     # Set the path to ChromeDriver
-    service = Service('/usr/local/bin/chromedriver')
+    service = Service("/usr/local/bin/chromedriver")
 
     # Initialize the Chrome WebDriver
     driver = webdriver.Chrome(service=service, options=options)

@@ -9,6 +9,7 @@ from botocore.config import Config
 
 tag = "BedrockClientManager"
 
+
 class BedrockClientManager:
     def __init__(self, refresh_interval: int = 3600):
         self.refresh_interval = refresh_interval
@@ -16,10 +17,7 @@ class BedrockClientManager:
     def assume_role_and_get_credentials(self, session, role_to_assume):
         """Assume the specified role and return temporary credentials."""
         sts = session.client("sts")
-        response = sts.assume_role(
-            RoleArn=str(role_to_assume),
-            RoleSessionName="langchain-llm-1"
-        )
+        response = sts.assume_role(RoleArn=str(role_to_assume), RoleSessionName="langchain-llm-1")
         logging.info(" ... successful!")
         return response["Credentials"]
 
@@ -60,10 +58,10 @@ class BedrockClientManager:
         runtime :
             Optional choice of getting different client to perform operations with the Amazon Bedrock service.
         """
-        aws_access_key_id = os.getenv('AWS_ACCESS_KEY_ID')
-        aws_secret_access_key = os.getenv('AWS_SECRET_ACCESS_KEY')
-        bedrock_assume_role = os.getenv('BEDROCK_ASSUME_ROLE')
-        allow_insecure = os.getenv('ALLOW_INSECURE_CONNECTIONS', 'false').lower() == 'true'
+        aws_access_key_id = os.getenv("AWS_ACCESS_KEY_ID")
+        aws_secret_access_key = os.getenv("AWS_SECRET_ACCESS_KEY")
+        bedrock_assume_role = os.getenv("BEDROCK_ASSUME_ROLE")
+        allow_insecure = os.getenv("ALLOW_INSECURE_CONNECTIONS", "false").lower() == "true"
 
         logging.info(f"{tag} /  AWS_REGION: {os.getenv('AWS_REGION')}")
         target_region = os.environ.get("AWS_REGION", "us-east-1") if region is None else region
@@ -98,12 +96,7 @@ class BedrockClientManager:
 
         service_name = "bedrock-runtime" if runtime else "bedrock"
 
-        bedrock_client = session.client(
-            service_name=service_name,
-            config=retry_config,
-            verify=not allow_insecure,
-            **client_kwargs
-        )
+        bedrock_client = session.client(service_name=service_name, config=retry_config, verify=not allow_insecure, **client_kwargs)
 
         logging.info("boto3 Bedrock client successfully created!")
         logging.info(bedrock_client._endpoint)

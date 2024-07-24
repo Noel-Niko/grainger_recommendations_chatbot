@@ -32,7 +32,7 @@ def extract_customer_attributes(customer_input, llm):
 
     entity_extraction_result = llm(ner_prompt).strip()
 
-    result = re.search('<attributes>(.*?)</attributes>', entity_extraction_result, re.DOTALL)
+    result = re.search("<attributes>(.*?)</attributes>", entity_extraction_result, re.DOTALL)
     if result:
         attributes_str = result.group(1)
         if attributes_str:

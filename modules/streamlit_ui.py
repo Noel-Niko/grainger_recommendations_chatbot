@@ -9,14 +9,13 @@ import uuid
 import httpx
 import streamlit as st
 from PIL import Image
-
-from ui_utils.constants import messages_for_getting_reviews, messages_for_answering_questions
+from ui_utils.constants import messages_for_answering_questions, messages_for_getting_reviews
 from ui_utils.custom_spinner import message_spinner
 
 st.set_page_config(layout="wide")
 
 tag = "StreamlitInterface"
-backend_url = os.getenv('BACKEND_URL', 'http://127.0.0.1:8000')
+backend_url = os.getenv("BACKEND_URL", "http://127.0.0.1:8000")
 
 
 class StreamlitInterface:
@@ -56,8 +55,7 @@ class StreamlitInterface:
 
                         # Call FastAPI to process the chat question
                         headers = {"session-id": self.session_id}
-                        payload = {"session_id": self.session_id, "question": question,
-                                   "clear_history": st.session_state.chat_history}
+                        payload = {"session_id": self.session_id, "question": question, "clear_history": st.session_state.chat_history}
                         url = f"{backend_url}/ask_question"
                         # Reset chat history after processing the question prn
                         if st.session_state.chat_history is True:
@@ -68,8 +66,8 @@ class StreamlitInterface:
                         if response and response.status_code == 200:
                             data = response.json()
                             self.display_message(center_col, data, start_time)
-                            products = data['products']
-                            st.session_state['products'] = products
+                            products = data["products"]
+                            st.session_state["products"] = products
                         else:
                             logging.error(f"Failed to process question: {response.text if response else 'No response'}")
 
@@ -115,32 +113,31 @@ class StreamlitInterface:
 
     def poll_reviews(self, center_col):
         start_time = time.time()
-        if 'products' in st.session_state:
+        if "products" in st.session_state:
             try:
                 spinner_placeholder = center_col.empty()  # Reserve a spot for the spinner
-                with spinner_placeholder:
-                    with message_spinner(messages_for_getting_reviews):
-                        products = st.session_state['products']
-                        headers = {"Content-Type": "application/json", "session-id": self.session_id}
-                        url = f"{backend_url}/fetch_reviews"
-                        response = self.retry_http_post(url, headers, products, timeout=120)
-                        if response and response.status_code == 200:
-                            review_data = response.json()
-                            new_reviews = review_data.get('reviews', [])
-                            if new_reviews:
-                                self.reviews.extend(new_reviews)
-                                self.display_reviews(center_col, new_reviews, start_time)
-                            if review_data.get('status') == 'completed':
-                                self.polling_active = False
-                                reviews_total_time = time.time() - start_time
-                                center_col.write(f"Reviews processed in: {reviews_total_time}")
-                        else:
-                            logging.error(f"Failed to fetch reviews: {response.text if response else 'No response'}")
+                with spinner_placeholder, message_spinner(messages_for_getting_reviews):
+                    products = st.session_state["products"]
+                    headers = {"Content-Type": "application/json", "session-id": self.session_id}
+                    url = f"{backend_url}/fetch_reviews"
+                    response = self.retry_http_post(url, headers, products, timeout=120)
+                    if response and response.status_code == 200:
+                        review_data = response.json()
+                        new_reviews = review_data.get("reviews", [])
+                        if new_reviews:
+                            self.reviews.extend(new_reviews)
+                            self.display_reviews(center_col, new_reviews, start_time)
+                        if review_data.get("status") == "completed":
+                            self.polling_active = False
+                            reviews_total_time = time.time() - start_time
+                            center_col.write(f"Reviews processed in: {reviews_total_time}")
+                    else:
+                        logging.error(f"Failed to fetch reviews: {response.text if response else 'No response'}")
 
-                        # Schedule the next polling
-                        if self.polling_active:
-                            time.sleep(self.polling_interval)
-                            st.rerun()
+                    # Schedule the next polling
+                    if self.polling_active:
+                        time.sleep(self.polling_interval)
+                        st.rerun()
             except Exception as e:
                 logging.error(f"Error in poll_reviews: {e}")
                 st.error(f"An error occurred while polling for reviews: {e}")
@@ -157,15 +154,13 @@ class StreamlitInterface:
         except Exception as e:
             logging.error(f"{tag} / Error displaying message: {e}")
 
-
     def display_images(self, col3, data, start_time):
         try:
             with st.spinner("Displaying images..."):
                 for image_info in data:
                     try:
                         img = Image.open(io.BytesIO(base64.b64decode(image_info["image_data"])))
-                        col3.image(img, caption=f"Grainger Product Image ({image_info['code']})",
-                                   use_column_width=True)
+                        col3.image(img, caption=f"Grainger Product Image ({image_info['code']})", use_column_width=True)
                     except Exception as e:
                         logging.error(f"{tag} / Error displaying image: {e}")
                 time_to_generate_images = time.time() - start_time
@@ -178,13 +173,13 @@ class StreamlitInterface:
             with st.spinner("Displaying reviews..."):
                 for review in reviews:
                     logging.info(f"{tag} / Displaying review: {review}")
-                    if 'code' in review:
-                        center_col.subheader('Extracted Review:')
+                    if "code" in review:
+                        center_col.subheader("Extracted Review:")
                         center_col.write(f"Product ID: {review['code']}")
                         center_col.write(f"Average Star Rating: {review['average_star_rating']}")
                         center_col.write(f"Average Recommendation Percent: {review['average_recommendation_percent']}")
                         center_col.write("Review Texts:")
-                        for idx, review_text in enumerate(review['review_texts'], start=1):
+                        for idx, review_text in enumerate(review["review_texts"], start=1):
                             center_col.write(f"\nReview {idx}: {review_text}")
                             review_search_time = time.time() - start_time
                             center_col.write(f"\nRetrieved in: {review_search_time}")
@@ -199,7 +194,7 @@ class StreamlitInterface:
 
 
 def main():
-    if 'chat_history' not in st.session_state:
+    if "chat_history" not in st.session_state:
         st.session_state.chat_history = False
 
     interface = StreamlitInterface()

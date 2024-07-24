@@ -9,7 +9,7 @@ from langchain.prompts import PromptTemplate
 from modules.vector_index.vector_utils.customer_attributes import extract_customer_attributes
 from modules.vector_index.vector_utils.response_parser import split_process_and_message_from_response
 
-tag = 'chat_processor'
+tag = "chat_processor"
 
 logging.basicConfig(level=logging.INFO, stream=sys.stdout)
 
@@ -31,16 +31,12 @@ def process_chat_question_with_customer_attribute_identifier(question, document,
                 Skip the preamble and always return valid json including empty json if not products are found.
                 Assistant: """
 
-    PROMPT = PromptTemplate(
-        template=prompt_template, input_variables=["context", "question"]
-    )
+    PROMPT = PromptTemplate(template=prompt_template, input_variables=["context", "question"])
 
     search_index_get_answer_from_llm = RetrievalQA.from_chain_type(
         llm=llm,
         chain_type="stuff",
-        retriever=document.as_retriever(
-            search_type="similarity", search_kwargs={"k": 6}
-        ),
+        retriever=document.as_retriever(search_type="similarity", search_kwargs={"k": 6}),
         return_source_documents=False,
         chain_type_kwargs={"prompt": PROMPT},
     )
@@ -49,10 +45,7 @@ def process_chat_question_with_customer_attribute_identifier(question, document,
         time_to_get_attributes = time.time() - start_time
         customer_input_with_attributes = f"{question} {str(customer_attributes_retrieved)}"
         # logging.info(f"{tag}/ Chat History passed to processor: {chat_history}")
-        context = {
-            'query': customer_input_with_attributes,
-            'chat_history': chat_history.copy()
-        }
+        context = {"query": customer_input_with_attributes, "chat_history": chat_history.copy()}
 
         llm_retrieval_augmented_response = search_index_get_answer_from_llm.run(**context)
         message, product_list_as_json = split_process_and_message_from_response(llm_retrieval_augmented_response)
@@ -83,6 +76,7 @@ def process_chat_question_with_customer_attribute_identifier(question, document,
 
     except ValueError as error:
         if "AccessDeniedException" in str(error):
+
             class StopExecution(ValueError):
                 def _render_traceback_(self):
                     pass

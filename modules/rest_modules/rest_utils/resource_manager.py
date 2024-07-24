@@ -1,5 +1,7 @@
-import httpx
 import logging
+
+import httpx
+
 from modules.vector_index.document import initialize_embeddings_and_faiss
 
 

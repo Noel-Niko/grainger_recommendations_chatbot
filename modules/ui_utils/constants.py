@@ -1,24 +1,23 @@
 messages_for_answering_questions = [
-                    "Processing...",
-                    "FAISS is optimized for efficient similarity search and clustering of dense vectors.",
-                    "Loading data and resources...",
-                    "Performing Named Entity Recognition (NER) on the input...",
-                    "Identifying key characteristics from the input...",
-                    "Parsing the question for relevant keywords...",
-                    "Vector indexes often use Euclidean distance for similarity measurement.",
-                    "Searching the FAISS index for similar data...",
-                    "Retrieving the most relevant results...",
-                    "FAISS uses various indexing methods for fast retrieval such as IVF (Inverted File) and HNSW ("
-                    "Hierarchical Navigable Small World).",
-                    "Comparing results to your question...",
-                    "Principal Component Analysis (PCA) can be used to reduce the dimensionality of vectors in FAISS.",
-                    "Generating a response with the LLM...",
-                    "FAISS supports GPU acceleration for improved performance.",
-                    "Validating the final output...",
-                    "Almost there...",
-                    "FAISS uses k-means clustering as one of its indexing techniques.",
-                    "Your response is ready!"
-                ]
+    "Processing...",
+    "FAISS is optimized for efficient similarity search and clustering of dense vectors.",
+    "Loading data and resources...",
+    "Performing Named Entity Recognition (NER) on the input...",
+    "Identifying key characteristics from the input...",
+    "Parsing the question for relevant keywords...",
+    "Vector indexes often use Euclidean distance for similarity measurement.",
+    "Searching the FAISS index for similar data...",
+    "Retrieving the most relevant results...",
+    "FAISS uses various indexing methods for fast retrieval such as IVF (Inverted File) and HNSW (" "Hierarchical Navigable Small World).",
+    "Comparing results to your question...",
+    "Principal Component Analysis (PCA) can be used to reduce the dimensionality of vectors in FAISS.",
+    "Generating a response with the LLM...",
+    "FAISS supports GPU acceleration for improved performance.",
+    "Validating the final output...",
+    "Almost there...",
+    "FAISS uses k-means clustering as one of its indexing techniques.",
+    "Your response is ready!",
+]
 
 messages_for_getting_reviews = [
     "Fetching reviews...",
@@ -36,5 +35,5 @@ messages_for_getting_reviews = [
     "Polling is a technique where a process repeatedly checks the status of an external condition.",
     "Averaging the review ratings...",
     "Collecting and reading review comments...",
-    "Organizing the review comments to send to you."
+    "Organizing the review comments to send to you.",
 ]

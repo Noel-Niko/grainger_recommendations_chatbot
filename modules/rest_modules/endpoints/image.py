@@ -12,11 +12,15 @@ from modules.rest_modules.rest_utils.resource_manager import ResourceManager
 router = APIRouter()
 tag = "image.py"
 
+
 async def get_resource_manager():
     from modules.fast_api_main import resource_manager
+
     return resource_manager
 
+
 resource_manager_dependency = Depends(get_resource_manager)
+
 
 @router.post("/fetch_images")
 async def fetch_images(request: Request, resource_manager_param: ResourceManager = resource_manager_dependency):
@@ -31,13 +35,10 @@ async def fetch_images(request: Request, resource_manager_param: ResourceManager
             try:
                 img = Image.open(io.BytesIO(image_info["Image Data"]))
                 img_byte_arr = io.BytesIO()
-                img.save(img_byte_arr, format='PNG')
+                img.save(img_byte_arr, format="PNG")
                 img_byte_arr = img_byte_arr.getvalue()
-                encoded_image = base64.b64encode(img_byte_arr).decode('utf-8')
-                image_responses.append({
-                    "code": image_info["Code"],
-                    "image_data": encoded_image
-                })
+                encoded_image = base64.b64encode(img_byte_arr).decode("utf-8")
+                image_responses.append({"code": image_info["Code"], "image_data": encoded_image})
             except Exception as e:
                 logging.error(f"Error processing image: {e}")
         return image_responses

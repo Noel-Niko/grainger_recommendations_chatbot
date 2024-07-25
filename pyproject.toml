@@ -2,7 +2,6 @@
 requires = ["setuptools", "wheel", "cython"]
 build-backend = "setuptools.build_meta"
 
-
 [tool.ruff]
 exclude = [
     ".git",
@@ -15,7 +14,6 @@ exclude = [
     "site-packages",
     "*/site-packages/*",
 ]
-
 line-length = 150
 
 [tool.ruff.lint]

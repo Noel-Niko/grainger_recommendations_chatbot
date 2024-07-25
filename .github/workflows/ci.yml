@@ -31,7 +31,7 @@ jobs:
 
     - name: Run Ruff linting
       run: |
-        ruff check modules/
+        ruff check ./modules ./unit_tests
     
 
     - name: Run tests

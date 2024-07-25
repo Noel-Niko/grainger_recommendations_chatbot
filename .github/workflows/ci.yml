@@ -31,7 +31,7 @@ jobs:
 
     - name: Run Ruff linting
       run: |
-        ruff check modules unit_tests --exclude .venv,__pycache__
+        ruff check ./modules ./unit_tests --exclude .venv,__pycache__
 
     - name: Run tests
       run: |

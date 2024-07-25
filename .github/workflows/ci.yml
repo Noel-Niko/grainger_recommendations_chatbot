@@ -31,8 +31,7 @@ jobs:
 
     - name: Run Ruff linting
       run: |
-        ruff check ./modules ./unit_tests
-    
+        ruff check ./modules ./unit_tests --exclude __pycache__
 
     - name: Run tests
       run: |

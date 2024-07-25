@@ -4,7 +4,7 @@ from modules.vector_index.document import Document
 
 
 def test_recreate_vector_index():
-    logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+    logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
     # Recreate the vector index
     vector_index = Document.recreate_index()

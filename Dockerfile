@@ -1,5 +1,5 @@
 # Base image
-FROM python:3.11-slim
+FROM python:3.11
 
 # Set environment variables for non-interactive installation
 ENV DEBIAN_FRONTEND=noninteractive
@@ -43,16 +43,13 @@ RUN set -x \
 # Install Chrome and ChromeDriver
 RUN echo "Checking network connectivity..." \
     && curl -I --insecure https://googlechromelabs.github.io/chrome-for-testing/last-known-good-versions-with-downloads.json \
-    && echo "Fetching the latest stable Chrome and ChromeDriver versions..." \
+    && echo "Fetching the specified ChromeDriver version..." \
+    && CHROMEDRIVER_VERSION=114.0.5735.90 \
     && curl -s --insecure https://googlechromelabs.github.io/chrome-for-testing/last-known-good-versions-with-downloads.json -o /tmp/chrome_versions.json \
     && echo "Contents of /tmp/chrome_versions.json:" \
     && cat /tmp/chrome_versions.json \
-    && VERSION=$(jq -r '.channels.Stable.version' /tmp/chrome_versions.json) \
-    && if [ -z "$VERSION" ]; then echo "Failed to fetch Chrome version"; exit 1; fi \
-    && echo "Latest stable version: $VERSION" \
-    && CHROME_URL=$(jq -r --arg VERSION "$VERSION" '.channels.Stable.downloads.chrome[] | select(.platform=="linux64") | .url' /tmp/chrome_versions.json) \
-    && echo "Chrome URL: ${CHROME_URL}" \
-    && CHROMEDRIVER_URL=$(jq -r --arg VERSION "$VERSION" '.channels.Stable.downloads.chromedriver[] | select(.platform=="linux64") | .url' /tmp/chrome_versions.json) \
+    && CHROME_URL=$(jq -r --arg VERSION "126.0.6478.183" '.channels.Stable.downloads.chrome[] | select(.platform=="linux64") | .url' /tmp/chrome_versions.json) \
+    && CHROMEDRIVER_URL=$(jq -r --arg VERSION "$CHROMEDRIVER_VERSION" '.channels.Stable.downloads.chromedriver[] | select(.platform=="linux64") | .url' /tmp/chrome_versions.json) \
     && if [ -z "$CHROME_URL" ] || [ -z "$CHROMEDRIVER_URL" ]; then echo "Failed to fetch Chrome or ChromeDriver URL"; exit 1; fi \
     && echo "Chrome URL: ${CHROME_URL}" \
     && echo "Chrome Driver URL: ${CHROMEDRIVER_URL}" \
@@ -93,7 +90,8 @@ COPY secrets/bedrock_assume_role /app/secrets/bedrock_assume_role
 # Install Python dependencies
 COPY requirements.txt .
 RUN pip install --upgrade pip setuptools wheel \
-    && pip install --no-cache-dir -r requirements.txt --verbose
+    && pip install --no-cache-dir -r requirements.txt --verbose \
+    && pip install --upgrade boto3
 
 # Clean up to reduce image size
 RUN apt-get remove -y wget unzip gnupg jq xdg-utils build-essential \
@@ -101,15 +99,12 @@ RUN apt-get remove -y wget unzip gnupg jq xdg-utils build-essential \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-# Create the config.toml file for Streamlit
-RUN mkdir -p ~/.streamlit && echo "[browser]\ngatherUsageStats = false" > ~/.streamlit/config.toml
-
 # Expose necessary ports
 EXPOSE 8000
 EXPOSE 8505
 
 # Health checks for FastAPI
-HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 CMD curl -f http://localhost:8000/health || exit 1
+HEALTHCHECK --interval=30s --timeout=15s --start-period=10s --retries=3 CMD curl -f http://localhost:8000/health || exit 1
 
 # Make the start script executable
 RUN chmod +x /app/start.sh

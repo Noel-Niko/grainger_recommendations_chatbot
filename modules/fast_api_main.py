@@ -1,21 +1,21 @@
-import logging
 import asyncio
+import logging
 from typing import Dict, List
 
 import httpx
 from fastapi import FastAPI
+
+from modules.rest_modules.endpoints import chat, health, image, review
 from modules.vector_index.document import initialize_embeddings_and_faiss
 
 logging.basicConfig(level=logging.INFO)
 app = FastAPI()
 
-# Define the global variables
 session_store: Dict[str, List[Dict[str, str]]] = {}
 current_tasks: Dict[str, asyncio.Task] = {}
 
 
-# Initialize ResourceManager
-class ResourceManager:
+class MainResourceManager:
     def __init__(self):
         self.bedrock_embeddings, self.vectorstore_faiss_doc, self.df, self.llm = initialize_embeddings_and_faiss()
         self.driver = None
@@ -33,7 +33,7 @@ class ResourceManager:
         self.bedrock_embeddings, self.vectorstore_faiss_doc, self.df, self.llm = initialize_embeddings_and_faiss()
 
 
-resource_manager = ResourceManager()
+resource_manager = MainResourceManager()
 
 
 @app.on_event("startup")
@@ -52,9 +52,6 @@ async def shutdown_event():
     await resource_manager.http_client.aclose()
     logging.info("Shutdown complete.")
 
-
-# Include routers from other modules
-from modules.rest_modules.endpoints import chat, image, review, health
 
 app.include_router(chat.router)
 app.include_router(image.router)

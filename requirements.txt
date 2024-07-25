@@ -41,3 +41,5 @@ httpx
 pydantic
 websockets
 langdetect
+nose
+moto

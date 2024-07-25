@@ -13,6 +13,7 @@ exclude = [
     "*/__pycache__/*",
     "site-packages",
     "*/site-packages/*",
+    ".unit_tests"
 ]
 line-length = 150
 

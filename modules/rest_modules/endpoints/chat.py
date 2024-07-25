@@ -66,7 +66,7 @@ async def process_question_task(chat_request, session_id, resource_manager_param
         products = response_json.get("products", [])
         logging.info(f"{tag}/ Products retrieved: {products}")
 
-        session_store[session_id].append({"question": chat_request.question, "response": response_json})
+        session_store[session_id].append({"user": chat_request.question, "assistant": response_json})
 
         return {
             "message": message,
@@ -97,7 +97,7 @@ async def process_chat_question(question, clear_history, session_id, resource_ma
             question, resource_manager_param.vectorstore_faiss_doc, resource_manager_param.llm, chat_history
         )
 
-        chat_history.append(f"QUESTION: {question}. MESSAGE: {message}. CUSTOMER ATTRIBUTES: {customer_attributes_retrieved}")
+        chat_history.append({"user": question, "assistant": message, "customer_attributes": customer_attributes_retrieved})
         session_store[session_id] = chat_history
 
         return message, response_json, customer_attributes_retrieved, time_to_get_attributes

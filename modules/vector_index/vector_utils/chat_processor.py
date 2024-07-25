@@ -16,6 +16,7 @@ logging.basicConfig(level=logging.INFO, stream=sys.stdout)
 
 def process_chat_question_with_customer_attribute_identifier(question, document, llm, chat_history):
     start_time = time.time()
+
     prompt_template = """Human: Extract a list of products (do not repeat or duplicate) and their respective Codes 
                         from catalog that answer the user question.
                 The catalog of products is provided under <catalog></catalog> tags below.
@@ -28,7 +29,7 @@ def process_chat_question_with_customer_attribute_identifier(question, document,
                 catalog>, "code":<code of the product from the catalog>}}, ...]</products> for me to process.
                 Also, provide a user-readable message responding in full to the question speaking as a friendly 
                 salesperson chatbot with all the of the information to display to the user in the form <response>{{message}}</response>.
-                Skip the preamble and always return valid json including empty json if not products are found.
+                Skip the preamble and always return valid json including empty json if no products are found.
                 Assistant: """
 
     PROMPT = PromptTemplate(template=prompt_template, input_variables=["context", "question"])
@@ -40,19 +41,28 @@ def process_chat_question_with_customer_attribute_identifier(question, document,
         return_source_documents=False,
         chain_type_kwargs={"prompt": PROMPT},
     )
+
     try:
         customer_attributes_retrieved = extract_customer_attributes(question, llm)
         time_to_get_attributes = time.time() - start_time
         customer_input_with_attributes = f"{question} {str(customer_attributes_retrieved)}"
-        # logging.info(f"{tag}/ Chat History passed to processor: {chat_history}")
-        context = {"query": customer_input_with_attributes, "chat_history": chat_history.copy()}
+
+        logging.info(f"{tag}/ Chat History passed to processor: {chat_history}")
+
+        if not isinstance(chat_history, list):
+            raise ValueError("Chat history must be a list of dictionaries.")
+        for entry in chat_history:
+            if not isinstance(entry, dict) or "user" not in entry or "assistant" not in entry:
+                raise ValueError("Each entry in chat history must be a dictionary with 'user' and 'assistant' keys.")
+
+        # Format chat history for the prompt
+        formatted_chat_history = "\n".join(
+            [f"User: {msg['user']}\nAssistant: {msg['assistant']}" for msg in chat_history])
+        context = {"query": customer_input_with_attributes, "chat_history": formatted_chat_history}
 
         llm_retrieval_augmented_response = search_index_get_answer_from_llm.run(**context)
         message, product_list_as_json = split_process_and_message_from_response(llm_retrieval_augmented_response)
-        # logging.info(f"{tag}/ chat_procesing: message: {message}")
-        # logging.info(f"{tag}/ chat_procesing: product_list_as_json: {product_list_as_json}")
 
-        # Ensure product_list_as_json is valid JSON
         logging.info(f"{tag}/ product_list_as_json: {product_list_as_json}")
         try:
             # Convert to string if not already

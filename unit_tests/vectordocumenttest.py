@@ -15,7 +15,8 @@ class TestInitializeEmbeddingsAndFaiss(unittest.TestCase):
     @patch("modules.vector_index.document.BedrockClientManager")
     @patch("builtins.open", new_callable=mock_open)
     @patch("modules.vector_index.document.pickle.load")
-    def test_initialize_embeddings_and_faiss(self, mock_pickle_load, mock_open, mock_bedrock_client_manager, mock_read_parquet, mock_path_exists):
+    def test_initialize_embeddings_and_faiss(self, mock_pickle_load, mock_open, mock_bedrock_client_manager,
+                                             mock_read_parquet, mock_path_exists):
         # Arrange
         documents_pkl_path = os.path.abspath('stored_data_copies/documents.pkl')
         vector_index_pkl_path = os.path.abspath('stored_data_copies/vector_index.pkl')
@@ -88,9 +89,76 @@ class TestParallelSearch(unittest.TestCase):
         self.assertIn("result1", results[1])
         self.assertIn("result2", results[1])
 
+
 if __name__ == "__main__":
     unittest.main()
 
 
+class VectorDocumentTest(unittest.TestCase):
+
+    @patch("modules.vector_index.document.parallel_search")
+    def test_should_find_product_by_product_code(self, mock_parallel_search):
+        # Arrange
+        mock_faiss_vectorstore = MagicMock()
+        mock_faiss_vectorstore.search.return_value = ["result1", "result2"]
+        product_code = "C1"
+        mock_parallel_search.return_value = [["Product with code C1"]]
+
+        # Act
+        results = parallel_search([product_code], mock_faiss_vectorstore, k=1)
+
+        # Assert
+        self.assertEqual(results[0], ["Product with code C1"])
+
+    @patch("modules.vector_index.document.parallel_search")
+    def test_should_find_product_by_product_name(self, mock_parallel_search):
+        # Arrange
+        product_name = "N1"
+        mock_parallel_search.return_value = [["Product with name N1"]]
+
+        # Act
+        results = parallel_search([product_name], MagicMock(), k=1)
+
+        # Assert
+        self.assertEqual(results[0], ["Product with name N1"])
+
+    @patch("modules.vector_index.document.parallel_search")
+    def test_should_find_product_by_product_description(self, mock_parallel_search):
+        # Arrange
+        product_description = "D1"
+        mock_parallel_search.return_value = [["Product with description D1"]]
+
+        # Act
+        results = parallel_search([product_description], MagicMock(), k=1)
+
+        # Assert
+        self.assertEqual(results[0], ["Product with description D1"])
+
+    @patch("modules.vector_index.document.parallel_search")
+    def test_should_generate_list_of_products_via_brand(self, mock_parallel_search):
+        # Arrange
+        product_brand = "B1"
+        mock_parallel_search.return_value = [["Product with brand B1"]]
+
+        # Act
+        results = parallel_search([product_brand], MagicMock(), k=1)
+
+        # Assert
+        self.assertEqual(results[0], ["Product with brand B1"])
+
+    @patch("modules.vector_index.document.parallel_search")
+    def test_should_update_product_description(self, mock_parallel_search):
+        # Arrange
+        old_description = "Old description"
+        new_description = "New description"
+        mock_parallel_search.return_value = [[f"Product updated from {old_description} to {new_description}"]]
+
+        # Act
+        results = parallel_search([old_description], MagicMock(), k=1)
+
+        # Assert
+        self.assertEqual(results[0], [f"Product updated from {old_description} to {new_description}"])
 
 
+if __name__ == "__main__":
+    unittest.main()

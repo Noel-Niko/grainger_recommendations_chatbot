@@ -59,7 +59,7 @@ sleep 5
 
 # Start Streamlit on port 8505
 echo "Starting Streamlit UI on port $STREAMLIT_PORT..."
-streamlit run modules/streamlit_ui.py --server.port $STREAMLIT_PORT --server.address 0.0.0.0 &
+streamlit run /Users/xnxn040/PycharmProjects/grainger_recommendations_chatbot/modules/streamlit_ui.py --server.port $STREAMLIT_PORT --server.address 0.0.0.0 &
 
 echo "FastAPI and Streamlit services have been restarted."
 

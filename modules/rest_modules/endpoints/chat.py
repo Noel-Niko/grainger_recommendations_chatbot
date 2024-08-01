@@ -50,7 +50,10 @@ async def ask_question(chat_request: ChatRequest, request: Request, resource_man
     except Exception as e:
         logging.error(f"Error in {tag}/ask_question: {str(e)}")
         logging.error(traceback.format_exc())
-        raise HTTPException(status_code=500, detail="Internal Server Error") from e
+        if isinstance(e, HTTPException):
+            raise HTTPException(status_code=e.status_code, detail=f"{e.detail}") from e
+        else:
+            raise e
 
 
 async def process_question_task(chat_request, session_id, resource_manager_param):

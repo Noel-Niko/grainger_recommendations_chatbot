@@ -5,16 +5,17 @@ import unittest
 from unittest.mock import patch, MagicMock, mock_open
 import pandas as pd
 
-from modules.vector_index.document import initialize_embeddings_and_faiss, Document, parallel_search
+from modules.vector_index.vector_facades.VectorStoreFacade import VectorStoreFacade
+from modules.vector_index.vector_implimentations import VectorStoreImpl
 
 
 class TestInitializeEmbeddingsAndFaiss(unittest.TestCase):
 
-    @patch("modules.vector_index.document.os.path.exists")
-    @patch("modules.vector_index.document.pd.read_parquet")
-    @patch("modules.vector_index.document.BedrockClientManager")
+    @patch("modules.vector_index.vector_facades.DocumentFacade.os.path.exists")
+    @patch("modules.vector_index.vector_facades.DocumentFacade.pd.read_parquet")
+    @patch("modules.vector_index.vector_facades.DocumentFacade.BedrockClientManager")
     @patch("builtins.open", new_callable=mock_open)
-    @patch("modules.vector_index.document.pickle.load")
+    @patch("modules.vector_index.vector_facades.VectorStoreFacade.pickle.load")
     def test_initialize_embeddings_and_faiss(self, mock_pickle_load, mock_open, mock_bedrock_client_manager,
                                              mock_read_parquet, mock_path_exists):
         # Arrange
@@ -60,7 +61,7 @@ class TestInitializeEmbeddingsAndFaiss(unittest.TestCase):
         mock_bedrock_client.invoke_model.side_effect = mock_invoke_model
 
         # Act
-        bedrock_embeddings, vectorstore_faiss_doc, df, llm = initialize_embeddings_and_faiss()
+        bedrock_embeddings, vectorstore_faiss_doc, df, llm = VectorStoreImpl.VectorStoreImpl.initialize_embeddings_and_faiss(VectorStoreFacade())
 
         # Assert
         self.assertIsNotNone(bedrock_embeddings)
@@ -80,7 +81,7 @@ class TestParallelSearch(unittest.TestCase):
         mock_faiss_vectorstore.search.return_value = ["result1", "result2"]
         # Act
         queries = ["query1", "query2"]
-        results = parallel_search(queries, mock_faiss_vectorstore, k=2, search_type="similarity", num_threads=2)
+        results = vector_store.parallel_search(queries, mock_faiss_vectorstore, k=2, search_type="similarity", num_threads=2)
 
         # Assert
         self.assertEqual(len(results), 2)
@@ -105,7 +106,7 @@ class VectorDocumentTest(unittest.TestCase):
         mock_parallel_search.return_value = [["Product with code C1"]]
 
         # Act
-        results = parallel_search([product_code], mock_faiss_vectorstore, k=1)
+        results = vector_store.parallel_search([product_code], mock_faiss_vectorstore, k=1)
 
         # Assert
         self.assertEqual(results[0], ["Product with code C1"])
@@ -117,7 +118,7 @@ class VectorDocumentTest(unittest.TestCase):
         mock_parallel_search.return_value = [["Product with name N1"]]
 
         # Act
-        results = parallel_search([product_name], MagicMock(), k=1)
+        results = vector_store.parallel_search([product_name], MagicMock(), k=1)
 
         # Assert
         self.assertEqual(results[0], ["Product with name N1"])
@@ -129,7 +130,7 @@ class VectorDocumentTest(unittest.TestCase):
         mock_parallel_search.return_value = [["Product with description D1"]]
 
         # Act
-        results = parallel_search([product_description], MagicMock(), k=1)
+        results = vector_store.parallel_search([product_description], MagicMock(), k=1)
 
         # Assert
         self.assertEqual(results[0], ["Product with description D1"])
@@ -141,7 +142,7 @@ class VectorDocumentTest(unittest.TestCase):
         mock_parallel_search.return_value = [["Product with brand B1"]]
 
         # Act
-        results = parallel_search([product_brand], MagicMock(), k=1)
+        results = vector_store.parallel_search([product_brand], MagicMock(), k=1)
 
         # Assert
         self.assertEqual(results[0], ["Product with brand B1"])
@@ -154,7 +155,7 @@ class VectorDocumentTest(unittest.TestCase):
         mock_parallel_search.return_value = [[f"Product updated from {old_description} to {new_description}"]]
 
         # Act
-        results = parallel_search([old_description], MagicMock(), k=1)
+        results = vector_store.parallel_search([old_description], MagicMock(), k=1)
 
         # Assert
         self.assertEqual(results[0], [f"Product updated from {old_description} to {new_description}"])

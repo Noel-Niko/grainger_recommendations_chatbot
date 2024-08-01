@@ -6,7 +6,7 @@ import httpx
 from fastapi import FastAPI
 
 from modules.rest_modules.endpoints import chat, health, image, review
-from modules.vector_index.document import initialize_embeddings_and_faiss
+from modules.vector_index.vector_implimentations import initialize_embeddings_and_faiss
 
 logging.basicConfig(level=logging.INFO)
 app = FastAPI()

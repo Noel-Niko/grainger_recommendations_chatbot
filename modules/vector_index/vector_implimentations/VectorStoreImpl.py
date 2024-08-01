@@ -1,25 +1,21 @@
-import logging
+import abc
+import unittest
+from abc import ABC
+import pandas as pd
 import os
 import pickle
-import sys
 from concurrent.futures import ThreadPoolExecutor
+import logging
+import sys
 
-import pandas as pd
+from modules.vector_index.vector_facades.VectorStoreFacade import VectorStoreFacade
+from modules.vector_index.vector_utils.bedrock import BedrockClientManager
+from modules.vector_index.vector_implimentations import DocumentImpl
 from langchain.embeddings import BedrockEmbeddings
 from langchain.vectorstores import FAISS
 from langchain_aws import Bedrock
 
-from modules.vector_index.vector_implimentations.DocumentImpl import DocumentImpl
-from modules.vector_index.vector_utils.bedrock import BedrockClientManager
-from modules.vector_index.vector_facades.VectorStoreFacade import VectorStoreFacade
-
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s",
-                    handlers=[logging.StreamHandler()])
-
 current_dir = os.path.dirname(__file__)
-project_root = os.path.abspath(os.path.join(current_dir, ".."))
-sys.path.append(project_root)
-
 
 
 class VectorStoreImpl(VectorStoreFacade):
@@ -29,8 +25,10 @@ class VectorStoreImpl(VectorStoreFacade):
         bedrock_runtime_client = bedrock_manager.get_bedrock_client()
 
         # Load or create LLM instance
-        model_parameter = {"temperature": 0.0, "top_p": 0.5, "top_k": 250, "max_tokens_to_sample": 2000,
-                           "stop_sequences": ["\n\n Human: bye"]}
+        model_parameter = {
+            "temperature": 0.0, "top_p": 0.5, "top_k": 250, "max_tokens_to_sample": 2000,
+            "stop_sequences": ["\n\n Human: bye"]
+        }
         llm = Bedrock(model_id="anthropic.claude-v2", model_kwargs=model_parameter, client=bedrock_runtime_client)
 
         # Initialize Titan Embeddings Model
@@ -48,7 +46,7 @@ class VectorStoreImpl(VectorStoreFacade):
         # Create serialized source doc for FAISS
         documents = []
         data_source_dir = os.path.join(current_dir, "data_sources")
-        os.makedirs(data_source_dir, exist_ok=True)
+        os.makedirs(data_source_dir, exist_okay=True)
         serialized_documents_file = os.path.join(data_source_dir, "documents.pkl")
         logging.info(f"Attempting to load file from: {serialized_documents_file}")
         if os.path.exists(serialized_documents_file):
@@ -63,8 +61,10 @@ class VectorStoreImpl(VectorStoreFacade):
                 description = row["Description"] if pd.notna(row["Description"]) else ""
                 price = row["Price"] if pd.notna(row["Price"]) else ""
                 page_content = f"{row['Code']} {row['Name']} {price} {description}"
-                metadata = {"Brand": row["Brand"], "Code": row["Code"], "Name": row["Name"],
-                            "Description": row["Description"], "Price": row["Price"]}
+                metadata = {
+                    "Brand": row["Brand"], "Code": row["Code"], "Name": row["Name"],
+                    "Description": row["Description"], "Price": row["Price"]
+                }
                 documents.append(DocumentImpl(page_content, metadata))
         logging.info("Structured documents created:")
         for idx, doc in enumerate(documents[:5], 1):
@@ -99,7 +99,6 @@ class VectorStoreImpl(VectorStoreFacade):
 
         return bedrock_embeddings, vectorstore_faiss_doc, df, llm
 
-    # 'similarity' is standard 'mmr' for greater variety
     def parallel_search(self, queries, vectorstore_faiss_doc, k=5, search_type="similarity", num_threads=5):
         def search_faiss(query):
             return vectorstore_faiss_doc.search(query, k=k, search_type=search_type)
@@ -107,3 +106,8 @@ class VectorStoreImpl(VectorStoreFacade):
         with ThreadPoolExecutor(max_workers=num_threads) as executor:
             results = list(executor.map(search_faiss, queries))
         return results
+
+
+# Update your tests to work with the new class structure
+if __name__ == "__main__":
+    unittest.main()

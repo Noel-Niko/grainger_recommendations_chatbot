@@ -1,13 +1,10 @@
-import abc
 import unittest
-from abc import ABC
+
 import pandas as pd
 import os
 import pickle
 from concurrent.futures import ThreadPoolExecutor
 import logging
-import sys
-
 from modules.vector_index.vector_facades.VectorStoreFacade import VectorStoreFacade
 from modules.vector_index.vector_utils.bedrock import BedrockClientManager
 from modules.vector_index.vector_implimentations import DocumentImpl
@@ -17,8 +14,10 @@ from langchain_aws import Bedrock
 
 current_dir = os.path.dirname(__file__)
 
-
 class VectorStoreImpl(VectorStoreFacade):
+    def __init__(self, vectorstore_faiss_doc):
+        super().__init__(vectorstore_faiss_doc)
+
     def initialize_embeddings_and_faiss(self):
         logging.info("Initializing Bedrock clients...")
         bedrock_manager = BedrockClientManager(refresh_interval=3600)
@@ -46,7 +45,7 @@ class VectorStoreImpl(VectorStoreFacade):
         # Create serialized source doc for FAISS
         documents = []
         data_source_dir = os.path.join(current_dir, "data_sources")
-        os.makedirs(data_source_dir, exist_okay=True)
+        os.makedirs(data_source_dir, exist_ok=True)
         serialized_documents_file = os.path.join(data_source_dir, "documents.pkl")
         logging.info(f"Attempting to load file from: {serialized_documents_file}")
         if os.path.exists(serialized_documents_file):
@@ -65,7 +64,8 @@ class VectorStoreImpl(VectorStoreFacade):
                     "Brand": row["Brand"], "Code": row["Code"], "Name": row["Name"],
                     "Description": row["Description"], "Price": row["Price"]
                 }
-                documents.append(DocumentImpl(page_content, metadata))
+                doc = DocumentImpl.DocumentImpl.__init__(page_content=page_content, metadata=metadata)
+                documents.append(doc)
         logging.info("Structured documents created:")
         for idx, doc in enumerate(documents[:5], 1):
             logging.info(f"Document {idx} of {len(documents)}:")
@@ -106,7 +106,6 @@ class VectorStoreImpl(VectorStoreFacade):
         with ThreadPoolExecutor(max_workers=num_threads) as executor:
             results = list(executor.map(search_faiss, queries))
         return results
-
 
 # Update your tests to work with the new class structure
 if __name__ == "__main__":

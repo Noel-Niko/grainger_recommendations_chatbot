@@ -7,12 +7,13 @@ from concurrent.futures import ThreadPoolExecutor
 import logging
 from modules.vector_index.vector_facades.VectorStoreFacade import VectorStoreFacade
 from modules.vector_index.vector_utils.bedrock import BedrockClientManager
-from modules.vector_index.vector_implimentations import DocumentImpl
+from modules.vector_index.vector_implementations import Document as document
 from langchain.embeddings import BedrockEmbeddings
 from langchain.vectorstores import FAISS
 from langchain_aws import Bedrock
 
 current_dir = os.path.dirname(__file__)
+
 
 class VectorStoreImpl(VectorStoreFacade):
     def __init__(self, vectorstore_faiss_doc):
@@ -64,7 +65,7 @@ class VectorStoreImpl(VectorStoreFacade):
                     "Brand": row["Brand"], "Code": row["Code"], "Name": row["Name"],
                     "Description": row["Description"], "Price": row["Price"]
                 }
-                doc = DocumentImpl.DocumentImpl.__init__(page_content=page_content, metadata=metadata)
+                doc = document.Document(page_content=page_content, metadata=metadata)
                 documents.append(doc)
         logging.info("Structured documents created:")
         for idx, doc in enumerate(documents[:5], 1):
@@ -106,6 +107,7 @@ class VectorStoreImpl(VectorStoreFacade):
         with ThreadPoolExecutor(max_workers=num_threads) as executor:
             results = list(executor.map(search_faiss, queries))
         return results
+
 
 # Update your tests to work with the new class structure
 if __name__ == "__main__":

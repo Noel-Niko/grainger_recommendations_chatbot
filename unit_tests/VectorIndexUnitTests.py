@@ -1,6 +1,6 @@
 import logging
 
-from modules.vector_index.vector_implimentations import DocumentImpl
+from modules.vector_index.vector_implementations import Document
 
 
 def test_recreate_vector_index():

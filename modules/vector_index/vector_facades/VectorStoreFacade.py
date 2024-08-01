@@ -1,8 +1,7 @@
 import pickle
-from modules.vector_index.vector_facades.DocumentFacade import DocumentFacade
 
 
-class VectorStoreFacade(DocumentFacade):
+class VectorStoreFacade():
     def __init__(self, vectorstore_faiss_doc):
         super().__init__()
         self.vectorstore_faiss_doc = vectorstore_faiss_doc

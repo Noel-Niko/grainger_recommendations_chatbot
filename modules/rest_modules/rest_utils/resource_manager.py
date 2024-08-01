@@ -2,7 +2,7 @@ import logging
 
 import httpx
 
-from modules.vector_index.vector_implimentations import initialize_embeddings_and_faiss
+from modules.vector_index.vector_implementations import initialize_embeddings_and_faiss
 
 
 class ResourceManager:

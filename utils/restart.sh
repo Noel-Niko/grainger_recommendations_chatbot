@@ -1,12 +1,13 @@
 #!/bin/bash
 
-aws_access_key_id=$(cat aws_access_key_id)
+# Load AWS credentials from secrets directory
+aws_access_key_id=$(cat /Users/xnxn040/PycharmProjects/grainger_recommendations_chatbot/secrets/aws_access_key_id)
 export AWS_ACCESS_KEY_ID=$aws_access_key_id
 
-aws_secret_access_key=$(cat aws_secret_access_key)
+aws_secret_access_key=$(cat /Users/xnxn040/PycharmProjects/grainger_recommendations_chatbot/secrets/aws_secret_access_key)
 export AWS_SECRET_ACCESS_KEY=$aws_secret_access_key
 
-bedrock_assume_role=$(cat bedrock_assume_role)
+bedrock_assume_role=$(cat /Users/xnxn040/PycharmProjects/grainger_recommendations_chatbot/secrets/bedrock_assume_role)
 export BEDROCK_ASSUME_ROLE=$bedrock_assume_role
 
 AWS_REGION="${AWS_REGION:-${AWS_DEFAULT_REGION:-us-east-1}}"
@@ -40,9 +41,10 @@ echo "Ports are now free."
 export BACKEND_URL="http://localhost:8000"
 echo "BACKEND_URL set to $BACKEND_URL"
 
-key_id=$(cat secrets/aws_access_key_id)
-secret_key=$(cat secrets/aws_secret_access_key)
-assume_role=$(cat secrets/bedrock_assume_role)
+# Reload AWS credentials from secrets directory
+key_id=$(cat /Users/xnxn040/PycharmProjects/grainger_recommendations_chatbot/secrets/aws_access_key_id)
+secret_key=$(cat /Users/xnxn040/PycharmProjects/grainger_recommendations_chatbot/secrets/aws_secret_access_key)
+assume_role=$(cat /Users/xnxn040/PycharmProjects/grainger_recommendations_chatbot/secrets/bedrock_assume_role)
 export AWS_ACCESS_KEY_ID="$key_id"
 export AWS_SECRET_ACCESS_KEY="$secret_key"
 export BEDROCK_ASSUME_ROLE="$assume_role"

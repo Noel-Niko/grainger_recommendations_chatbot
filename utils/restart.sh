@@ -1,13 +1,18 @@
 #!/bin/bash
 
-# Load AWS credentials from secrets directory
-aws_access_key_id=$(cat /Users/xnxn040/PycharmProjects/grainger_recommendations_chatbot/secrets/aws_access_key_id)
+# Directory where the script is located
+SCRIPT_DIR=$(dirname "$(realpath "$0")")
+
+# Project root directory
+PROJECT_ROOT=$(realpath "$SCRIPT_DIR/..")
+
+aws_access_key_id=$(cat "$PROJECT_ROOT/secrets/aws_access_key_id")
 export AWS_ACCESS_KEY_ID=$aws_access_key_id
 
-aws_secret_access_key=$(cat /Users/xnxn040/PycharmProjects/grainger_recommendations_chatbot/secrets/aws_secret_access_key)
+aws_secret_access_key=$(cat "$PROJECT_ROOT/secrets/aws_secret_access_key")
 export AWS_SECRET_ACCESS_KEY=$aws_secret_access_key
 
-bedrock_assume_role=$(cat /Users/xnxn040/PycharmProjects/grainger_recommendations_chatbot/secrets/bedrock_assume_role)
+bedrock_assume_role=$(cat "$PROJECT_ROOT/secrets/bedrock_assume_role")
 export BEDROCK_ASSUME_ROLE=$bedrock_assume_role
 
 AWS_REGION="${AWS_REGION:-${AWS_DEFAULT_REGION:-us-east-1}}"
@@ -42,9 +47,9 @@ export BACKEND_URL="http://localhost:8000"
 echo "BACKEND_URL set to $BACKEND_URL"
 
 # Reload AWS credentials from secrets directory
-key_id=$(cat /Users/xnxn040/PycharmProjects/grainger_recommendations_chatbot/secrets/aws_access_key_id)
-secret_key=$(cat /Users/xnxn040/PycharmProjects/grainger_recommendations_chatbot/secrets/aws_secret_access_key)
-assume_role=$(cat /Users/xnxn040/PycharmProjects/grainger_recommendations_chatbot/secrets/bedrock_assume_role)
+key_id=$(cat "$PROJECT_ROOT/secrets/aws_access_key_id")
+secret_key=$(cat "$PROJECT_ROOT/secrets/aws_secret_access_key")
+assume_role=$(cat "$PROJECT_ROOT/secrets/bedrock_assume_role")
 export AWS_ACCESS_KEY_ID="$key_id"
 export AWS_SECRET_ACCESS_KEY="$secret_key"
 export BEDROCK_ASSUME_ROLE="$assume_role"
@@ -61,7 +66,7 @@ sleep 5
 
 # Start Streamlit on port 8505
 echo "Starting Streamlit UI on port $STREAMLIT_PORT..."
-streamlit run /Users/xnxn040/PycharmProjects/grainger_recommendations_chatbot/modules/streamlit_ui.py --server.port $STREAMLIT_PORT --server.address 0.0.0.0 &
+streamlit run "$PROJECT_ROOT/modules/streamlit_ui.py" --server.port $STREAMLIT_PORT --server.address 0.0.0.0 &
 
 echo "FastAPI and Streamlit services have been restarted."
 

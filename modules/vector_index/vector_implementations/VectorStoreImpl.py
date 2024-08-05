@@ -7,17 +7,17 @@ from concurrent.futures import ThreadPoolExecutor
 import logging
 from modules.vector_index.vector_facades.VectorStoreFacade import VectorStoreFacade
 from modules.vector_index.vector_utils.bedrock import BedrockClientManager
-from modules.vector_index.vector_implementations import Document as document
+from modules.vector_index.vector_implementations.Document import Document
 from langchain.embeddings import BedrockEmbeddings
 from langchain.vectorstores import FAISS
 from langchain_aws import Bedrock
 
 current_dir = os.path.dirname(__file__)
 
-
 class VectorStoreImpl(VectorStoreFacade):
     def __init__(self, vectorstore_faiss_doc):
         super().__init__(vectorstore_faiss_doc)
+        self.vectorstore_faiss_doc = vectorstore_faiss_doc
 
     def initialize_embeddings_and_faiss(self):
         logging.info("Initializing Bedrock clients...")
@@ -56,7 +56,7 @@ class VectorStoreImpl(VectorStoreFacade):
                 logging.info("Documents file loaded successfully!")
         else:
             logging.error("Error loading serialized_documents_file at " + serialized_documents_file)
-            logging.info("Generating new df")
+            logging.info("Generating new documents")
             for _index, row in df.iterrows():
                 description = row["Description"] if pd.notna(row["Description"]) else ""
                 price = row["Price"] if pd.notna(row["Price"]) else ""
@@ -65,7 +65,7 @@ class VectorStoreImpl(VectorStoreFacade):
                     "Brand": row["Brand"], "Code": row["Code"], "Name": row["Name"],
                     "Description": row["Description"], "Price": row["Price"]
                 }
-                doc = document.Document(page_content=page_content, metadata=metadata)
+                doc = Document(page_content=page_content, metadata=metadata)
                 documents.append(doc)
         logging.info("Structured documents created:")
         for idx, doc in enumerate(documents[:5], 1):
@@ -100,14 +100,13 @@ class VectorStoreImpl(VectorStoreFacade):
 
         return bedrock_embeddings, vectorstore_faiss_doc, df, llm
 
-    def parallel_search(self, queries, vectorstore_faiss_doc, k=5, search_type="similarity", num_threads=5):
+    def parallel_search(self, queries, k=5, search_type="similarity", num_threads=5):
         def search_faiss(query):
-            return vectorstore_faiss_doc.search(query, k=k, search_type=search_type)
+            return self.vectorstore_faiss_doc.search(query, k=k, search_type=search_type)
 
         with ThreadPoolExecutor(max_workers=num_threads) as executor:
             results = list(executor.map(search_faiss, queries))
         return results
-
 
 # Update your tests to work with the new class structure
 if __name__ == "__main__":

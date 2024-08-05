@@ -4,8 +4,54 @@ import pickle
 import unittest
 from unittest.mock import patch, MagicMock, mock_open
 import pandas as pd
+from langchain_aws import BedrockEmbeddings
+from langchain_community.vectorstores import FAISS
 
 from modules.vector_index.vector_implementations import VectorStoreImpl
+from modules.vector_index.vector_implementations.Document import Document
+from unit_tests.unit_test_utils.sample_vector_store import initialize_vector_store_with_sample_data, return_sample_vector
+
+import unittest
+import pandas as pd
+from modules.vector_index.vector_implementations.VectorStoreImpl import VectorStoreImpl
+
+
+class TestVectorStoreImpl(unittest.TestCase):
+    vectorstore_faiss_doc = None
+    vectorstore_impl = None
+
+    @classmethod
+    def setUpClass(cls):
+        df = return_sample_vector()
+        # Initialize vector store with sample data
+        cls.vectorstore_faiss_doc = initialize_vector_store_with_sample_data(df)
+        cls.vectorstore_impl = VectorStoreImpl(cls.vectorstore_faiss_doc)
+
+    def test_should_find_product_with_matching_full_input(self):
+        # Arrange
+        product_code =  "C1 Product 1 10 Description of Product 1"
+
+        # Act
+        results = self.vectorstore_impl.parallel_search([product_code], k=1)
+
+        # Assert
+        expected_page_content = "Product 1"
+        self.assertIn(expected_page_content, results[0][0].page_content)
+
+    def test_should_find_product_by_product_code(self):
+        # Arrange
+        product_code = "Product 1"
+
+        # Act
+        results = self.vectorstore_impl.parallel_search([product_code], k=1)
+
+        # Assert
+        expected_page_content = "Product 1"
+        self.assertIn(expected_page_content, results[0][0].page_content)
+
+
+if __name__ == "__main__":
+    unittest.main()
 
 
 class TestInitializeEmbeddingsAndFaiss(unittest.TestCase):
@@ -96,20 +142,25 @@ class TestParallelSearch(unittest.TestCase):
 
 
 class VectorDocumentTest(unittest.TestCase):
+    vectorstore_faiss_doc = None
+    vectorstore_impl = None
 
-    @patch("modules.vector_index.vector_implementations.VectorStoreImpl.parallel_search")
-    def test_should_find_product_by_product_code(self, mock_parallel_search):
+    @classmethod
+    def setUpClass(cls):
+        # Initialize vector store with sample data
+        df = return_sample_vector()
+        cls.vectorstore_faiss_doc = initialize_vector_store_with_sample_data(df)
+        cls.vectorstore_impl = VectorStoreImpl.VectorStoreImpl(cls.vectorstore_faiss_doc)
+
+    def test_should_find_product_by_product_code(self):
         # Arrange
-        mock_faiss_vectorstore = MagicMock()
         product_code = "C1"
-        mock_parallel_search.return_value = [["Product with code C1"]]
-        vector_store_impl = VectorStoreImpl.VectorStoreImpl(mock_faiss_vectorstore)
 
         # Act
-        results = vector_store_impl.parallel_search([product_code], mock_faiss_vectorstore, k=1)
+        results = self.vectorstore_impl.parallel_search([product_code], k=1)
 
         # Assert
-        self.assertEqual(results[0], ["Product with code C1"])
+        self.assertIn("Product 1", results[0][0].page_content)
 
     @patch("modules.vector_index.vector_implementations.VectorStoreImpl.parallel_search")
     def test_should_find_product_by_product_name(self, mock_parallel_search):

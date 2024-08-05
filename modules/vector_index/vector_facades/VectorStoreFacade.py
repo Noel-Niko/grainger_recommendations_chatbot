@@ -7,9 +7,7 @@ class VectorStoreFacade():
         self.vectorstore_faiss_doc = vectorstore_faiss_doc
 
     def initialize_embeddings_and_faiss(self):
-        # This will be implemented in VectorStoreImpl
         pass
 
-    def parallel_search(self, queries, vectorstore_faiss_doc, k=5, search_type="similarity", num_threads=5):
-        # This will be implemented in VectorStoreImpl
+    def parallel_search(self, queries, k=5, search_type="similarity", num_threads=5):
         pass

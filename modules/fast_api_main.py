@@ -6,7 +6,7 @@ import httpx
 from fastapi import FastAPI
 
 from modules.rest_modules.endpoints import chat, health, image, review
-from modules.vector_index.vector_implementations import initialize_embeddings_and_faiss
+from modules.vector_index.vector_implementations.VectorStoreImpl import VectorStoreImpl
 
 logging.basicConfig(level=logging.INFO)
 app = FastAPI()
@@ -17,7 +17,7 @@ current_tasks: Dict[str, asyncio.Task] = {}
 
 class MainResourceManager:
     def __init__(self):
-        self.bedrock_embeddings, self.vectorstore_faiss_doc, self.df, self.llm = initialize_embeddings_and_faiss()
+        self.bedrock_embeddings, self.vectorstore_faiss_doc, self.df, self.llm = VectorStoreImpl.initialize_embeddings_and_faiss
         self.driver = None
         self.http_client = None
         self.initialize_http_client()
@@ -30,7 +30,7 @@ class MainResourceManager:
             logging.error(f"Failed to initialize HTTP client: {e}")
 
     async def refresh_bedrock_embeddings(self):
-        self.bedrock_embeddings, self.vectorstore_faiss_doc, self.df, self.llm = initialize_embeddings_and_faiss()
+        self.bedrock_embeddings, self.vectorstore_faiss_doc, self.df, self.llm = VectorStoreImpl.initialize_embeddings_and_faiss
 
 
 resource_manager = MainResourceManager()

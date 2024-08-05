@@ -40,13 +40,13 @@ class TestVectorStoreImpl(unittest.TestCase):
 
     def test_should_find_product_by_product_code(self):
         # Arrange
-        product_code = "Product 1"
+        product_code = "Product 3"
 
         # Act
         results = self.vectorstore_impl.parallel_search([product_code], k=1)
 
         # Assert
-        expected_page_content = "Product 1"
+        expected_page_content = "Product 3"
         self.assertIn(expected_page_content, results[0][0].page_content)
 
 

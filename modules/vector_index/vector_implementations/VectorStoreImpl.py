@@ -15,9 +15,9 @@ from langchain_aws import Bedrock
 current_dir = os.path.dirname(__file__)
 
 class VectorStoreImpl(VectorStoreFacade):
-    def __init__(self, vectorstore_faiss_doc):
-        super().__init__(vectorstore_faiss_doc)
-        self.vectorstore_faiss_doc = vectorstore_faiss_doc
+    def __init__(self, vectorstore):
+        super().__init__(vectorstore)
+        self.vectorstore_faiss_doc, self.exact_match_map = vectorstore
 
     def initialize_embeddings_and_faiss(self):
         logging.info("Initializing Bedrock clients...")
@@ -102,7 +102,19 @@ class VectorStoreImpl(VectorStoreFacade):
 
     def parallel_search(self, queries, k=5, search_type="similarity", num_threads=5):
         def search_faiss(query):
-            return self.vectorstore_faiss_doc.search(query, k=k, search_type=search_type)
+            # Check for exact match first
+            if query in self.exact_match_map:
+                index = self.exact_match_map[query]
+                # Get the document ID
+                doc_id = self.vectorstore_faiss_doc.index_to_docstore_id[index]
+
+                # Retrieve the document from the docstore using the document ID
+                document = self.vectorstore_faiss_doc.docstore.search(doc_id)
+
+                return [document]
+            else:
+                # Fallback to FAISS search
+                return self.vectorstore_faiss_doc.search(query, k=k, search_type=search_type)
 
         with ThreadPoolExecutor(max_workers=num_threads) as executor:
             results = list(executor.map(search_faiss, queries))

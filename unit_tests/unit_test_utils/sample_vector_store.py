@@ -46,7 +46,7 @@ def initialize_vector_store_with_sample_data(df):
 
         # Populate exact match map
         exact_match_map[row['Code']] = _index
-        exact_match_map[row['ProductName']] = _index
+        exact_match_map[row['Name']] = _index
 
     # Create FAISS vector store from documents
     vectorstore_faiss_doc = FAISS.from_documents(documents, bedrock_embeddings)

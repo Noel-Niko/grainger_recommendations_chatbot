@@ -59,7 +59,7 @@ STREAMLIT_PORT=8505
 
 # Start FastAPI on port 8000
 echo "Starting FastAPI Application on port $FASTAPI_PORT..."
-uvicorn modules.fast_api_main:app --host 0.0.0.0 --port $FASTAPI_PORT &
+PYTHONPATH=$PROJECT_ROOT uvicorn modules.fast_api_main:app --host 0.0.0.0 --port $FASTAPI_PORT &
 
 # Wait a few seconds for FastAPI to start
 sleep 5

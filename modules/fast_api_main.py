@@ -1,5 +1,6 @@
 import asyncio
 import logging
+import threading
 from typing import Dict, List
 
 import httpx
@@ -8,6 +9,7 @@ from fastapi import FastAPI
 from modules.rest_modules.endpoints import chat, health, image, review
 from modules.vector_index.vector_implementations.VectorStoreImpl import VectorStoreImpl
 
+faiss_creation_event = threading.Event()
 logging.basicConfig(level=logging.INFO)
 app = FastAPI()
 
@@ -38,6 +40,7 @@ resource_manager = MainResourceManager()
 
 @app.on_event("startup")
 async def startup_event():
+    faiss_creation_event.wait()
     logging.info("Startup complete.")
     global session_store, current_tasks
     session_store = {}

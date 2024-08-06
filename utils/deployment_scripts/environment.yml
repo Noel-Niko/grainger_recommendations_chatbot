@@ -1,0 +1,46 @@
+name: grainger_chatbot_8-6
+channels:
+  - defaults
+  - conda-forge
+dependencies:
+  - python=3.11
+  - boto3>=1.28.57
+  - awscli>=1.29.57
+  - botocore>=1.31.57
+  - unstructured[csv]
+  - langchain=0.2.6
+  - langchain-aws=0.1.8
+  - langchain-community=0.2.6
+  - langchain-core
+  - langchain-text-splitters=0.2.2
+  - langsmith=0.1.83
+  - langchain-openai
+  - pypdf=3.17.0
+  - pandas<2.0.0
+  - openai>=1.0.0
+  - streamlit=1.36.0
+  - scipy=1.13.1
+  - selenium=4.22.0
+  - webdriver-manager
+  - requests
+  - beautifulsoup4=4.12.3
+  - pyarrow
+  - sagemaker
+  - aiohttp
+  - ipython
+  - faiss-cpu
+  - matplotlib
+  - transformers
+  - pillow
+  - kubernetes
+  - fastapi
+  - uvicorn
+  - sse-starlette
+  - httpx
+  - pydantic
+  - websockets
+  - langdetect
+  - nose
+  - moto
+
+#  pip install torch python-weather asyncio

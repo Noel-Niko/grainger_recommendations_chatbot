@@ -16,7 +16,10 @@ st.set_page_config(layout="wide")
 
 tag = "StreamlitInterface"
 backend_url = os.getenv("BACKEND_URL", "http://127.0.0.1:8000")
-
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
 
 class StreamlitInterface:
     def __init__(self):

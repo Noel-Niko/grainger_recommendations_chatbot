@@ -11,7 +11,7 @@ tag = "BedrockClientManager"
 
 
 class BedrockClientManager:
-    def __init__(self, refresh_interval: int = 3600):
+    def __init__(self, refresh_interval: int = 850): # 15 minutes - 5 seconds
         self.refresh_interval = refresh_interval
 
     def assume_role_and_get_credentials(self, session, role_to_assume):

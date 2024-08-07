@@ -1,12 +1,18 @@
 #!/bin/bash
 
-aws_access_key_id=$(cat aws_access_key_id)
+# Directory where the script is located
+SCRIPT_DIR=$(dirname "$(realpath "$0")")
+
+# Project root directory
+PROJECT_ROOT=$(realpath "$SCRIPT_DIR/..")
+
+aws_access_key_id=$(cat "$PROJECT_ROOT/secrets/aws_access_key_id")
 export AWS_ACCESS_KEY_ID=$aws_access_key_id
 
-aws_secret_access_key=$(cat aws_secret_access_key)
+aws_secret_access_key=$(cat "$PROJECT_ROOT/secrets/aws_secret_access_key")
 export AWS_SECRET_ACCESS_KEY=$aws_secret_access_key
 
-bedrock_assume_role=$(cat bedrock_assume_role)
+bedrock_assume_role=$(cat "$PROJECT_ROOT/secrets/bedrock_assume_role")
 export BEDROCK_ASSUME_ROLE=$bedrock_assume_role
 
 AWS_REGION="${AWS_REGION:-${AWS_DEFAULT_REGION:-us-east-1}}"
@@ -40,9 +46,10 @@ echo "Ports are now free."
 export BACKEND_URL="http://localhost:8000"
 echo "BACKEND_URL set to $BACKEND_URL"
 
-key_id=$(cat secrets/aws_access_key_id)
-secret_key=$(cat secrets/aws_secret_access_key)
-assume_role=$(cat secrets/bedrock_assume_role)
+# Reload AWS credentials from secrets directory
+key_id=$(cat "$PROJECT_ROOT/secrets/aws_access_key_id")
+secret_key=$(cat "$PROJECT_ROOT/secrets/aws_secret_access_key")
+assume_role=$(cat "$PROJECT_ROOT/secrets/bedrock_assume_role")
 export AWS_ACCESS_KEY_ID="$key_id"
 export AWS_SECRET_ACCESS_KEY="$secret_key"
 export BEDROCK_ASSUME_ROLE="$assume_role"
@@ -52,14 +59,24 @@ STREAMLIT_PORT=8505
 
 # Start FastAPI on port 8000
 echo "Starting FastAPI Application on port $FASTAPI_PORT..."
-uvicorn modules.fast_api_main:app --host 0.0.0.0 --port $FASTAPI_PORT &
+PYTHONPATH=$PROJECT_ROOT uvicorn modules.fast_api_main:app --host 0.0.0.0 --port $FASTAPI_PORT > $PROJECT_ROOT/fastapi.log 2>&1 &
 
-# Wait a few seconds for FastAPI to start
-sleep 5
+# Wait longer for FastAPI to start
+sleep 20
+
+# Check if FastAPI is running
+if lsof -i:$FASTAPI_PORT; then
+  echo "FastAPI is running on port $FASTAPI_PORT."
+else
+  echo "FastAPI did not start successfully. Checking logs..."
+  tail -n 50 $PROJECT_ROOT/fastapi.log
+  exit 1
+fi
+
 
 # Start Streamlit on port 8505
 echo "Starting Streamlit UI on port $STREAMLIT_PORT..."
-streamlit run modules/streamlit_ui.py --server.port $STREAMLIT_PORT --server.address 0.0.0.0 &
+streamlit run "$PROJECT_ROOT/modules/streamlit_ui.py" --server.port $STREAMLIT_PORT --server.address 0.0.0.0 &
 
 echo "FastAPI and Streamlit services have been restarted."
 

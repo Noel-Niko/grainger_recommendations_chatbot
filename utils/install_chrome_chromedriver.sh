@@ -14,7 +14,7 @@ curl -o /tmp/chrome-mac.zip -L $CHROME_URL
 echo "Unzipping Chrome"
 unzip -o /tmp/chrome-mac.zip -d /tmp
 
-# Check if the application directory already exists and remove it
+# Remove existing Chrome for Testing app if it exists
 if [ -d "/Applications/Google Chrome for Testing.app" ]; then
     echo "Removing existing /Applications/Google Chrome for Testing.app"
     sudo rm -rf "/Applications/Google Chrome for Testing.app"
@@ -22,7 +22,7 @@ fi
 
 # Move Chrome to Applications
 echo "Moving Chrome to /Applications"
-sudo mv /tmp/chrome-mac-x64/Google\ Chrome\ for\ Testing.app /Applications/Google\ Chrome\ for\ Testing.app
+sudo mv /tmp/chrome-mac-x64/Google\ Chrome\ for\ Testing.app /Applications/
 
 # Ensure the default Chrome directory exists
 echo "Ensuring the default Chrome directory exists"
@@ -34,6 +34,16 @@ fi
 # Replace default Chrome binary
 echo "Replacing default Chrome binary"
 sudo mv "/Applications/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing" "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
+
+# Ensure the Frameworks directory exists
+if [ ! -d "/Applications/Google Chrome.app/Contents/Frameworks" ]; then
+    echo "Creating directory /Applications/Google Chrome.app/Contents/Frameworks"
+    sudo mkdir -p "/Applications/Google Chrome.app/Contents/Frameworks"
+fi
+
+# Move Google Chrome for Testing Framework to the default Chrome location
+echo "Moving Google Chrome for Testing Framework to default Chrome location"
+sudo mv "/Applications/Google Chrome for Testing.app/Contents/Frameworks/Google Chrome for Testing Framework.framework" "/Applications/Google Chrome.app/Contents/Frameworks/"
 
 # Download ChromeDriver
 echo "Downloading ChromeDriver from $CHROMEDRIVER_URL"
@@ -66,6 +76,7 @@ else
 fi
 
 echo "Installation completed successfully"
+
 
 # chmod +x utils/install_chrome_chromedriver.sh
   # ./utils/install_chrome_chromedriver.sh

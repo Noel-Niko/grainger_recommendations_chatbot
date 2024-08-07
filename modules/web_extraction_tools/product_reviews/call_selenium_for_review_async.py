@@ -65,21 +65,21 @@ async def async_navigate_to_reviews_selenium(product_id):
     options.add_argument("--no-sandbox")
     options.add_argument("--disable-dev-shm-usage")
 
-    # running_in_docker = os.getenv('RUNNING_IN_DOCKER', 'false').lower() == 'true'
-    #
-    # if running_in_docker:
-    #     chrome_bin = os.getenv('CHROME_BIN', '/usr/local/bin/google-chrome')
-    #     chrome_driver = os.getenv('CHROME_DRIVER', '/usr/local/bin/chromedriver')
-    #     options.binary_location = chrome_bin
-    #     service = Service(chrome_driver)
-    # else:
-    #     service = Service(ChromeDriverManager().install())
-    #
+    running_in_docker = os.getenv('RUNNING_IN_DOCKER', 'false').lower() == 'true'
+
+    if running_in_docker:
+        chrome_bin = os.getenv('CHROME_BIN', '/usr/local/bin/google-chrome')
+        chrome_driver = os.getenv('CHROME_DRIVER', '/usr/local/bin/chromedriver')
+        options.binary_location = chrome_bin
+        service = Service(chrome_driver)
+    else:
+        service = Service(ChromeDriverManager().install())
+
     # driver = webdriver.Chrome(service=service, options=options)
     #
     # search_url = f'https://www.zoro.com/search?q={product_id}'
     # Set the binary location to the Chrome for Testing binary
-    options.binary_location = "/Applications/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing"
+    # options.binary_location = "/Applications/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing"
 
     service = Service(ChromeDriverManager().install())
     driver = webdriver.Chrome(service=service, options=options)

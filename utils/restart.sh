@@ -19,7 +19,7 @@ AWS_REGION="${AWS_REGION:-${AWS_DEFAULT_REGION:-us-east-1}}"
 export AWS_REGION
 
 # Define the ports to be freed
-PORTS=(8000 8505)
+PORTS=(8000 8505 6379)
 
 # Function to kill processes using specified ports
 kill_processes_on_ports() {
@@ -42,6 +42,39 @@ kill_processes_on_ports
 
 echo "Ports are now free."
 
+# Stop the Redis server
+redis-cli shutdown
+
+# Verify Redis server stopped
+if ps aux | grep -v grep | grep redis-server > /dev/null
+then
+    echo "Failed to stop Redis server"
+    exit 1
+else
+    echo "Redis server stopped successfully"
+fi
+
+# Start the Redis server
+REDIS_CONF_PATH="$PROJECT_ROOT/redis.conf"
+if [ -f "$REDIS_CONF_PATH" ]; then
+    echo "Starting Redis server with config $REDIS_CONF_PATH..."
+    redis-server "$REDIS_CONF_PATH" &
+else
+    echo "Redis configuration file not found at $REDIS_CONF_PATH"
+    exit 1
+fi
+
+# Wait a few seconds for Redis to start
+sleep 5
+
+# Check if Redis is running
+if lsof -i:6379; then
+  echo "Redis is running on port 6379."
+else
+  echo "Redis did not start successfully."
+  exit 1
+fi
+
 # Running locally
 export BACKEND_URL="http://localhost:8000"
 echo "BACKEND_URL set to $BACKEND_URL"
@@ -59,24 +92,33 @@ STREAMLIT_PORT=8505
 
 # Start FastAPI on port 8000
 echo "Starting FastAPI Application on port $FASTAPI_PORT..."
-PYTHONPATH=$PROJECT_ROOT uvicorn modules.fast_api_main:app --host 0.0.0.0 --port $FASTAPI_PORT > $PROJECT_ROOT/fastapi.log 2>&1 &
+PYTHONPATH=$PROJECT_ROOT uvicorn modules.fast_api_main:app --host 0.0.0.0 --port $FASTAPI_PORT &
 
 # Wait longer for FastAPI to start
-sleep 20
+sleep 5
 
 # Check if FastAPI is running
 if lsof -i:$FASTAPI_PORT; then
   echo "FastAPI is running on port $FASTAPI_PORT."
 else
-  echo "FastAPI did not start successfully. Checking logs..."
-  tail -n 50 $PROJECT_ROOT/fastapi.log
+  echo "FastAPI did not start successfully."
   exit 1
 fi
-
 
 # Start Streamlit on port 8505
 echo "Starting Streamlit UI on port $STREAMLIT_PORT..."
 streamlit run "$PROJECT_ROOT/modules/streamlit_ui.py" --server.port $STREAMLIT_PORT --server.address 0.0.0.0 &
+
+# Wait a few seconds for Streamlit to start
+sleep 5
+
+# Check if Streamlit is running
+if lsof -i:$STREAMLIT_PORT; then
+  echo "Streamlit is running on port $STREAMLIT_PORT."
+else
+  echo "Streamlit did not start successfully."
+  exit 1
+fi
 
 echo "FastAPI and Streamlit services have been restarted."
 

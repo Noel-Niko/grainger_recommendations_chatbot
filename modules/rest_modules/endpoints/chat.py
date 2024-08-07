@@ -1,7 +1,6 @@
 import asyncio
 import logging
 import traceback
-
 from fastapi import APIRouter, Depends, HTTPException, Request
 
 from modules.globals import current_tasks, session_store
@@ -12,15 +11,11 @@ from modules.vector_index.vector_utils.chat_processor import process_chat_questi
 router = APIRouter()
 tag = "fast_api_main"
 
-
 async def get_resource_manager():
     from modules.fast_api_main import resource_manager
-
     return resource_manager
 
-
 resource_manager_dependency = Depends(get_resource_manager)
-
 
 @router.post("/ask_question")
 async def ask_question(chat_request: ChatRequest, request: Request, resource_manager_param: ResourceManager = resource_manager_dependency):
@@ -36,7 +31,7 @@ async def ask_question(chat_request: ChatRequest, request: Request, resource_man
         logging.info(f"{tag}/ Received question: {chat_request.question} with session_id: {session_id}")
 
         if session_id in current_tasks and not current_tasks[session_id].done():
-            logging.info(f"Cancelling task for session ID: {session_id} due to new question.")
+            logging.info(f"{tag}/ Cancelling task for session ID: {session_id} due to new question.")
             current_tasks[session_id].cancel()
             await current_tasks[session_id]
 
@@ -97,8 +92,12 @@ async def process_chat_question(question, clear_history, session_id, resource_ma
 
         logging.info(f"{tag}/ Processing question: {question}")
         message, response_json, customer_attributes_retrieved, time_to_get_attributes = process_chat_question_with_customer_attribute_identifier(
-            question, resource_manager_param.vectorstore_faiss_doc, resource_manager_param.llm, chat_history
+            question, resource_manager_param.vectorstore_faiss_doc, resource_manager_param.exact_match_map, resource_manager_param.llm, chat_history
         )
+
+        if response_json is None:
+            logging.error(f"{tag}/ No response JSON returned")
+            raise HTTPException(status_code=500, detail=f"{tag}/ No response JSON returned")
 
         chat_history.append({"user": question, "assistant": message, "customer_attributes": customer_attributes_retrieved})
         session_store[session_id] = chat_history
@@ -108,3 +107,4 @@ async def process_chat_question(question, clear_history, session_id, resource_ma
         logging.error(f"{tag}/ Error processing chat question: {str(e)}")
         logging.error(traceback.format_exc())
         raise
+

@@ -160,32 +160,37 @@ class VectorStoreImpl(VectorStoreFacade):
         def search_faiss(query: str) -> List[Document]:
             query = query.upper().strip()
             logging.info(f"{tag} / Searching for query: {query}")
-            product = re.sub(r'\{[^{}]*\}', '', query).strip()
+            # Find all product codes that are 5-7 characters long and include at least 2 numbers and 2 letters
+            product_codes = re.findall(r'\b[A-Za-z0-9]{5,7}\b', query)
+            filtered_codes = [code for code in product_codes if
+                              sum(c.isdigit() for c in code) >= 2 and sum(c.isalpha() for c in code) >= 2]
 
-            # Remove product codes that are 5-7 characters long and include at least 2 numbers and 2 letters
-            # product = re.sub(r'\b(?=\w*[0-9])(?=\w*[A-Z])[A-Z0-9]{5,7}\b', '', product).strip()
-
-            logging.info(f"{tag} / Cleaned query: {product}")
+            logging.info(f"{tag} / Found product codes: {filtered_codes}")
 
             # Check for exact match first
-            if product in self.exact_match_map:
-                logging.info(f"{tag} / Exact match found for product: {product}")
-                index = self.exact_match_map[product]
-                # Get the document ID
-                doc_id = self.vectorstore_faiss_doc.index_to_docstore_id[index]
-                logging.info(f"{tag} / Document ID for exact match: {doc_id}")
+            documents = []
+            match_found = False
+            for code in filtered_codes:
+                if code in self.exact_match_map:
+                    logging.info(f"{tag} / Exact match found for product: {code}")
+                    index = self.exact_match_map[code]
+                    # Get the document ID
+                    doc_id = self.vectorstore_faiss_doc.index_to_docstore_id[index]
+                    logging.info(f"{tag} / Document ID for exact match: {doc_id}")
 
-                # Retrieve the document from the docstore using the document ID
-                document = self.vectorstore_faiss_doc.docstore.search(doc_id)
-                logging.info(f"{tag} / Document retrieved for exact match: {document}")
-
-                return [document]
-            else:
-                logging.info(f"{tag} / No exact match found for product: {product}. Performing FAISS search.")
+                    # Retrieve the document from the docstore using the document ID
+                    document = self.vectorstore_faiss_doc.docstore.search(doc_id)
+                    logging.info(f"{tag} / Document retrieved for exact match: {document}")
+                    documents.append(document)
+                    match_found = True
+            if not match_found:
+                logging.info(f"{tag} / No exact match found for products. Performing FAISS search.")
                 # Fallback to FAISS search
                 faiss_results = self.vectorstore_faiss_doc.search(query, k=k, search_type=search_type)
                 logging.info(f"{tag} / FAISS search results for query '{query}': {faiss_results}")
                 return faiss_results
+            else:
+                return documents
 
         logging.info("Initializing ThreadPoolExecutor")
         with ThreadPoolExecutor(max_workers=num_threads) as executor:

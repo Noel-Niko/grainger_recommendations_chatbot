@@ -9,7 +9,7 @@ from modules.rest_modules.rest_utils.resource_manager import ResourceManager
 from modules.vector_index.vector_utils.chat_processor import process_chat_question_with_customer_attribute_identifier
 
 router = APIRouter()
-tag = "fast_api_main"
+tag = "chat"
 
 async def get_resource_manager():
     from modules.fast_api_main import resource_manager
@@ -88,7 +88,7 @@ async def process_chat_question(question, clear_history, session_id, resource_ma
             session_store[session_id] = []
 
         chat_history = session_store.get(session_id, [])
-        logging.info(f"{tag}/ Current chat history for session_id {session_id}: {chat_history}")
+        # logging.info(f"{tag}/ Current chat history for session_id {session_id}: {chat_history}")
 
         logging.info(f"{tag}/ Processing question: {question}")
         message, response_json, customer_attributes_retrieved, time_to_get_attributes = process_chat_question_with_customer_attribute_identifier(

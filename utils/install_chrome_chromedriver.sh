@@ -1,60 +1,84 @@
 #!/bin/bash
 
-# Define the paths for Chrome and ChromeDriver
-CHROME_PATH="/Applications/chrome-mac-x64/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing"
-CHROMEDRIVER_PATH="/usr/local/bin/chromedriver"
+set -e
 
-# Install jq if not already installed
-if ! command -v jq &> /dev/null
-then
-    echo "jq could not be found, installing..."
-    brew install jq
-fi
+# Define URLs
+CHROME_URL="https://storage.googleapis.com/chrome-for-testing-public/127.0.6533.99/mac-x64/chrome-mac-x64.zip"
+CHROMEDRIVER_URL="https://storage.googleapis.com/chrome-for-testing-public/127.0.6533.99/mac-x64/chromedriver-mac-x64.zip"
 
-# Download and install Google Chrome
-echo "Downloading and installing Google Chrome..."
-CHROME_URL=$(curl -s https://googlechromelabs.github.io/chrome-for-testing/last-known-good-versions-with-downloads.json | jq -r '.channels.Stable.downloads.chrome[] | select(.platform=="mac-x64") | .url')
+# Download Chrome
+echo "Downloading Chrome from $CHROME_URL"
 curl -o /tmp/chrome-mac.zip -L $CHROME_URL
-unzip -o /tmp/chrome-mac.zip -d /Applications
-rm /tmp/chrome-mac.zip
 
-# Verify Chrome installation
-if [ ! -f "$CHROME_PATH" ]; then
-  echo "Google Chrome installation failed."
-  exit 1
-else
-  echo "Google Chrome installed successfully."
+# Unzip Chrome
+echo "Unzipping Chrome"
+unzip -o /tmp/chrome-mac.zip -d /tmp
+
+# Remove existing Chrome for Testing app if it exists
+if [ -d "/Applications/Google Chrome for Testing.app" ]; then
+    echo "Removing existing /Applications/Google Chrome for Testing.app"
+    sudo rm -rf "/Applications/Google Chrome for Testing.app"
 fi
 
-# Download and install ChromeDriver
-echo "Downloading and installing ChromeDriver..."
-CHROMEDRIVER_URL=$(curl -s https://googlechromelabs.github.io/chrome-for-testing/last-known-good-versions-with-downloads.json | jq -r '.channels.Stable.downloads.chromedriver[] | select(.platform=="mac-x64") | .url')
+# Move Chrome to Applications
+echo "Moving Chrome to /Applications"
+sudo mv /tmp/chrome-mac-x64/Google\ Chrome\ for\ Testing.app /Applications/
+
+# Ensure the default Chrome directory exists
+echo "Ensuring the default Chrome directory exists"
+if [ ! -d "/Applications/Google Chrome.app/Contents/MacOS" ]; then
+    echo "Creating directory /Applications/Google Chrome.app/Contents/MacOS"
+    sudo mkdir -p "/Applications/Google Chrome.app/Contents/MacOS"
+fi
+
+# Replace default Chrome binary
+echo "Replacing default Chrome binary"
+sudo mv "/Applications/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing" "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
+
+# Ensure the Frameworks directory exists
+if [ ! -d "/Applications/Google Chrome.app/Contents/Frameworks" ]; then
+    echo "Creating directory /Applications/Google Chrome.app/Contents/Frameworks"
+    sudo mkdir -p "/Applications/Google Chrome.app/Contents/Frameworks"
+fi
+
+# Remove existing Google Chrome for Testing Framework if it exists
+if [ -d "/Applications/Google Chrome.app/Contents/Frameworks/Google Chrome for Testing Framework.framework" ]; then
+    echo "Removing existing Google Chrome for Testing Framework.framework"
+    sudo rm -rf "/Applications/Google Chrome.app/Contents/Frameworks/Google Chrome for Testing Framework.framework"
+fi
+
+# Move Google Chrome for Testing Framework to the default Chrome location
+echo "Moving Google Chrome for Testing Framework to default Chrome location"
+sudo mv "/Applications/Google Chrome for Testing.app/Contents/Frameworks/Google Chrome for Testing Framework.framework" "/Applications/Google Chrome.app/Contents/Frameworks/"
+
+# Download ChromeDriver
+echo "Downloading ChromeDriver from $CHROMEDRIVER_URL"
 curl -o /tmp/chromedriver-mac.zip -L $CHROMEDRIVER_URL
-unzip -o /tmp/chromedriver-mac.zip -d /tmp
-mv /tmp/chromedriver-mac-x64/chromedriver /usr/local/bin/chromedriver
-rm -rf /tmp/chromedriver-mac.zip /tmp/chromedriver-mac-x64
-chmod +x /usr/local/bin/chromedriver
 
-# Verify ChromeDriver installation
-if [ ! -f "$CHROMEDRIVER_PATH" ]; then
-  echo "ChromeDriver installation failed."
-  exit 1
+# Unzip ChromeDriver
+echo "Unzipping ChromeDriver"
+unzip -o /tmp/chromedriver-mac.zip -d /tmp
+
+# Move ChromeDriver to /usr/local/bin
+echo "Moving ChromeDriver to /usr/local/bin"
+sudo mv /tmp/chromedriver-mac-x64/chromedriver /usr/local/bin/
+sudo chmod +x /usr/local/bin/chromedriver
+
+# Verify installation
+echo "Verifying Chrome installation"
+if [ -f "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" ]; then
+    echo "Chrome for Testing installed successfully"
 else
-  echo "ChromeDriver installed successfully."
+    echo "Chrome for Testing installation failed"
+    exit 1
 fi
 
-# Set up environment variables in Conda activation script
-echo "Setting up environment variables for Conda..."
-CONDA_ENV_PATH="/opt/anaconda3/envs/grainger_recommendations_chatbot_3-11"
-ACTIVATE_SCRIPT="$CONDA_ENV_PATH/etc/conda/activate.d/env_vars.sh"
+echo "Verifying ChromeDriver installation"
+if command -v chromedriver &> /dev/null; then
+    echo "ChromeDriver installed successfully"
+else
+    echo "ChromeDriver installation failed"
+    exit 1
+fi
 
-mkdir -p "$CONDA_ENV_PATH/etc/conda/activate.d"
-touch "$ACTIVATE_SCRIPT"
-
-echo '#!/bin/bash' > "$ACTIVATE_SCRIPT"
-echo "export CHROME_BINARY_PATH=\"$CHROME_PATH\"" >> "$ACTIVATE_SCRIPT"
-echo "export PATH=\"/usr/local/bin:\$PATH\"" >> "$ACTIVATE_SCRIPT"
-
-chmod +x "$ACTIVATE_SCRIPT"
-
-echo "Installation and setup completed successfully."
+echo "Installation completed successfully"

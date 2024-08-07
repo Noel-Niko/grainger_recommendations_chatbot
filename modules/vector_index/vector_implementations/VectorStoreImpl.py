@@ -67,8 +67,9 @@ class VectorStoreImpl(VectorStoreFacade):
         # Create serialized source doc for FAISS
         documents = []
         exact_match_map = {}
-        data_source_dir = os.path.join(current_dir, "data_sources")
-        os.makedirs(data_source_dir, exist_ok=True)
+        data_source_dir = os.path.join(current_dir, "../data_source")
+        if not os.path.exists(data_source_dir):
+            os.makedirs(data_source_dir, exist_ok=True)
         serialized_documents_file = os.path.join(data_source_dir, "documents_pickle.pkl")
         logging.info(f"{tag} / Attempting to load file from: {serialized_documents_file}")
         if os.path.exists(serialized_documents_file):
@@ -97,7 +98,6 @@ class VectorStoreImpl(VectorStoreFacade):
                 # Populate exact match map
                 exact_match_map[row['Code']] = _index
                 exact_match_map[row['Name']] = _index
-                logging.info(f"{tag} / NAME = {row['Name']}")
 
         # Store exact_match_map in Redis only if it's not empty
         if exact_match_map:
@@ -120,8 +120,7 @@ class VectorStoreImpl(VectorStoreFacade):
                 exact_match_map[doc.metadata['Name']] = _index
 
         # Check if serialized FAISS index exists
-        serialized_index_file = os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                                             "data_sources/vector_index.pkl")
+        serialized_index_file = os.path.join(data_source_dir, "vector_index.pkl")
         logging.info(f"{tag} / Serialized index file {serialized_index_file}")
         if os.path.exists(serialized_index_file):
             logging.info(f"{tag} / Serialized file {serialized_index_file} already exists. Loading...")

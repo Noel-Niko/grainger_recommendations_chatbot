@@ -2,6 +2,8 @@
 
 ## Key Features: 
   - Asynchronous calls and use of a polling for "reviews" to return a responses as soon as available.
+  - Implements the Facade pattern for API.
+  - Utilized a Redis DB for quick look up of products by SKU or Name.
   - Utilizes Anthropic instead of OpenAi, and through its use of AWS Bedrock Anthropic can be switched for any of the many LLM models available.
   - Uses Named Entity Recognition to categorize the customer and personalize responses.
     - This could also be used for generating analytic data on customers.

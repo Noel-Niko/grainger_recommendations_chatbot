@@ -1,6 +1,4 @@
-# modules/vector_index/vector_implementations/VectorStoreImpl.py
 from concurrent.futures import ThreadPoolExecutor
-
 from modules.vector_index.vector_facades.VectorStoreFacade import VectorStoreFacade
 from modules.vector_index.vector_utils.bedrock import BedrockClientManager
 from modules.vector_index.vector_implementations.Document import Document
@@ -13,7 +11,6 @@ import pickle
 import logging
 import threading
 
-
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
@@ -22,6 +19,7 @@ logger = logging.getLogger(__name__)
 current_dir = os.path.dirname(__file__)
 faiss_creation_event = threading.Event()
 tag = "VectorStoreImpl"
+
 class VectorStoreImpl(VectorStoreFacade):
     def __init__(self, vectorstore):
         super().__init__(vectorstore)
@@ -52,9 +50,11 @@ class VectorStoreImpl(VectorStoreFacade):
         logging.info(f"{tag} / Attempting to load file from: {parquet_file_path}")
         df = pd.read_parquet(parquet_file_path)
 
+        # Initialize exact_match_map as an empty dictionary
+        exact_match_map = {}
+
         # Create serialized source doc for FAISS
         documents = []
-
         data_source_dir = os.path.join(current_dir, "data_sources")
         os.makedirs(data_source_dir, exist_ok=True)
         serialized_documents_file = os.path.join(data_source_dir, "documents_pickle.pkl")
@@ -119,25 +119,41 @@ class VectorStoreImpl(VectorStoreFacade):
             except Exception as e:
                 logging.error(f"{tag} / Failed to create FAISS vector store: {e}")
         faiss_creation_event.set()
-        return bedrock_embeddings, vectorstore_faiss_doc, df, llm
+        return bedrock_embeddings, vectorstore_faiss_doc, exact_match_map, df, llm
 
     def parallel_search(self, queries, k=5, search_type="similarity", num_threads=5):
+        logging.info("Starting parallel search")
+        logging.info(f"Queries: {queries}")
+        logging.info(f"Top k results: {k}")
+        logging.info(f"Search type: {search_type}")
+        logging.info(f"Number of threads: {num_threads}")
+
         def search_faiss(query):
+            logging.info(f"Searching for query: {query}")
             # Check for exact match first
             if query in self.exact_match_map:
+                logging.info(f"Exact match found for query: {query}")
                 index = self.exact_match_map[query]
                 # Get the document ID
                 doc_id = self.vectorstore_faiss_doc.index_to_docstore_id[index]
+                logging.info(f"Document ID for exact match: {doc_id}")
 
                 # Retrieve the document from the docstore using the document ID
                 document = self.vectorstore_faiss_doc.docstore.search(doc_id)
+                logging.info(f"Document retrieved for exact match: {document}")
 
                 return [document]
             else:
+                logging.info(f"No exact match found for query: {query}. Performing FAISS search.")
                 # Fallback to FAISS search
-                return self.vectorstore_faiss_doc.search(query, k=k, search_type=search_type)
+                faiss_results = self.vectorstore_faiss_doc.search(query, k=k, search_type=search_type)
+                logging.info(f"FAISS search results for query '{query}': {faiss_results}")
+                return faiss_results
 
+        logging.info("Initializing ThreadPoolExecutor")
         with ThreadPoolExecutor(max_workers=num_threads) as executor:
+            logging.info("Starting search using ThreadPoolExecutor")
             results = list(executor.map(search_faiss, queries))
+        logging.info(f"Search completed with results: {results}")
         return results
 

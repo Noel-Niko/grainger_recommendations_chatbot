@@ -69,10 +69,11 @@ class StreamlitInterface:
                         if response and response.status_code == 200:
                             data = response.json()
                             self.display_message(center_col, data, start_time)
-                            products = data["products"]
+                            products = data.get("products", [])
                             st.session_state["products"] = products
                         else:
                             logging.error(f"Failed to process question: {response.text if response else 'No response'}")
+                            products = []
 
                         total_time = time.time() - start_time
                         center_col.write(f"Total time to answer question: {total_time}")
@@ -85,6 +86,7 @@ class StreamlitInterface:
         """Retry HTTP POST request if it fails."""
         for attempt in range(retries):
             try:
+                logging.info(f"Attempt {attempt + 1} for URL: {url} with payload: {payload}")
                 response = httpx.post(url, headers=headers, json=payload, timeout=timeout)
                 if response.status_code == 200:
                     logging.info(f"{tag} / Attempt {attempt + 1} successful returning response")
@@ -95,7 +97,8 @@ class StreamlitInterface:
                 logging.error(f"{tag} / Attempt {attempt + 1} failed: {str(e)}")
             time.sleep(delay)
         logging.error(f"{tag} / All {retries} attempts failed.")
-        center_col.write("Sorry unable to process your request. Please try again.")
+        if center_col:
+            center_col.write("Sorry, unable to process your request. Please try again.")
         return None
 
     async def fetch_and_display_images(self, col3, products):
@@ -186,8 +189,8 @@ class StreamlitInterface:
                             center_col.write(f"\nReview {idx}: {review_text}")
                             review_search_time = time.time() - start_time
                             center_col.write(f"\nRetrieved in: {review_search_time}")
-                else:
-                    logging.error(f"{tag} / Missing 'code' in review: {review}")
+                    else:
+                        logging.error(f"{tag} / Missing 'code' in review: {review}")
         except Exception as e:
             logging.error(f"{tag} / Error displaying reviews: {e}")
 
@@ -195,14 +198,12 @@ class StreamlitInterface:
     if st.query_params.get("health"):
         st.write("ok")
 
-
 def main():
     if "chat_history" not in st.session_state:
         st.session_state.chat_history = False
 
     interface = StreamlitInterface()
     interface.run()
-
 
 if __name__ == "__main__":
     main()

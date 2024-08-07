@@ -61,8 +61,16 @@ STREAMLIT_PORT=8505
 echo "Starting FastAPI Application on port $FASTAPI_PORT..."
 PYTHONPATH=$PROJECT_ROOT uvicorn modules.fast_api_main:app --host 0.0.0.0 --port $FASTAPI_PORT &
 
-# Wait a few seconds for FastAPI to start
-sleep 5
+# Wait longer for FastAPI to start
+sleep 15
+
+# Check if FastAPI is running
+if lsof -i:$FASTAPI_PORT; then
+  echo "FastAPI is running on port $FASTAPI_PORT."
+else
+  echo "FastAPI did not start successfully."
+  exit 1
+fi
 
 # Start Streamlit on port 8505
 echo "Starting Streamlit UI on port $STREAMLIT_PORT..."

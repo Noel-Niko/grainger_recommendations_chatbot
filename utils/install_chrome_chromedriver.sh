@@ -1,67 +1,71 @@
 #!/bin/bash
 
-# Set the ChromeDriver version
-CHROMEDRIVER_VERSION=114.0.5735.90
+set -e
 
-# Fetch the last known good versions with downloads
-curl -s --insecure https://googlechromelabs.github.io/chrome-for-testing/last-known-good-versions-with-downloads.json -o /tmp/chrome_versions.json
+# Define URLs
+CHROME_URL="https://storage.googleapis.com/chrome-for-testing-public/127.0.6533.99/mac-x64/chrome-mac-x64.zip"
+CHROMEDRIVER_URL="https://storage.googleapis.com/chrome-for-testing-public/127.0.6533.99/mac-x64/chromedriver-mac-x64.zip"
 
-# Display the contents of the fetched JSON
-echo "Contents of /tmp/chrome_versions.json:"
-cat /tmp/chrome_versions.json
-
-# Extract the Chrome URL for mac64 platform
-CHROME_URL=$(jq -r '.channels.Stable.downloads.chrome[] | select(.platform=="mac-x64") | .url' /tmp/chrome_versions.json)
-
-# Extract the ChromeDriver URL for mac64 platform and the specified version
-CHROMEDRIVER_URL=$(jq -r --arg VERSION "$CHROMEDRIVER_VERSION" '.channels.Stable.downloads.chromedriver[] | select(.platform=="mac-x64") | .url' /tmp/chrome_versions.json)
-
-# Check if URLs were fetched successfully
-if [ -z "$CHROME_URL" ] || [ -z "$CHROMEDRIVER_URL" ]; then
-    echo "Failed to fetch Chrome or ChromeDriver URL";
-    exit 1;
-fi
-
-# Display the fetched URLs
-echo "Chrome URL: ${CHROME_URL}"
-echo "Chrome Driver URL: ${CHROMEDRIVER_URL}"
-
-# Download and install Chrome
+# Download Chrome
 echo "Downloading Chrome from $CHROME_URL"
 curl -o /tmp/chrome-mac.zip -L $CHROME_URL
+
+# Unzip Chrome
+echo "Unzipping Chrome"
 unzip -o /tmp/chrome-mac.zip -d /tmp
-rm /tmp/chrome-mac.zip
 
-# Move the Chrome app to the Applications folder
-echo "Installing Chrome..."
-if [ -d "/Applications/Google Chrome.app" ]; then
-    rm -rf "/Applications/Google Chrome.app"
+# Check if the application directory already exists and remove it
+if [ -d "/Applications/Google Chrome for Testing.app" ]; then
+    echo "Removing existing /Applications/Google Chrome for Testing.app"
+    sudo rm -rf "/Applications/Google Chrome for Testing.app"
 fi
-mv /tmp/chrome-mac-x64/Google\ Chrome\ for\ Testing.app /Applications/Google\ Chrome.app
 
-# Download and install ChromeDriver
+# Move Chrome to Applications
+echo "Moving Chrome to /Applications"
+sudo mv /tmp/chrome-mac-x64/Google\ Chrome\ for\ Testing.app /Applications/Google\ Chrome\ for\ Testing.app
+
+# Ensure the default Chrome directory exists
+echo "Ensuring the default Chrome directory exists"
+if [ ! -d "/Applications/Google Chrome.app/Contents/MacOS" ]; then
+    echo "Creating directory /Applications/Google Chrome.app/Contents/MacOS"
+    sudo mkdir -p "/Applications/Google Chrome.app/Contents/MacOS"
+fi
+
+# Replace default Chrome binary
+echo "Replacing default Chrome binary"
+sudo mv "/Applications/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing" "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
+
+# Download ChromeDriver
 echo "Downloading ChromeDriver from $CHROMEDRIVER_URL"
 curl -o /tmp/chromedriver-mac.zip -L $CHROMEDRIVER_URL
-unzip -o /tmp/chromedriver-mac.zip -d /usr/local/bin/
-mv /usr/local/bin/chromedriver-mac-x64/chromedriver /usr/local/bin/chromedriver
-rm -rf /tmp/chromedriver-mac.zip /usr/local/bin/chromedriver-mac-x64
-chmod +x /usr/local/bin/chromedriver
+
+# Unzip ChromeDriver
+echo "Unzipping ChromeDriver"
+unzip -o /tmp/chromedriver-mac.zip -d /tmp
+
+# Move ChromeDriver to /usr/local/bin
+echo "Moving ChromeDriver to /usr/local/bin"
+sudo mv /tmp/chromedriver-mac-x64/chromedriver /usr/local/bin/
+sudo chmod +x /usr/local/bin/chromedriver
 
 # Verify installation
-echo "Verifying Chrome installation..."
-if [ -f "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome for Testing" ]; then
-    echo "Chrome installed successfully."
+echo "Verifying Chrome installation"
+if [ -f "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" ]; then
+    echo "Chrome for Testing installed successfully"
 else
-    echo "Chrome installation failed."
+    echo "Chrome for Testing installation failed"
     exit 1
 fi
 
-echo "Verifying ChromeDriver installation..."
-if [ -f "/usr/local/bin/chromedriver" ]; then
-    echo "ChromeDriver installed successfully."
+echo "Verifying ChromeDriver installation"
+if command -v chromedriver &> /dev/null; then
+    echo "ChromeDriver installed successfully"
 else
-    echo "ChromeDriver installation failed."
+    echo "ChromeDriver installation failed"
     exit 1
 fi
 
-echo "Chrome and ChromeDriver installed successfully."
+echo "Installation completed successfully"
+
+# chmod +x utils/install_chrome_chromedriver.sh
+  # ./utils/install_chrome_chromedriver.sh

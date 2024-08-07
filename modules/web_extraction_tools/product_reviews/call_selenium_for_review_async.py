@@ -65,11 +65,11 @@ async def async_navigate_to_reviews_selenium(product_id):
     options.add_argument("--no-sandbox")
     options.add_argument("--disable-dev-shm-usage")
 
-    running_in_docker = os.getenv("RUNNING_IN_DOCKER", "false").lower() == "true"
+    running_in_docker = os.getenv('RUNNING_IN_DOCKER', 'false').lower() == 'true'
 
     if running_in_docker:
-        chrome_bin = os.getenv("CHROME_BIN", "/usr/local/bin/google-chrome")
-        chrome_driver = os.getenv("CHROME_DRIVER", "/usr/local/bin/chromedriver")
+        chrome_bin = os.getenv('CHROME_BIN', '/usr/local/bin/google-chrome')
+        chrome_driver = os.getenv('CHROME_DRIVER', '/usr/local/bin/chromedriver')
         options.binary_location = chrome_bin
         service = Service(chrome_driver)
     else:
@@ -77,7 +77,7 @@ async def async_navigate_to_reviews_selenium(product_id):
 
     driver = webdriver.Chrome(service=service, options=options)
 
-    search_url = f"https://www.zoro.com/search?q={product_id}"
+    search_url = f'https://www.zoro.com/search?q={product_id}'
 
     try:
         # Navigate to the search results page and wait for the product link to appear

@@ -8,6 +8,7 @@ import pandas as pd
 import os
 import pickle
 import threading
+import redis
 
 from langchain_core.documents import Document
 from langchain_core.retrievers import BaseRetriever
@@ -31,6 +32,7 @@ logger = logging.getLogger(__name__)
 current_dir = os.path.dirname(__file__)
 faiss_creation_event = threading.Event()
 tag = "VectorStoreImpl"
+
 
 class VectorStoreImpl(VectorStoreFacade):
     def __init__(self, vectorstore):
@@ -96,6 +98,14 @@ class VectorStoreImpl(VectorStoreFacade):
                 exact_match_map[row['Code']] = _index
                 exact_match_map[row['Name']] = _index
                 logging.info(f"{tag} / NAME = {row['Name']}")
+
+        # Store exact_match_map in Redis only if it's not empty
+        if exact_match_map:
+            redis_client = redis.StrictRedis(host='localhost', port=6379, db=0)
+            redis_client.hmset("exact_match_map", exact_match_map)
+        else:
+            logging.error(f"{tag} / exact_match_map is empty and cannot be stored in Redis")
+
         logging.info("Structured documents created:")
         for idx, doc in enumerate(documents[:5], 1):
             logging.info(f"{tag} / Document {idx} of {len(documents)}:")

@@ -9,7 +9,6 @@ from fastapi import FastAPI
 from modules.rest_modules.endpoints import chat, health, image, review
 from modules.vector_index.vector_implementations.VectorStoreImpl import VectorStoreImpl
 
-faiss_creation_event = threading.Event()
 logging.basicConfig(level=logging.INFO)
 app = FastAPI()
 
@@ -51,12 +50,11 @@ resource_manager = MainResourceManager()
 @app.on_event("startup")
 async def startup_event():
     try:
-        faiss_creation_event.wait()
-        logging.info(f"{tag} / Startup complete.")
         global session_store, current_tasks
         session_store = {}
         current_tasks = {}
         resource_manager.initialize_http_client()
+        logging.info(f"{tag} / Startup complete.")
     except Exception as e:
         logging.error(f"{tag} / Error during startup: {e}")
 

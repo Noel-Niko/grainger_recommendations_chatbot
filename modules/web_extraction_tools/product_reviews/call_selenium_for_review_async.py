@@ -2,6 +2,7 @@ import asyncio
 import contextlib
 import logging
 import os
+import stat
 
 from bs4 import BeautifulSoup
 from selenium import webdriver
@@ -42,7 +43,8 @@ def extract_reviews(soup):
 
     recommendation_section = soup.find("section", class_="pr-review-snapshot-block-recommend")
     if recommendation_section:
-        recommendation_percent_text = recommendation_section.find("span", class_="pr-reco-value").text.strip().replace("%", "")
+        recommendation_percent_text = recommendation_section.find("span", class_="pr-reco-value").text.strip().replace(
+            "%", "")
         with contextlib.suppress(ValueError):
             recommendation_percentages.append(float(recommendation_percent_text))
 
@@ -53,9 +55,11 @@ def extract_reviews(soup):
             review_texts.append(review_text.text.strip())
 
     avg_star_rating = sum(star_rating_values) / len(star_rating_values) if star_rating_values else None
-    avg_recommendation_percent = sum(recommendation_percentages) / len(recommendation_percentages) if recommendation_percentages else None
+    avg_recommendation_percent = sum(recommendation_percentages) / len(
+        recommendation_percentages) if recommendation_percentages else None
 
-    return {"Average Star Rating": avg_star_rating, "Average Recommendation Percent": avg_recommendation_percent, "Review Texts": review_texts}
+    return {"Average Star Rating": avg_star_rating, "Average Recommendation Percent": avg_recommendation_percent,
+            "Review Texts": review_texts}
 
 
 async def async_navigate_to_reviews_selenium(product_id):
@@ -73,15 +77,18 @@ async def async_navigate_to_reviews_selenium(product_id):
         options.binary_location = chrome_bin
         service = Service(chrome_driver)
     else:
-        service = Service(ChromeDriverManager().install())
+        # Use the correct path for the Chrome binary
+        options.binary_location = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
+        # Explicitly set the path to the correct ChromeDriver binary
+        chrome_driver_path = ChromeDriverManager().install()
+        # Ensure correct executable is used
+        if "THIRD_PARTY_NOTICES" in chrome_driver_path:
+            chrome_driver_path = chrome_driver_path.replace("THIRD_PARTY_NOTICES.chromedriver", "chromedriver")
+        service = Service(chrome_driver_path)
 
-    # driver = webdriver.Chrome(service=service, options=options)
-    #
-    # search_url = f'https://www.zoro.com/search?q={product_id}'
-    # Set the binary location to the Chrome for Testing binary
-    # options.binary_location = "/Applications/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing"
+        # Ensure the ChromeDriver executable has the correct permissions
+        os.chmod(chrome_driver_path, os.stat(chrome_driver_path).st_mode | stat.S_IEXEC)
 
-    service = Service(ChromeDriverManager().install())
     driver = webdriver.Chrome(service=service, options=options)
 
     search_url = f'https://www.zoro.com/search?q={product_id}'

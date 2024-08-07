@@ -41,6 +41,12 @@ if [ ! -d "/Applications/Google Chrome.app/Contents/Frameworks" ]; then
     sudo mkdir -p "/Applications/Google Chrome.app/Contents/Frameworks"
 fi
 
+# Remove existing Google Chrome for Testing Framework if it exists
+if [ -d "/Applications/Google Chrome.app/Contents/Frameworks/Google Chrome for Testing Framework.framework" ]; then
+    echo "Removing existing Google Chrome for Testing Framework.framework"
+    sudo rm -rf "/Applications/Google Chrome.app/Contents/Frameworks/Google Chrome for Testing Framework.framework"
+fi
+
 # Move Google Chrome for Testing Framework to the default Chrome location
 echo "Moving Google Chrome for Testing Framework to default Chrome location"
 sudo mv "/Applications/Google Chrome for Testing.app/Contents/Frameworks/Google Chrome for Testing Framework.framework" "/Applications/Google Chrome.app/Contents/Frameworks/"
@@ -76,7 +82,3 @@ else
 fi
 
 echo "Installation completed successfully"
-
-
-# chmod +x utils/install_chrome_chromedriver.sh
-  # ./utils/install_chrome_chromedriver.sh

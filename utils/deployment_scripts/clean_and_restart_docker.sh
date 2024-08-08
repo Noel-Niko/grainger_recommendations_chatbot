@@ -22,4 +22,4 @@ docker system prune -a --volumes
 docker build -t grainger_recommendations_chatbot .
 
 # Run the Docker container
-docker run -p 8000:8000 -p 8505:8505 grainger_recommendations_chatbot
+docker run -p 8000:8000 -p 8505:8505 -p 6379:6379 grainger_recommendations_chatbot

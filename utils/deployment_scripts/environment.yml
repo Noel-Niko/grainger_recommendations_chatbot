@@ -43,4 +43,5 @@ dependencies:
   - nose
   - moto
 
-#  pip install torch python-weather asyncio, redis,  redis-server
+#  pip install torch python-weather asyncio, redis
+

@@ -25,6 +25,26 @@ export ALLOW_INSECURE_CONNECTIONS=true
 
 # Start the application
 echo "Starting the application..."
+# Start the Redis server
+REDIS_CONF_PATH="/app/redis.conf"
+if [ -f "$REDIS_CONF_PATH" ]; then
+    echo "Starting Redis server with config $REDIS_CONF_PATH..."
+    redis-server "$REDIS_CONF_PATH" &
+else
+    echo "Redis configuration file not found at $REDIS_CONF_PATH"
+    exit 1
+fi
+
+# Wait a few seconds for Redis to start
+sleep 5
+
+# Check if Redis is running
+if lsof -i:6379; then
+  echo "Redis is running on port 6379."
+else
+  echo "Redis did not start successfully."
+  exit 1
+fi
 
 # Start FastAPI on port 8000
 echo "Starting FastAPI Application on port $FASTAPI_PORT..."

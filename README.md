@@ -1,15 +1,16 @@
 # grainger_recommendations_chatbot
 
 ## Key Features: 
-  - Asynchronous calls and use of a websocket for "reviews" to return a responses as soon as available.
+  - Asynchronous calls and use of a polling for "reviews" to return a responses as soon as available.
+  - Implements the Facade pattern for API.
+  - Utilized a Redis DB for quick look up of products by SKU or Name.
   - Utilizes Anthropic instead of OpenAi, and through its use of AWS Bedrock Anthropic can be switched for any of the many LLM models available.
   - Uses Named Entity Recognition to categorize the customer and personalize responses.
     - This could also be used for generating analytic data on customers.
     
-     
-![Deer Hunting Hats](https://github.com/Noel-Niko/grainger_recommendations_chatbot/assets/83922762/b73cf069-c8fa-46bf-a45f-0d13e52651f8)
+     ![latest rec chatbot video](https://github.com/user-attachments/assets/5f43e1a9-b80d-4e02-8b91-1c2e0faca13e)
 
-![Alaskan boots](https://github.com/Noel-Niko/grainger_recommendations_chatbot/assets/83922762/398ea974-43c4-476b-93e1-7a92fd52b5e8)
+
 
 # Data Sources:
   - Webscrapes grainger.com for a potential list of related products.

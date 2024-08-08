@@ -10,7 +10,7 @@ from fastapi import APIRouter, HTTPException, Request
 from modules.web_extraction_tools.product_reviews.call_selenium_for_review_async import async_navigate_to_reviews_selenium
 
 router = APIRouter()
-tag = "fast_api_main"
+tag = "review"
 
 
 @router.post("/fetch_reviews")

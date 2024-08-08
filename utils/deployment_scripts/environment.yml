@@ -44,3 +44,4 @@ dependencies:
   - moto
 
 #  pip install torch python-weather asyncio, redis
+

@@ -1,16 +1,12 @@
-import json
-import os
 import pickle
 import unittest
-from unittest.mock import patch, MagicMock, mock_open
+from unittest.mock import mock_open
 
-import numpy as np
-import pandas as pd
+from langchain_community.embeddings import BedrockEmbeddings
 
 from modules.vector_index.vector_implementations import VectorStoreImpl
 from modules.vector_index.vector_implementations.VectorStoreImpl import VectorStoreImpl
-from unit_tests.unit_test_utils.sample_vector_store import initialize_vector_store_with_sample_data, \
-    return_sample_vector
+from modules.vector_index.vector_utils.bedrock import BedrockClientManager
 
 
 class TestVectorStoreImpl(unittest.TestCase):
@@ -19,14 +15,13 @@ class TestVectorStoreImpl(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        df = return_sample_vector()
+
         # Initialize vector store with sample data
-        cls.vectorstore_faiss_doc = initialize_vector_store_with_sample_data(df)
-        cls.vectorstore_impl = VectorStoreImpl(cls.vectorstore_faiss_doc)
+        cls.vectorstore_impl = create_real_faiss_vector_store()
 
     def test_should_find_product_with_matching_full_input(self):
         # Arrange
-        product_code = "C1234B Product 1 10 Description of Product 1"
+        product_code = "C1234B Product 1 10 About Prod 1"
 
         # Act
         results = self.vectorstore_impl.parallel_search([product_code], k=1)
@@ -37,25 +32,19 @@ class TestVectorStoreImpl(unittest.TestCase):
 
     def test_should_find_product_by_product_code(self):
         # Arrange
-        product_code = "Product 3"
-
+        product_code = "C234B"
+        vector_store_impl = create_real_faiss_vector_store()
         # Act
-        results = self.vectorstore_impl.parallel_search([product_code], k=1)
+        results = vector_store_impl.parallel_search([product_code], k=1)
 
         # Assert
-        expected_page_content = "Product 3"
-        self.assertIn(expected_page_content, results[0][0].page_content)
+        self.assertIn(product_code, results[0][0].page_content)
 
 
 if __name__ == "__main__":
     unittest.main()
 
 import unittest
-from unittest.mock import MagicMock, patch, mock_open
-import os
-import pandas as pd
-import numpy as np
-from langchain_core.documents import Document
 from langchain_community.vectorstores import FAISS
 
 
@@ -65,6 +54,14 @@ import numpy as np
 import os
 from unittest.mock import MagicMock, patch, mock_open
 
+sample_data = {
+        "Code": ["C123B", "C234B", "C3234B"],
+        "Name": ["Product 1", "Item 2", "C Thing"],
+        "Description": ["About Prod 1", "Item 2 Described", "Tool 3 Characteristics"],
+        "Price": ["$10.00", "$20.00", "$30.00"],
+        "Brand": ["Manufacturer A", "Brand B1", "C Distributor"]
+    }
+
 def create_vector_store_mock(mock_faiss_class, mock_embed_documents, mock_pickle_load, mock_open, mock_read_parquet,
                              mock_path_exists):
     # Arrange
@@ -73,13 +70,6 @@ def create_vector_store_mock(mock_faiss_class, mock_embed_documents, mock_pickle
     parquet_file_path = os.path.abspath('stored_data_copies/grainger_products.parquet')
     mock_path_exists.side_effect = lambda x: x in [documents_pkl_path, vector_index_pkl_path, parquet_file_path]
 
-    sample_data = {
-        "Code": ["C123B", "C234B", "C3234B"],
-        "Name": ["Product 1", "Product 2", "Product 3"],
-        "Description": ["Description of Product 1", "Description of Product 2", "Description of Product 3"],
-        "Price": ["10", "20", "30"],
-        "Brand": ["Brand A", "Brand B", "Brand C"]
-    }
     mock_df = pd.DataFrame(sample_data)
     mock_read_parquet.return_value = mock_df
 
@@ -128,28 +118,9 @@ def create_vector_store_mock(mock_faiss_class, mock_embed_documents, mock_pickle
     return VectorStoreImpl(vector_store)
 
 
-import logging
-import os
-from pathlib import Path
-import pandas as pd
-from langchain_core.documents import Document
-from langchain_community.embeddings import BedrockEmbeddings
-from langchain_community.vectorstores import FAISS
-from modules.vector_index.vector_implementations.VectorStoreImpl import VectorStoreImpl
-from modules.vector_index.vector_utils.bedrock import BedrockClientManager
-
-
-def create_sample_parquet_file(file_path):
-    sample_data = {
-        "Code": ["C123B", "C234B", "C3234B"],
-        "Name": ["Product 1", "Product 2", "Product 3"],
-        "Description": ["Description of Product 1", "Description of Product 2", "Description of Product 3"],
-        "Price": ["10", "20", "30"],
-        "Brand": ["Brand A", "Brand B", "Brand C"]
-    }
+def create_sample_parquet_file():
     df = pd.DataFrame(sample_data)
-    df.to_parquet(file_path)
-    print(f"Parquet file created at {file_path}")
+    df.to_parquet('unit_test_utils/grainger_products.parquet')
 
 def create_real_faiss_vector_store():
     # Initialize Bedrock clients
@@ -161,6 +132,7 @@ def create_real_faiss_vector_store():
     print("Titan Embeddings Model initialized.")
 
     # Instead of loading an existing parquet file, use the one created from sample data
+    create_sample_parquet_file()
     parquet_file_path = 'unit_test_utils/grainger_products.parquet'
 
     # Load the parquet file
@@ -168,35 +140,23 @@ def create_real_faiss_vector_store():
 
     # Rest of your vector store initialization logic
     documents = []
-    for _, row in df.iterrows():
-        page_content = f"{row['Code']} {row['Name']} {row['Price']} {row['Description']}"
+    exact_match_map = {}
+    for _index, row in df.iterrows():
+        page_content = f"{row['Code']} {row['Brand']} {row['Name']} {row['Price']} {row['Description']}"
         metadata = {
             "Brand": row["Brand"], "Code": row["Code"], "Name": row["Name"],
             "Description": row["Description"], "Price": row["Price"]
         }
+        # Populate exact match map
+        exact_match_map[row['Code']] = _index
+        exact_match_map[row['Name']] = _index
         documents.append(Document(page_content=page_content, metadata=metadata))
 
     # Create FAISS vector store
     vectorstore_faiss_doc = FAISS.from_documents(documents, bedrock_embeddings)
 
     # Return initialized vector store
-    return VectorStoreImpl((vectorstore_faiss_doc, {}))
-
-
-# Example of using the real FAISS vector store for a search
-def example_search():
-    vector_store_impl = create_real_faiss_vector_store()
-    queries = ["Description of Product 2"]
-    results = vector_store_impl.parallel_search(queries)
-
-    for result in results:
-        for doc in result:
-            print(f"Found document: {doc.page_content}")
-
-
-if __name__ == "__main__":
-    example_search()
-
+    return VectorStoreImpl((vectorstore_faiss_doc, exact_match_map))
 
 class TestInitializeEmbeddingsAndFaiss(unittest.TestCase):
 
@@ -277,49 +237,34 @@ class VectorDocumentTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         # Initialize vector store with sample data
-        df = return_sample_vector()
-        cls.vectorstore_faiss_doc = initialize_vector_store_with_sample_data(df)
-        cls.vectorstore_impl = VectorStoreImpl(cls.vectorstore_faiss_doc)
+        cls.vectorstore_impl = create_real_faiss_vector_store()
 
     def test_should_find_product_by_product_code(self):
         # Arrange
         product_code = "C123B"
+        vector_store_impl = create_real_faiss_vector_store()
 
         # Act
-        results = self.vectorstore_impl.parallel_search([product_code], k=1)
+        results = vector_store_impl.parallel_search([product_code], k=1)
 
         # Assert
         self.assertIn("Product 1", results[0][0].page_content)
 
-    @patch("modules.vector_index.vector_implementations.vector_store_impl.VectorStoreImpl.parallel_search")
-    @patch.dict(os.environ, {
-        "AWS_ACCESS_KEY_ID": "fake_access_key",
-        "AWS_SECRET_ACCESS_KEY": "fake_secret_key",
-        "AWS_DEFAULT_REGION": "us-west-2"
-    })
-    @patch("modules.vector_index.vector_implementationvector_store_impl.VectorStoreImpl.os.path.exists")
-    @patch("modules.vector_index.vector_implementationvector_store_impl.VectorStoreImpl.pd.read_parquet")
-    @patch("builtins.open", new_callable=mock_open)
-    @patch("modules.vector_index.vector_implementations.vector_store_impl.VectorStoreImpl.pickle.load")
-    @patch("langchain_community.embeddings.bedrock.BedrockEmbeddings.embed_documents")
-    @patch("langchain_community.vectorstores.faiss.FAISS")
-    def test_should_find_product_by_product_name(self, mock_parallel_search, mock_faiss_class, mock_embed_documents, mock_pickle_load, mock_open,
-                                             mock_read_parquet, mock_path_exists):
+    def test_should_find_product_by_product_name(self,):
         # Arrange
-        product_name = "N123B"
-        mock_parallel_search.return_value = [["Product with name N1"]]
-        vector_store_impl = create_vector_store_mock(mock_faiss_class, mock_embed_documents, mock_pickle_load, mock_open,
-                                                     mock_read_parquet, mock_path_exists)
+        product_name = "Item 2"
+
+        vector_store_impl = create_real_faiss_vector_store()
 
         # Act
-        results = vector_store_impl.parallel_search([product_name], MagicMock(), k=1)
+        results = vector_store_impl.parallel_search([product_name], k=1)
 
         # Assert
-        self.assertEqual(results[0], ["Product with name N123B"])
+        self.assertIn("Item 2 Described", results[0][0].page_content)
 
     def test_should_find_product_by_product_description(self):
         # Arrange
-        product_description = "Description of Product 2"
+        product_description = "Tool 3 Characteristics"
 
         vector_store_impl = create_real_faiss_vector_store()
 
@@ -327,60 +272,20 @@ class VectorDocumentTest(unittest.TestCase):
         results = vector_store_impl.parallel_search([product_description], k=1)
 
         # Assert
-        self.assertIn("Description of Product 2", results[0][0].page_content)
+        self.assertIn("C3234B", results[0][0].page_content)
+        self.assertIn(product_description, results[0][0].page_content)
 
-    @patch("modules.vector_index.vector_implementations.vector_store_impl.VectorStoreImpl.parallel_search")
-    @patch.dict(os.environ, {
-        "AWS_ACCESS_KEY_ID": "fake_access_key",
-        "AWS_SECRET_ACCESS_KEY": "fake_secret_key",
-        "AWS_DEFAULT_REGION": "us-west-2"
-    })
-    @patch("modules.vector_index.vector_implementationvector_store_impl.VectorStoreImpl.os.path.exists")
-    @patch("modules.vector_index.vector_implementationvector_store_impl.VectorStoreImpl.pd.read_parquet")
-    @patch("builtins.open", new_callable=mock_open)
-    @patch("modules.vector_index.vector_implementations.vector_store_impl.VectorStoreImpl.pickle.load")
-    @patch("langchain_community.embeddings.bedrock.BedrockEmbeddings.embed_documents")
-    @patch("langchain_community.vectorstores.faiss.FAISS")
-    def test_should_generate_list_of_products_via_brand(self, mock_parallel_search, mock_faiss_class, mock_embed_documents, mock_pickle_load, mock_open,
-                                             mock_read_parquet, mock_path_exists):
+
+    def test_should_generate_list_of_products_via_brand(self):
         # Arrange
-        product_brand = "B123B"
-        mock_parallel_search.return_value = [["Product with brand B123B"]]
-        vector_store_impl = create_vector_store_mock(mock_faiss_class, mock_embed_documents, mock_pickle_load, mock_open,
-                                                     mock_read_parquet, mock_path_exists)
+        product_brand = "Brand B1"
+        vector_store_impl = create_real_faiss_vector_store()
 
         # Act
-        results = vector_store_impl.parallel_search([product_brand], MagicMock(), k=1)
+        results = vector_store_impl.parallel_search([product_brand], k=1)
 
         # Assert
-        self.assertEqual(results[0], ["Product with brand B123B"])
-
-    @patch("modules.vector_index.vector_implementations.vector_store_impl.VectorStoreImpl.parallel_search")
-    @patch.dict(os.environ, {
-        "AWS_ACCESS_KEY_ID": "fake_access_key",
-        "AWS_SECRET_ACCESS_KEY": "fake_secret_key",
-        "AWS_DEFAULT_REGION": "us-west-2"
-    })
-    @patch("modules.vector_index.vector_implementationvector_store_impl.VectorStoreImpl.os.path.exists")
-    @patch("modules.vector_index.vector_implementationvector_store_impl.VectorStoreImpl.pd.read_parquet")
-    @patch("builtins.open", new_callable=mock_open)
-    @patch("modules.vector_index.vector_implementations.vector_store_impl.VectorStoreImpl.pickle.load")
-    @patch("langchain_community.embeddings.bedrock.BedrockEmbeddings.embed_documents")
-    @patch("langchain_community.vectorstores.faiss.FAISS")
-    def test_should_update_product_description(self, mock_parallel_search, mock_faiss_class, mock_embed_documents, mock_pickle_load, mock_open,
-                                             mock_read_parquet, mock_path_exists):
-        # Arrange
-        old_description = "Old description"
-        new_description = "New description"
-        mock_parallel_search.return_value = [[f"Product updated from {old_description} to {new_description}"]]
-        vector_store_impl = create_vector_store_mock(mock_faiss_class, mock_embed_documents, mock_pickle_load, mock_open,
-                                                     mock_read_parquet, mock_path_exists)
-
-        # Act
-        results = vector_store_impl.parallel_search([old_description], MagicMock(), k=1)
-
-        # Assert
-        self.assertEqual(results[0], [f"Product updated from {old_description} to {new_description}"])
+        self.assertIn("Item 2 Described", results[0][0].page_content)
 
 
 if __name__ == "__main__":

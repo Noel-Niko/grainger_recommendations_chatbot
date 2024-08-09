@@ -1,25 +1,17 @@
-import re
 import logging
-import sys
-from typing import List, Dict, Any
-from concurrent.futures import ThreadPoolExecutor
-from pathlib import Path
-import pandas as pd
 import os
 import pickle
+import re
 import threading
-import redis
+from concurrent.futures import ThreadPoolExecutor
+from typing import List
 
-from langchain_core.documents import Document
-from langchain_core.retrievers import BaseRetriever
-from langchain_core.callbacks.manager import (
-    CallbackManagerForRetrieverRun,
-    AsyncCallbackManagerForRetrieverRun,
-)
-from langchain_core.runnables import run_in_executor
+import pandas as pd
+import redis
+from langchain_aws import Bedrock
 from langchain_community.embeddings import BedrockEmbeddings
 from langchain_community.vectorstores import FAISS
-from langchain_aws import Bedrock
+from langchain_core.documents import Document
 
 from modules.vector_index.vector_facades.VectorStoreFacade import VectorStoreFacade
 from modules.vector_index.vector_utils.bedrock import BedrockClientManager
@@ -84,8 +76,9 @@ class VectorStoreImpl(VectorStoreFacade):
                 description = row["Description"] if pd.notna(row["Description"]) else ""
                 price = row["Price"] if pd.notna(row["Price"]) else ""
                 normalized_name = row['Name'].strip()
+                normalized_brand = row['Brand'].strip()
                 normalized_price = price.strip() if price else ""
-                page_content = f"{row['Code']} {normalized_name} {normalized_price} {description}"
+                page_content = f"{row['Code']} {normalized_name} {normalized_brand} {normalized_price} {description}"
 
                 metadata = {
                     "Brand": row["Brand"], "Code": row["Code"], "Name": row["Name"],

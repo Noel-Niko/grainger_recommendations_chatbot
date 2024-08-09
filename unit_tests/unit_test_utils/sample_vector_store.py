@@ -4,12 +4,14 @@ import pickle
 import logging
 from langchain.embeddings import BedrockEmbeddings
 from langchain.vectorstores import FAISS
-from modules.vector_index.vector_implementations.Document import Document
+from langchain_core.documents import Document
 
 import pandas as pd
 
+from modules.vector_index.vector_utils.bedrock import BedrockClientManager
+
 sample_data = {
-    "Code": ["C1", "C2", "C3"],
+    "Code": ["C123B", "C234B", "C3234B"],
     "Name": ["Product 1", "Product 2", "Product 3"],
     "Description": ["Description of Product 1", "Description of Product 2", "Description of Product 3"],
     "Price": ["10", "20", "30"],
@@ -25,7 +27,16 @@ def return_sample_vector():
 
 
 def initialize_vector_store_with_sample_data(df):
-    bedrock_embeddings = BedrockEmbeddings(model_id="amazon.titan-embed-text-v1", client=None)
+    logging.info("Initializing Bedrock clients...")
+    bedrock_manager = BedrockClientManager(refresh_interval=3600)
+    bedrock_runtime_client = bedrock_manager.get_bedrock_client()
+
+    # Load or create LLM instance
+    # Initialize Titan Embeddings Model
+    logging.info("Initializing Titan Embeddings Model...")
+    bedrock_embeddings = BedrockEmbeddings(model_id="amazon.titan-embed-text-v1", client=bedrock_runtime_client)
+    logging.info("Titan Embeddings Model initialized.")
+
     documents = []
     exact_match_map = {}  # Map for exact matching
 

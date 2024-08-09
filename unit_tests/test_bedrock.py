@@ -29,7 +29,7 @@ class TestBedrockClientManager(unittest.TestCase):
         self.client_kwargs = {}
 
     @mock_aws
-    def should_assume_role_and_get_credentials(self):
+    def test_should_assume_role_and_get_credentials(self):
         with patch.object(self.session, "client", return_value=MagicMock()) as mock_sts_client:
             mock_sts_client().assume_role.return_value = {
                 "Credentials": {
@@ -44,7 +44,7 @@ class TestBedrockClientManager(unittest.TestCase):
             self.assertEqual(credentials["SessionToken"], "fake_session_token")
 
     @mock_aws
-    def should_update_client_kwargs_with_credentials(self):
+    def test_should_update_client_kwargs_with_credentials(self):
         credentials = {"AccessKeyId": "fake_access_key_id", "SecretAccessKey": "fake_secret_access_key", "SessionToken": "fake_session_token"}
         self.manager.update_client_kwargs_with_credentials(credentials, self.client_kwargs)
         self.assertEqual(self.client_kwargs["aws_access_key_id"], "fake_access_key_id")
@@ -53,7 +53,7 @@ class TestBedrockClientManager(unittest.TestCase):
 
     @mock_aws
     @patch("modules.vector_index.vector_utils.bedrock.BedrockClientManager.refresh_credentials", autospec=True)
-    def should_get_bedrock_client(self, mock_refresh_credentials):
+    def test_should_get_bedrock_client(self, mock_refresh_credentials):
         with patch.object(self.session, "client", return_value=MagicMock()) as mock_client:
             mock_client().assume_role.return_value = {
                 "Credentials": {
@@ -71,7 +71,7 @@ class TestBedrockClientManager(unittest.TestCase):
             self.assertTrue(mock_refresh_credentials.called)
 
     @mock_aws
-    def should_refresh_credentials(self):
+    def test_should_refresh_credentials(self):
         manager = BedrockClientManager(refresh_interval=3600)
         session = boto3.Session(region_name="us-east-1")
         role_arn = "arn:aws:iam::123456789012:role/TestRole"

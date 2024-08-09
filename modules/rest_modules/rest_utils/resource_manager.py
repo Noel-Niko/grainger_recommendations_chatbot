@@ -22,7 +22,9 @@ class ResourceManager:
             logging.error(f"Failed to initialize HTTP client: {e}")
 
     async def refresh_bedrock_embeddings(self):
-        self.bedrock_embeddings, self.vectorstore_faiss_doc, self.exact_match_map, self.df, self.llm = VectorStoreImpl.initialize_embeddings_and_faiss()
+        self.bedrock_embeddings, self.vectorstore_faiss_doc, self.exact_match_map, self.df, self.llm = (
+            VectorStoreImpl.initialize_embeddings_and_faiss()
+        )
 
 
 resource_manager = ResourceManager()

@@ -6,10 +6,12 @@ from unittest.mock import MagicMock, patch
 
 import boto3
 from moto import mock_aws
+
+from modules.vector_index.vector_utils.bedrock import BedrockClientManager
+
 current_dir = os.path.dirname(__file__)
 project_root = os.path.abspath(os.path.join(current_dir, ".."))
 sys.path.append(project_root)
-from modules.vector_index.vector_utils.bedrock import BedrockClientManager
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s", handlers=[logging.StreamHandler()])

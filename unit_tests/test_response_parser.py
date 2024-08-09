@@ -1,8 +1,5 @@
 import unittest
 from unittest.mock import patch
-import json
-import re
-import time
 
 from modules.vector_index.vector_utils.response_parser import split_process_and_message_from_response
 
@@ -13,7 +10,9 @@ class TestSplitProcessAndMessageFromResponse(unittest.TestCase):
     def test_split_process_and_message_from_response_success(self, mock_time):
         # Arrange
         mock_time.side_effect = [0, 1]  # Simulating time taken
-        recs_response = "<response>Hello, here are the products you requested:</response><products>[{\"product\": \"Product A\", \"code\": \"123\"}, {\"product\": \"Product B\", \"code\": \"456\"}]</products>"
+        recs_response = ("<response>Hello, here are the products you requested:</response><products>[{\"product\": "
+                         "\"Product A\", \"code\": \"123\"}, {\"product\": \"Product B\", \"code\": "
+                         "\"456\"}]</products>")
 
         # Act
         message, products_json = split_process_and_message_from_response(recs_response)
@@ -46,7 +45,8 @@ class TestSplitProcessAndMessageFromResponse(unittest.TestCase):
     def test_split_process_and_message_from_response_unexpected_format(self, mock_time):
         # Arrange
         mock_time.side_effect = [0, 1]  # Simulating time taken
-        recs_response = "<response>Hello, here are the products you requested:</response><productList>[{\"product\": \"Product A\", \"code\": \"123\"}]</productList>"
+        recs_response = ("<response>Hello, here are the products you requested:</response><productList>[{\"product\": "
+                         "\"Product A\", \"code\": \"123\"}]</productList>")
 
         # Act
         message, products_json = split_process_and_message_from_response(recs_response)

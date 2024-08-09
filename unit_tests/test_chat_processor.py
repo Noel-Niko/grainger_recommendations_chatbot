@@ -1,8 +1,5 @@
 import unittest
-from unittest.mock import patch, MagicMock
-import json
-import time
-from fastapi import APIRouter, Depends, HTTPException, Request
+from unittest.mock import MagicMock, patch
 
 from modules.vector_index.vector_utils.chat_processor import process_chat_question_with_customer_attribute_identifier
 

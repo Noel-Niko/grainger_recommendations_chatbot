@@ -2,13 +2,14 @@ import json
 import logging
 import sys
 import time
+
 from langchain.chains import RetrievalQA
 from langchain.prompts import PromptTemplate
 
+from modules.vector_index.vector_implementations.VectorStoreImpl import VectorStoreImpl
 from modules.vector_index.vector_utils.custom_retriever import CustomRetriever
 from modules.vector_index.vector_utils.customer_attributes import extract_customer_attributes
 from modules.vector_index.vector_utils.response_parser import split_process_and_message_from_response
-from modules.vector_index.vector_implementations.VectorStoreImpl import VectorStoreImpl
 
 tag = "chat_processor"
 

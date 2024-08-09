@@ -1,16 +1,15 @@
 import logging
 import sys
-from typing import List, Any
-from langchain_core.retrievers import BaseRetriever
-from langchain_core.documents import Document
-from langchain_core.callbacks.manager import (
-    CallbackManagerForRetrieverRun,
-    AsyncCallbackManagerForRetrieverRun,
-)
-from langchain_core.runnables import run_in_executor
-from pydantic import BaseModel, Field
+from typing import Any, List
 
-from modules.vector_index.vector_implementations.VectorStoreImpl import VectorStoreImpl
+from langchain_core.callbacks.manager import (
+    AsyncCallbackManagerForRetrieverRun,
+    CallbackManagerForRetrieverRun,
+)
+from langchain_core.documents import Document
+from langchain_core.retrievers import BaseRetriever
+from langchain_core.runnables import run_in_executor
+from pydantic import Field
 
 tag = "custom_retriever"
 logging.basicConfig(level=logging.INFO, stream=sys.stdout)

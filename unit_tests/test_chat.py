@@ -1,14 +1,14 @@
 import asyncio
 import unittest
-from unittest.mock import patch, MagicMock, AsyncMock
-from fastapi.testclient import TestClient
-from fastapi import FastAPI
-from starlette.middleware.sessions import SessionMiddleware
-from fastapi import APIRouter, Depends, HTTPException, Request
+from unittest.mock import AsyncMock, MagicMock, patch
 
+from fastapi import FastAPI, HTTPException
+from fastapi.testclient import TestClient
+from starlette.middleware.sessions import SessionMiddleware
+
+from modules.rest_modules.endpoints.chat import process_chat_question, process_question_task, router
 from modules.rest_modules.models import ChatRequest
 from modules.rest_modules.rest_utils.resource_manager import ResourceManager
-from modules.rest_modules.endpoints.chat import router, ask_question, process_question_task, process_chat_question
 
 app = FastAPI()
 app.add_middleware(SessionMiddleware, secret_key="some-secret")

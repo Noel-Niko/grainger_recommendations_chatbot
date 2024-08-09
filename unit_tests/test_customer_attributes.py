@@ -1,8 +1,5 @@
 import unittest
 from unittest.mock import MagicMock, patch
-import json
-import re
-import time
 
 from modules.vector_index.vector_utils.customer_attributes import extract_customer_attributes
 

@@ -1,10 +1,14 @@
+import os
 import pickle
 import unittest
-from unittest.mock import mock_open
+from unittest.mock import MagicMock, mock_open, patch
 
+import numpy as np
+import pandas as pd
 from langchain_community.embeddings import BedrockEmbeddings
+from langchain_community.vectorstores import FAISS
+from langchain_core.documents import Document
 
-from modules.vector_index.vector_implementations import VectorStoreImpl
 from modules.vector_index.vector_implementations.VectorStoreImpl import VectorStoreImpl
 from modules.vector_index.vector_utils.bedrock import BedrockClientManager
 
@@ -43,16 +47,6 @@ class TestVectorStoreImpl(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
-
-import unittest
-from langchain_community.vectorstores import FAISS
-
-
-from langchain_core.documents import Document
-import pandas as pd
-import numpy as np
-import os
-from unittest.mock import MagicMock, patch, mock_open
 
 sample_data = {
         "Code": ["C123B", "C234B", "C3234B"],

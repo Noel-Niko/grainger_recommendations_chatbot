@@ -13,7 +13,7 @@ class TestProcessChatQuestionWithCustomerAttributeIdentifier(unittest.TestCase):
     def test_process_chat_question_with_customer_attribute_identifier_success(
             self, mock_from_chain_type, mock_split_process_and_message, mock_extract_attributes, mock_time):
         # Arrange
-        mock_time.side_effect = [0, 1]  # Simulating time taken
+        mock_time.side_effect = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19]
         mock_llm = MagicMock()
         mock_document = MagicMock()
         mock_retriever = MagicMock()
@@ -30,7 +30,7 @@ class TestProcessChatQuestionWithCustomerAttributeIdentifier(unittest.TestCase):
 
         # Act
         message, product_list_as_json, attributes, time_to_get_attributes = process_chat_question_with_customer_attribute_identifier(
-            question, document, llm, chat_history)
+            question, document, {}, llm, chat_history)
 
         # Assert
         self.assertEqual(message, "message")
@@ -45,7 +45,7 @@ class TestProcessChatQuestionWithCustomerAttributeIdentifier(unittest.TestCase):
     def test_process_chat_question_with_customer_attribute_identifier_invalid_chat_history(
             self, mock_from_chain_type, mock_split_process_and_message, mock_extract_attributes, mock_time):
         # Arrange
-        mock_time.side_effect = [0, 1, 2]  # Simulating time taken
+        mock_time.side_effect = [0, 1, 2, 3]
         mock_llm = MagicMock()
         mock_document = MagicMock()
         mock_retriever = MagicMock()
@@ -61,7 +61,7 @@ class TestProcessChatQuestionWithCustomerAttributeIdentifier(unittest.TestCase):
 
         # Act & Assert
         with self.assertRaises(ValueError) as context:
-            process_chat_question_with_customer_attribute_identifier(question, document, llm, invalid_chat_history)
+            process_chat_question_with_customer_attribute_identifier(question, document, {}, llm, invalid_chat_history)
         self.assertEqual(str(context.exception), "Chat history must be a list of dictionaries.")
 
     @patch("time.time")
@@ -71,7 +71,7 @@ class TestProcessChatQuestionWithCustomerAttributeIdentifier(unittest.TestCase):
     def test_process_chat_question_with_customer_attribute_identifier_invalid_chat_history_entry(
             self, mock_from_chain_type, mock_split_process_and_message, mock_extract_attributes, mock_time):
         # Arrange
-        mock_time.side_effect = [0, 1, 2]  # Simulating time taken
+        mock_time.side_effect = [0, 1, 2, 3]
         mock_llm = MagicMock()
         mock_document = MagicMock()
         mock_retriever = MagicMock()
@@ -87,7 +87,7 @@ class TestProcessChatQuestionWithCustomerAttributeIdentifier(unittest.TestCase):
 
         # Act & Assert
         with self.assertRaises(ValueError) as context:
-            process_chat_question_with_customer_attribute_identifier(question, document, llm, invalid_chat_history)
+            process_chat_question_with_customer_attribute_identifier(question, document, {}, llm, invalid_chat_history)
         self.assertEqual(str(context.exception),
                          "Each entry in chat history must be a dictionary with 'user' and 'assistant' keys.")
 
@@ -98,7 +98,7 @@ class TestProcessChatQuestionWithCustomerAttributeIdentifier(unittest.TestCase):
     def test_process_chat_question_with_customer_attribute_identifier_invalid_json_format(
             self, mock_from_chain_type, mock_split_process_and_message, mock_extract_attributes, mock_time):
         # Arrange
-        mock_time.side_effect = [0, 1, 2]  # Simulating time taken
+        mock_time.side_effect = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19]
         mock_llm = MagicMock()
         mock_document = MagicMock()
         mock_retriever = MagicMock()
@@ -115,7 +115,7 @@ class TestProcessChatQuestionWithCustomerAttributeIdentifier(unittest.TestCase):
 
         # Act
         message, product_list_as_json, attributes, time_to_get_attributes = process_chat_question_with_customer_attribute_identifier(
-            question, document, llm, chat_history)
+            question, document, {}, llm, chat_history)
 
         # Assert
         self.assertEqual(message, "message")
@@ -130,7 +130,7 @@ class TestProcessChatQuestionWithCustomerAttributeIdentifier(unittest.TestCase):
     def test_process_chat_question_with_customer_attribute_identifier_access_denied_exception(
             self, mock_from_chain_type, mock_split_process_and_message, mock_extract_attributes, mock_time):
         # Arrange
-        mock_time.side_effect = [0, 1, 2]  # Simulating time taken
+        mock_time.side_effect = [0, 1, 2, 3]
         mock_llm = MagicMock()
         mock_document = MagicMock()
         mock_retriever = MagicMock()
@@ -146,7 +146,7 @@ class TestProcessChatQuestionWithCustomerAttributeIdentifier(unittest.TestCase):
 
         # Act & Assert
         with self.assertRaises(ValueError) as context:
-            process_chat_question_with_customer_attribute_identifier(question, document, llm, chat_history)
+            process_chat_question_with_customer_attribute_identifier(question, document, {}, llm, chat_history)
         self.assertIn("AccessDeniedException", str(context.exception))
 
 

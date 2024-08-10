@@ -40,3 +40,5 @@
  asyncio
  redis
  redis-cli
+ pytest
+ pytest-asyncio

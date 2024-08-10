@@ -1,6 +1,5 @@
 import asyncio
 import logging
-import threading
 from typing import Dict, List
 
 import httpx
@@ -20,7 +19,9 @@ class MainResourceManager:
     def __init__(self):
         try:
             logging.info(f"{tag} / Initializing MainResourceManager...")
-            self.bedrock_embeddings, self.vectorstore_faiss_doc, self.exact_match_map, self.df, self.llm = VectorStoreImpl.initialize_embeddings_and_faiss()
+            self.bedrock_embeddings, self.vectorstore_faiss_doc, self.exact_match_map, self.df, self.llm = (
+                VectorStoreImpl.initialize_embeddings_and_faiss()
+            )
             self.driver = None
             self.http_client = None
             self.initialize_http_client()
@@ -38,7 +39,9 @@ class MainResourceManager:
 
     async def refresh_bedrock_embeddings(self):
         try:
-            self.bedrock_embeddings, self.vectorstore_faiss_doc, self.exact_match_map, self.df, self.llm = VectorStoreImpl.initialize_embeddings_and_faiss()
+            self.bedrock_embeddings, self.vectorstore_faiss_doc, self.exact_match_map, self.df, self.llm = (
+                VectorStoreImpl.initialize_embeddings_and_faiss()
+            )
             logging.info(f"{tag} / Bedrock embeddings refreshed successfully.")
         except Exception as e:
             logging.error(f"{tag} / Failed to refresh Bedrock embeddings: {e}")

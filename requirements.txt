@@ -20,6 +20,7 @@
  requests
  beautifulsoup4==4.12.3
  pyarrow
+ fastparquet
  sagemaker
  aiohttp
  ipython
@@ -39,3 +40,5 @@
  asyncio
  redis
  redis-cli
+ pytest
+ pytest-asyncio
